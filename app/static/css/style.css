@@ -1,0 +1,129 @@
+
+body {
+      box-sizing: border-box;
+}
+
+
+
+
+#calender-holder{
+
+    width: 60%;
+    margin: 10% 20% 5% 20%;
+
+}
+
+#calender{
+    cellspacing: 0;
+    width: 100%;
+    border-collapse: collapse;
+
+}
+
+.outer-day{
+    background: lightgray;
+    color: darkgray;
+}
+
+
+th {
+    position: relative;
+    width:  calc(100%*1/7);
+    padding: 0;
+    padding-bottom:  calc(100%*1/21);
+    border: 2px solid darkred;
+    outline: 2px solid lightgray;
+    outline-offset: -3px;
+
+
+
+}
+
+td {
+    position: relative;
+    width:  calc(100%*1/7);
+    padding: 0;
+    padding-bottom:  calc(100%*1/14);
+    border: 2px solid darkgray;
+}
+
+
+
+
+
+th div {
+    position: absolute;
+
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%)
+
+}
+
+td div {
+    position: absolute;
+
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%)
+
+}
+
+
+
+
+body {
+    min-height: 100vh;
+    padding: 0px;
+    margin: 0px;
+    font-family: "Candara", "Helvetica", monospace;
+}
+
+*, *::before, *::after {                                    /*TODO revisit/check*/
+    box-sizing: inherit;
+}
+
+
+
+
+
+.navbar {
+    display: grid;
+    width: auto;
+    list-style-type: none;                                  /*remove bullets*/
+    grid-template-columns: 1fr auto auto auto;
+    justify-content: space-between;
+    align-content: center;
+    position: center;
+
+    height: 60px;
+    background: gray;
+
+    padding-left:0;
+    margin: 10px 10px 0px 10px;
+    border-radius: 2rem;
+}
+
+
+
+
+.nav-item{
+    padding: 0 25px 0 25px;
+
+}
+
+
+.nav-item:first-child {
+    justify-self: start;                                /*remove underlines from links*/
+
+/*
+     grid-column-start: 1;
+    grid-column-end: 5;
+*/
+}
+
+.navbar a {
+    text-decoration: none;                                  /*remove underlines from links*/
+    color: white;
+}
+

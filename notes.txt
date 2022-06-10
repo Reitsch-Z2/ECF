@@ -1,1 +1,6 @@
 git setup
+app factory!
+postgres
+heroku
+
+license?

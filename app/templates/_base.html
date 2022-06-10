@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+</head>
+<body>
+
+<header class="header">
+
+    {% block navbar %}
+        {% include 'navbar/_navbar_root.html' %}
+    {% endblock %}
+
+    <div></div>
+</header>
+<div></div>
+
+
+
+    {% block widget %}
+        {% include '_calender.html' %}
+    {% endblock %}
+
+</body>
+</html>
