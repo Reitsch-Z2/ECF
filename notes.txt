@@ -4,3 +4,9 @@ postgres
 heroku
 
 license?
+
+
+#TODO dymanically suggest existing categories in the category field of a new item entry
+#TODO dynamically suggest a category on focus out of item field
+#TODO date in the future in entries - recheck and reset
+#TODO date instead of DateTime???

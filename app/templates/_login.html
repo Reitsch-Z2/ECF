@@ -1,0 +1,28 @@
+
+<div class="form-container">
+    <div class="form">
+        <form action="" method="post" novalidate>
+            {{form.hidden_tag()}}
+            <p>
+                {{form.username.label}}<br>
+                {{form.username(class= "form-field")}}
+                {% for error in form.username.errors %}
+                <span>[{{error}}]</span>
+                {% endfor %}
+            </p>
+            <br>
+            <p>
+                {{form.password.label}}<br>
+                {{form.password(class= "form-field")}}
+                {% for error in form.password.errors %}
+                <span>[{{error}}]</span>
+                {% endfor %}
+            </p>
+            <br>
+            <p>
+                {{form.remember_me()}} {{form.remember_me.label}}<br>
+            </p>
+            <p>{{form.submit}}</p>
+        </form>
+    </div>
+</div>

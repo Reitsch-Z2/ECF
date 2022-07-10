@@ -1,0 +1,66 @@
+
+.form-container {
+  position: relative;
+  height: 100vh;
+}
+
+.form {
+    border: 0.1px solid black;
+    border-radius: 2em;
+    position: absolute;
+    height: auto;
+    max-width: 300px;
+    width: 50%;
+    padding: 15px 30px 15px 30px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%)
+}
+
+.form-field{
+    width: 100%;
+    box-sizing:border-box;
+
+}
+
+.form-alt {
+
+    border: 0.1px solid black;
+    position: absolute;
+    height: auto;
+    width: 90%;
+    padding: 15px 30px 15px 30px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%)
+}
+
+.form-field-alt{
+    height: 25px;
+    width: 100%;
+    box-sizing:border-box;
+
+}
+
+.poly {
+    display: inline-block;
+    flex-grow: 3;
+}
+
+.poly2 {
+    display: inline-block;
+    flex-grow: 1;
+}
+
+.experiment{
+  display:flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.submit {
+  height: 25px;
+  width:100%;
+}
+

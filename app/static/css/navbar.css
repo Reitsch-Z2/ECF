@@ -1,0 +1,39 @@
+.navbar {
+    display: grid;
+    width: auto;
+    list-style-type: none;                                  /*remove bullets*/
+    grid-template-columns: 1fr auto auto auto;
+    justify-content: space-between;
+    align-content: center;
+    position: center;
+
+    height: 60px;
+    background: gray;
+
+    padding-left:0;
+    margin: 10px 10px 0px 10px;
+    border-radius: 2rem;
+}
+
+
+
+
+.nav-item{
+    padding: 0 25px 0 25px;
+
+}
+
+
+.nav-item:first-child {
+    justify-self: start;                                /*remove underlines from links*/
+
+/*
+     grid-column-start: 1;
+    grid-column-end: 5;
+*/
+}
+
+.navbar a {
+    text-decoration: none;                                  /*remove underlines from links*/
+    color: white;
+}
