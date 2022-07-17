@@ -10,3 +10,6 @@ license?
 #TODO dynamically suggest a category on focus out of item field
 #TODO date in the future in entries - recheck and reset
 #TODO date instead of DateTime???
+#TODO temporary flashed messages in _base.html
+
+#TODO ever send pure JSON in a request???

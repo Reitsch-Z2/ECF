@@ -30,7 +30,7 @@
 
             <span class="poly">
                 {{form.category.label}}<br>
-                {{form.category(class= "form-field-alt")}}
+                {{form.category(class= "form-field-alt", autocomplete="")}}
                 {% for error in form.category.errors %}
                 <span>[{{error}}]</span>
                 {% endfor %}

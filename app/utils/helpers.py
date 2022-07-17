@@ -16,11 +16,6 @@ def json_loader(path:bool or str, *args):               #TODO can we do this?
     return sample_config
 
 
-# x=json_loader(True, "settings", "general", "currencies")
-#
-# print(x)
-
-
 def currency_list_api(base_currency, comparison_currency, date, quantity, decimals=2):
 
     url = f'https://api.exchangerate.host/convert?from={base_currency}&to={comparison_currency}'
@@ -32,3 +27,11 @@ def currency_list_api(base_currency, comparison_currency, date, quantity, decima
 
 
 currency_list_api('EUR', 'RSD', '2022-07-09', 200, 4)
+
+
+
+__name__ == "__main__"
+
+    # x=json_loader(True, "settings", "general", "currencies")
+    #
+    # print(x)

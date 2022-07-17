@@ -1,88 +1,136 @@
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 let today = new Date()
+datePacker = {}
+let mode = 'week'                                                           //TODO outside???
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+reqPack = function(){
+  var package = {}
+  package['data'] = {}
+  package.data['dates'] = datePacker
+
+  return package
+}
+
+
+
+
+
+
+
+
+
+
+
+
+function xhrSend(package, responseFunction ){
+  var xhr = new XMLHttpRequest()                                              //TODO global or local
+  xhr.open('POST', '/api/tables', true)
+  xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8")      //TODO recheck if mandatory
+  xhr.setRequestHeader("Accept", "application/json;charset=UTF-8")            //TODO recheck if mandatory
+  xhr.send(JSON.stringify(package))
+
+  xhr.onload = function() {
+    if (xhr.status == 200){
+      responseFunction(xhr.response)
+    }
+  }
+}
+
 
 function Calender(year, month=(new Date(today).getMonth()), day=(new Date(today).getDay())){
 
-    const days = [ "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  const days = [ "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-    function daysMapper(year, month){                              //TODO move to exterior?
-      var daysTotal = new Date(year, month+1, 0).getDate()
-      var days = []
-      for (i=1; i < (daysTotal+1); i++){
-        var x = [i,(new Date(year, month, i).getDay())]
-        days.push(x)
+  function daysMapper(year, month){                              //TODO move to exterior?
+    var daysTotal = new Date(year, month+1, 0).getDate()
+    var days = []
+    for (i=1; i < (daysTotal+1); i++){
+      var x = [i,(new Date(year, month, i).getDay())]
+      days.push(x)
+    }
+    return days
+  }
+
+  function weeksMapper(day_mapper){                              //TODO move to exterior?
+
+    var weeks = []
+    var week = []
+
+    for (i=0; i < day_mapper.length; i++){
+      if ((day_mapper[i][1] != 0) && (day_mapper[i][0] != day_mapper.slice(-1)[0][0])){
+        week.push(day_mapper[i])
+      } else if ((day_mapper[i][1] != 0) && (day_mapper[i][0] == day_mapper.slice(-1)[0][0])){
+        week.push(day_mapper[i])
+        weeks.push(week)
+        week = []
+      } else {
+        week.push(day_mapper[i])
+        weeks.push(week)
+        week = []
       }
-      return days
     }
 
-    function weeksMapper(day_mapper){                              //TODO move to exterior?
+    return weeks
+  }
 
-      var weeks = []
-      var week = []
+  function arraySlicer (array, start, end){                              //TODO move to exterior?
+    return array.slice(start, end)
+  }
 
-      for (i=0; i < day_mapper.length; i++){
-        if ((day_mapper[i][1] != 0) && (day_mapper[i][0] != day_mapper.slice(-1)[0][0])){
-          week.push(day_mapper[i])
-        } else if ((day_mapper[i][1] != 0) && (day_mapper[i][0] == day_mapper.slice(-1)[0][0])){
-          week.push(day_mapper[i])
-          weeks.push(week)
-          week = []
-        } else {
-          week.push(day_mapper[i])
-          weeks.push(week)
-          week = []
-        }
-      }
+  this.day = day
+  this.day_named = days[this.day]
+  this.month = month
+  this.month_named = months[this.month]
+  this.previousMonth = month-1
+  this.nextMonth = month+1
+  this.month_named = months[this.month]
+  this.year = year
 
-      return weeks
+  this.daysMapper = daysMapper
+  this.arraySlicer = arraySlicer
+  this.days = (daysMapper(this.year, this.month))
+  this.weeks = (weeksMapper(this.days))
+
+  this.firstWeek = this.weeks[0]
+  this.lastWeek = this.weeks[this.weeks.length-1]
+
+  this.preWeek = (function(){
+    var previous = this.daysMapper(this.year, this.previousMonth)
+    var preLength = 7 - this.firstWeek.length
+    if (preLength !=0){
+      return this.arraySlicer(previous, -preLength)
     }
+  }.bind(this))()
 
-    function arraySlicer (array, start, end){                              //TODO move to exterior?
-      return array.slice(start, end)
+  this.postWeek = (function(){
+    var next = this.daysMapper(this.year, this.nextMonth)
+    var postLength = 7 - this.lastWeek.length
+    if (postLength !=0){
+      return this.arraySlicer(next, 0, postLength)
     }
+  }.bind(this))()
 
-    this.day = day
-    this.day_named = days[this.day]
-    this.month = month
-    this.month_named = months[this.month]
-    this.previousMonth = month-1
-    this.nextMonth = month+1
-    this.month_named = months[this.month]
-    this.year = year
-
-    this.daysMapper = daysMapper
-    this.arraySlicer = arraySlicer
-    this.days = (daysMapper(this.year, this.month))
-    this.weeks = (weeksMapper(this.days))
-
-    this.firstWeek = this.weeks[0]
-    this.lastWeek = this.weeks[this.weeks.length-1]
-
-    this.preWeek = (function(){
-      var previous = this.daysMapper(this.year, this.previousMonth)
-      var preLength = 7 - this.firstWeek.length
-      if (preLength !=0){
-        return this.arraySlicer(previous, -preLength)
-      }
-    }.bind(this))()
-
-    this.postWeek = (function(){
-      var next = this.daysMapper(this.year, this.nextMonth)
-      var postLength = 7 - this.lastWeek.length
-      if (postLength !=0){
-        return this.arraySlicer(next, 0, postLength)
-      }
-    }.bind(this))()
-
-    this.no_days = (function (){
-      return new Date(month, year, 0).getDate();
-    }())
+  this.no_days = (function (){
+    return new Date(month, year, 0).getDate();
+  }())
 
 }
 
 function generateCalender(year, month=(new Date(today).getMonth()), day=(new Date(today).getDay())){
 
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
+  window['monthGlobal']=month
+  window['yearGlobal']=year
+  datePacker['month']=monthGlobal
+  datePacker['year']=yearGlobal
+//  alert(JSON.stringify(datePacker))
 
   function dayLooper(theWeek, boolean=0){         //TODO only add the function to this.function instead of pre-naming?
       theWeek.forEach(day => {
@@ -197,15 +245,23 @@ function generateCalender(year, month=(new Date(today).getMonth()), day=(new Dat
   timeMarker()
 }
 
+
+
+
+
 function timeMarker(){
   var cal = document.getElementById("calender")
   cal.addEventListener("click", function(e){              //TODO pack this as a function that is to be called on every month changed
+
     if (mode == 'day'){
-      var target = e.target.closest('td')
+      var target = e.target.closest('td.day')
       var targetChild = target.children[0]
       var remover = this.querySelectorAll("td div")
       remover.forEach(day => {day.classList.remove("clicked")})
       targetChild.classList.add("clicked")
+      ajax = targetChild.textContent
+
+      datePacker['days']=ajax
     } else if (mode == 'week'){
       var target = e.target.closest('tr')
       var days = target.querySelectorAll('div')
@@ -213,7 +269,13 @@ function timeMarker(){
       var remover = this.querySelectorAll("td div")
       remover.forEach(day => {day.classList.remove("clicked")})
       days.forEach(day => {day.classList.add("clicked")})
+      ajax = days.map(x => x.textContent)
+      datePacker['days']=ajax
+
     }
+    alert('hoi')
+    xhrSend(reqPack(), alert)
+
   })
 }
 
@@ -232,23 +294,45 @@ function monthModes(){
   month.addEventListener('click', function(e){
     var target = e.target
 
+
+
+
+    if (month.querySelectorAll('.clicked')[0]){                             //TODO experimental
+      current = month.querySelectorAll('.clicked')[0]
+      if (target.id != current.id){
+        var cleaner = document.querySelectorAll(".clicked")
+        cleaner.forEach(day => {day.classList.remove("clicked")})
+      }
+    }
+
+    var outers = document.body.querySelectorAll('.outer-day div')
+    alert(outers.length)
+    if (target.id == "week-mode"){
+      outers.forEach(day => {day.classList.remove("hidden")})
+    } else {
+      outers.forEach(day => {day.classList.add("hidden")})
+    }
+
+
+
+
     if (target.tagName=='BUTTON'){
       var holder = target.closest('#modes-group')
       holder = Array.from(holder.children)
       holder.forEach(button => {button.classList.remove('clicked')})
       target.classList.add('clicked')                                       //TODO different click class for aesthetics
       mode = target.textContent
+
+
     }
 
-
   })
-
-
 
   return month
 
 }
 
+//function dateSender(mode):
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -270,23 +354,6 @@ function monthModes(){
 
 generateCalender(2022, 5)
 
-//document.body.addEventListener("click", function(e){
-//    alert(e.target.tagName)
-//  })
-
-
-//var tay = document.querySelectorAll("td")
-//tay.forEach(teed => {
-//  teed.addEventListener("click", function(e){
-//    if (e.target.tagName=='td')
-//    {alert(e.tagName)}
-//
-//    })
-//})
-
-
-
-let mode = 'week'          //TODO outside
 
 
 
@@ -294,13 +361,8 @@ let mode = 'week'          //TODO outside
 
 
 
-//addEventListener("click", function(){
-//  alert('e.target')
-//})
 
-
-
-
+//xhrSend(xhr, datePacker, alert)
 
 
 

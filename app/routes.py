@@ -1,12 +1,29 @@
 from app import app, db
 from app.models import User, Item, Category, Price
-from flask import render_template, url_for, redirect, flash
+from flask import render_template, url_for, redirect, flash, request
 from flask_login import current_user, login_user, logout_user, login_required
 from app.forms import LoginForm, RegistrationForm, ItemForm
 
+import json
 
 
 
+# class AjaxQuery()
+
+
+
+
+@app.route('/api/tables', methods=['POST'])
+def tables():
+    requests = dict(json.loads(request.get_data()))
+
+    # x = user.query.join(user_settings, users.id == user_settings.user_id)
+    x = Item.query.filter_by(name = 'cvekla').all()
+
+    return {
+        # 'data' : str(x[0].category.name)
+        'data': str(requests)
+    }
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -68,24 +85,17 @@ def entries():
             category = Category(
                 name = form.category.data
             )
-        category.items.append(item)
-
 
 
         item.prices.append(price)
-
+        category.items.append(item)
+        current_user.categories.append(category)
         current_user.items.append(item)
         db.session.commit()
+        return redirect(url_for('entries'))
 
 
     return render_template('entries.html', form=form)
-
-
-
-
-
-
-
 
 
 @app.route('/overview')
@@ -93,4 +103,18 @@ def entries():
 def overview():
     form = ItemForm()
     return render_template('overview.html', form=form)
+
+@app.route('/inception', methods=['GET', 'POST'])
+def inception():
+    user = User(username='Marko', email='marko@ecf.com')
+    user.set_password('Alesund')
+    db.session.add(user)
+    db.session.commit()
+    user = User.query.filter_by(username='Marko').first()
+    login_user(user, remember=True)
+    form=ItemForm()
+    return redirect(url_for('entries'))
+
+
+
 
