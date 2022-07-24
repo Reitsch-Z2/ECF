@@ -3,7 +3,7 @@
 
 let today = new Date()
 datePacker = {}
-let mode = 'week'                                                           //TODO outside???
+//let mode = 'week'                                                           //TODO outside???
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -11,7 +11,7 @@ let mode = 'week'                                                           //TO
 reqPack = function(){
   var package = {}
   package['data'] = {}
-  package.data['dates'] = datePacker
+  package.data['time'] = datePacker
 
   return package
 }
@@ -50,7 +50,7 @@ function Calender(year, month=(new Date(today).getMonth()), day=(new Date(today)
   function daysMapper(year, month){                              //TODO move to exterior?
     var daysTotal = new Date(year, month+1, 0).getDate()
     var days = []
-    for (i=1; i < (daysTotal+1); i++){
+    for (let i=1; i < (daysTotal+1); i++){
       var x = [i,(new Date(year, month, i).getDay())]
       days.push(x)
     }
@@ -62,7 +62,7 @@ function Calender(year, month=(new Date(today).getMonth()), day=(new Date(today)
     var weeks = []
     var week = []
 
-    for (i=0; i < day_mapper.length; i++){
+    for (let i=0; i < day_mapper.length; i++){
       if ((day_mapper[i][1] != 0) && (day_mapper[i][0] != day_mapper.slice(-1)[0][0])){
         week.push(day_mapper[i])
       } else if ((day_mapper[i][1] != 0) && (day_mapper[i][0] == day_mapper.slice(-1)[0][0])){
@@ -126,10 +126,8 @@ function generateCalender(year, month=(new Date(today).getMonth()), day=(new Dat
 
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
-  window['monthGlobal']=month
+  window['monthGlobal']=month+1                   //TODO Careful around this one! Real enum vs. JS month enum
   window['yearGlobal']=year
-  datePacker['month']=monthGlobal
-  datePacker['year']=yearGlobal
 //  alert(JSON.stringify(datePacker))
 
   function dayLooper(theWeek, boolean=0){         //TODO only add the function to this.function instead of pre-naming?
@@ -155,7 +153,7 @@ function generateCalender(year, month=(new Date(today).getMonth()), day=(new Dat
   header.append(header_row)
   table.id = "calender"
 
-  for (i=0; i < 7; i++){                //creating the calender TH/header cells
+  for (let i=0; i < 7; i++){                //creating the calender TH/header cells
     var cell = document.createElement("th")
     var div = document.createElement("div")
     cell.append(div)
@@ -168,7 +166,7 @@ function generateCalender(year, month=(new Date(today).getMonth()), day=(new Dat
   var content = new Calender(year, month, day)
                                             //TODO as a function
 
-  for (i=0; i < content.weeks.length; i++){           //TODO let?
+  for (let i=0; i < content.weeks.length; i++){           //TODO let?
     var row = document.createElement("tr")
     row.classList.add("week")
     body.append(row)
@@ -259,25 +257,105 @@ function timeMarker(){
       var remover = this.querySelectorAll("td div")
       remover.forEach(day => {day.classList.remove("clicked")})
       targetChild.classList.add("clicked")
-      ajax = targetChild.textContent
-
-      datePacker['days']=ajax
+      day = targetChild.textContent
+      day = datePipeline(yearGlobal, monthGlobal, day, mode)
+      datePacker['dates'] = day
     } else if (mode == 'week'){
-      var target = e.target.closest('tr')
+      var target = e.target.closest('tr.week')
       var days = target.querySelectorAll('div')
       var days = Array.from(days)
       var remover = this.querySelectorAll("td div")
       remover.forEach(day => {day.classList.remove("clicked")})
       days.forEach(day => {day.classList.add("clicked")})
-      ajax = days.map(x => x.textContent)
-      datePacker['days']=ajax
-
+      let additional
+      if (days[0].parentNode.className == 'outer-day'){
+        additional = 'pre'
+      } else if (days[6].parentNode.className == 'outer-day'){
+        additional = 'post'
+      } else {
+        additional = 'mid'
+      }
+      days = days.map(x => x.textContent)
+      dates = datePipeline(yearGlobal, monthGlobal, days, mode, additional)
+      datePacker['dates'] = dates
+    } else {
+      //pass //alert('')
     }
-    alert('hoi')
+    datePacker['mode'] = mode
     xhrSend(reqPack(), alert)
-
   })
 }
+
+
+function dateFormat(Y, M, D){
+  var D = D, M = String(M)
+//  alert(D)
+//  alert(M)
+//  alert(typeof(D))
+//  alert(typeof(M))
+//  alert(D.length)
+//  alert(M.length)
+  var D = D.length < 2 ? (D = ('0'+ D)) : (D = D);
+  var M = M.length < 2 ? (M = ('0'+ M)) : (M = M);
+
+  return (Y+'-'+ M + '-' + D)                           //TODO add sub-object with key=func for additional date formats
+}
+
+function weekDatesParser(Y, M, D, additional){
+  alert(additional)
+  switch(additional){
+    case('mid'):
+      dates = D.map(day => dateFormat(Y, M, day))
+      return dates
+      break
+    case('pre'):
+    case('post'):
+      firstPart = []              //denoting the first part of the week
+      secondPart = []             //denoting the second part of the week
+      for (let i = 0; i <D.length; i++){
+        (parseInt(D[i])>parseInt(D[6])) ? firstPart.push(D[i]) : secondPart.push(D[i])
+      }
+    switch(additional){
+      case('pre'):
+        innerDays = secondPart.map(day => dateFormat(Y, M, day))
+        M == 1 ? (M = 12, Y = parseInt(Y)-1) : (M = parseInt(M)-1)
+        outerDays = firstPart.map(day => dateFormat(Y, M, day))
+        dates = outerDays.concat(innerDays)
+        return dates
+        break
+      case('post'):
+        innerDays = firstPart.map(day => dateFormat(Y, M, day))
+        M == 12 ? (M = 11, Y = parseInt(Y)+1) : (M = parseInt(M)+1)
+        outerDays = secondPart.map(day => dateFormat(Y, M, day))
+        dates = innerDays.concat(outerDays)
+        return dates
+        break
+    }
+  }
+}
+
+
+
+
+
+function datePipeline(Y, M, D, mode, additional=0){                       //TODO switsch statement with "mode" as an arg instead of type-parsing
+
+  switch(mode){
+    case 'day':
+      return dateFormat(Y, M, D)
+      break
+    case 'week':
+      return weekDatesParser(Y, M, D, additional)
+      break
+    case 'month':
+      //pass
+      break
+    case 'period':      //TODO to be added later on
+      //pass
+      break
+  }
+}
+
 
 function monthModes(){
 
@@ -306,7 +384,7 @@ function monthModes(){
     }
 
     var outers = document.body.querySelectorAll('.outer-day div')
-    alert(outers.length)
+//    alert(outers.length)
     if (target.id == "week-mode"){
       outers.forEach(day => {day.classList.remove("hidden")})
     } else {
@@ -352,8 +430,8 @@ function monthModes(){
 
 
 
-generateCalender(2022, 5)
-
+generateCalender(2022, 6)
+monthModes()
 
 
 

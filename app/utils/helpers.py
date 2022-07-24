@@ -1,6 +1,9 @@
 import json
 import os
 import requests
+from app.models import Item
+
+
 
 def json_loader(path:bool or str, *args):               #TODO can we do this?
     if path == True:
@@ -25,12 +28,9 @@ def currency_list_api(base_currency, comparison_currency, date, quantity, decima
 
     print(data)
 
-
-currency_list_api('EUR', 'RSD', '2022-07-09', 200, 4)
-
-
-
-__name__ == "__main__"
+# __name__ == "__main__":
+#
+#     currency_list_api('EUR', 'RSD', '2022-07-09', 200, 4)
 
     # x=json_loader(True, "settings", "general", "currencies")
     #

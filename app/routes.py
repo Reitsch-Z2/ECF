@@ -6,23 +6,60 @@ from app.forms import LoginForm, RegistrationForm, ItemForm
 
 import json
 
+from sqlalchemy import func
+from datetime import datetime
+
+from app.utils.orms import AjaxQuery
 
 
-# class AjaxQuery()
+
+
 
 
 
 
 @app.route('/api/tables', methods=['POST'])
+@login_required
 def tables():
     requests = dict(json.loads(request.get_data()))
+    columns = ['name', 'price', 'currency']
+    # filters = {'name' : 'dezodorans'}                 #TODO TURN INTO COMBINATION OF MODES FOR FILTERING OUT!
 
+    dates=requests['data']['time']
+    # AQ = AjaxQuery(dates)
+
+    columns = ['name', 'price']
+
+    test = AjaxQuery(requests)
+    test = test.querier(columns)
+
+    dime = datetime.strptime('21 June, 2018', "%d %B, %Y")
     # x = user.query.join(user_settings, users.id == user_settings.user_id)
-    x = Item.query.filter_by(name = 'cvekla').all()
+    # x = Item.query.filter_by(date >= '2022/02/02').all()
+    # x = Item.query.filter_by(name= 'cvekla').all()
+
+    # Query = Item.query.
+    x = Item.query.filter(Item.date >= '2022-07-17').filter_by(name='cvekla').all()
+
+
+    # x = Item.query.filter(Item.date >= '2022-07-17').filter_by(name='cvekla').all()               #proper
+
+
+    # x = Item.query.filter(Item.date.between('2022-07-17', '2022-09-17')).all()                      #proper
+
+    # x = Item.query.filter_by(user_id = current_user.id).all()
+
+    # for item in x.prices:
+    #     if item.currency == 'RSD':
+    #         final = x
+    # xx = x.to_dict(['name',['price', 'RSD'], 'category'])
+
+
 
     return {
-        # 'data' : str(x[0].category.name)
-        'data': str(requests)
+        'data': str(test)
+        # 'data' : AjaxQuery.to_dict_mapper(x, columns)
+        # 'data': str(x[0].to_dict(columns))
     }
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -108,6 +145,37 @@ def overview():
 def inception():
     user = User(username='Marko', email='marko@ecf.com')
     user.set_password('Alesund')
+
+    # item = Item(
+    #     name='cvekla',
+    #     date='2022/07/018'
+    # )
+    #
+    # price = Price(
+    #     price=320,
+    #     currency='RSD'
+    # )
+    #
+    # category = Category.query.filter_by(name=form.category.data).first()
+    # if category is None:
+    #     category = Category(
+    #         name=form.category.data
+    #     )
+    #
+    # item.prices.append(price)
+    # category.items.append(item)
+    # current_user.categories.append(category)
+    # current_user.items.append(item)
+    # db.session.commit()
+
+
+
+
+
+
+
+
+
     db.session.add(user)
     db.session.commit()
     user = User.query.filter_by(username='Marko').first()

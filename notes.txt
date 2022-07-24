@@ -13,3 +13,18 @@ license?
 #TODO temporary flashed messages in _base.html
 
 #TODO ever send pure JSON in a request???
+
+
+
+
+    @hybrid_property
+    def category(self):
+        return self._category.name
+
+    @category.setter
+    def category(self, category_object):
+        self._category = category_object
+
+    @category.expression                                #TODO recheck
+    def category(cls):
+        return select([Category.name]).where(cls.category_id == Category.id).as_scalar()
