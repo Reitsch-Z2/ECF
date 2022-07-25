@@ -3,7 +3,7 @@
 
 let today = new Date()
 datePacker = {}
-//let mode = 'week'                                                           //TODO outside???
+let mode = 'week'                                                           //TODO outside???
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -27,7 +27,7 @@ reqPack = function(){
 
 
 
-function xhrSend(package, responseFunction ){
+function xhrSend(package, responseFunction, ...args){
   var xhr = new XMLHttpRequest()                                              //TODO global or local
   xhr.open('POST', '/api/tables', true)
   xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8")      //TODO recheck if mandatory
@@ -36,7 +36,7 @@ function xhrSend(package, responseFunction ){
 
   xhr.onload = function() {
     if (xhr.status == 200){
-      responseFunction(xhr.response)
+      responseFunction(...args, xhr.response)
     }
   }
 }
@@ -282,7 +282,7 @@ function timeMarker(){
       //pass //alert('')
     }
     datePacker['mode'] = mode
-    xhrSend(reqPack(), alert)
+    xhrSend(reqPack(), queryTableMaker, 'queried')
   })
 }
 
@@ -302,7 +302,7 @@ function dateFormat(Y, M, D){
 }
 
 function weekDatesParser(Y, M, D, additional){
-  alert(additional)
+//  alert(additional)
   switch(additional){
     case('mid'):
       dates = D.map(day => dateFormat(Y, M, day))

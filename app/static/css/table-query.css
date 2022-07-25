@@ -1,0 +1,44 @@
+
+#queried{
+
+
+    width: 80%;
+    margin: 5% 10% 5% 10%;
+
+}
+
+#table-costs{
+    position: relative;
+    margin: auto;
+    border-collapse: collapse;
+    width: 100%;
+
+}
+
+
+
+#table-costs td, th {
+    border: 0.5px gray solid;
+    text-align: center;
+}
+
+#table-costs td {
+
+    position: relative;
+    width: auto;
+
+
+}
+
+
+#table-costs td div {
+    margin: 1% 0% 1% auto;
+
+
+}
+
+
+
+
+
+

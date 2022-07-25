@@ -28,12 +28,12 @@ class AjaxQuery():
 
 
 
-
+        final={}
         rows = [x.to_dict(columns) for x in query.all()]
         final['columns'] = columns
         final['rows'] = rows
 
-        return res
+        return final
 
 
 

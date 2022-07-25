@@ -14,8 +14,10 @@ license?
 
 #TODO ever send pure JSON in a request???
 
+#TODO prevent default on clicking a link and instead make a HTTP request with recent query as a package to be sent and returned on refresh
 
 
+#TODO count existing number of the same items for the user when inserting new items with that name.... new column, used for item edit view naming
 
     @hybrid_property
     def category(self):
@@ -28,3 +30,9 @@ license?
     @category.expression                                #TODO recheck
     def category(cls):
         return select([Category.name]).where(cls.category_id == Category.id).as_scalar()
+
+
+
+#TODO file-naming, identation, quotes!
+
+#TODO time format in Upmodel class - could be better?

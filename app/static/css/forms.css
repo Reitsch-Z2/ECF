@@ -43,11 +43,13 @@
 }
 
 .poly {
+    position: relative;
     display: inline-block;
     flex-grow: 3;
 }
 
 .poly2 {
+    position: relative;
     display: inline-block;
     flex-grow: 1;
 }
@@ -55,12 +57,22 @@
 .experiment{
   display:flex;
   align-items: flex-end;
-  flex-wrap: wrap;
+  flex-wrap: no-wrap;
   gap: 10px;
 }
 
 .submit {
   height: 25px;
-  width:100%;
+
+}
+
+.form-error{
+  position: absolute;
+  height: auto;
+  display: inline-block;
+  width: 100%;
+  margin-top: 3em;
+  margin-left: -100%;
+  z-index: -1;
 }
 

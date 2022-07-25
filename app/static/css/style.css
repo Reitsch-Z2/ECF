@@ -1,27 +1,9 @@
 @import "navbar.css";
 @import "month-navbar.css";
 @import "forms.css";
-
-
-
-
-
-
-#modes-group{
-  margin: 5% auto 5% auto;
-  display: flex;
-  justify-content: space-around;
-  flex-direction: row;
-  width: 60%;
-
-
-}
-
-#modes-group button{
-  width: 40%;
-  white-space: no-wrap;
-
-}
+@import "calender.css";
+@import "table-query.css";
+@import "auto-fill.css";
 
 
 
@@ -29,88 +11,6 @@
 
 
 
-
-#calender-holder{
-    display:inline-block;
-
-    width: 60%;
-    margin: 0% 20% 0% 20%;
-
-
-}
-
-#calender{
-    cellspacing: 0;
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 5%;
-}
-
-
-
-
-th {
-    position: relative;
-    width:  calc(100%*1/7);
-    padding: 0;
-    padding-bottom:  calc(100%*1/21);
-    border: 2px solid darkred;
-    outline: 1px solid orange;
-    outline-offset: -1.5px;
-
-
-
-}
-
-td {
-    position: relative;
-    width:  calc(100%*1/7);
-    padding: 0;
-    padding-bottom:  calc(100%*1/10.5);
-    border: 1px solid darkgray;
-    margin: 1%;
-
-
-}
-
-
-
-
-
-th div {
-    position: absolute;
-
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%)
-
-}
-
-.week td div {
-    position: absolute;
-    height: 48%;
-    width: 32%;
-    border-radius: 50%;
-
-    justify-content: center;
-    align-items: center;
-    display: flex;
-
-
-
-    /** background-color: lightgray;
-    border: 1px solid black;**/
-
-    font-size: 100%;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    }
-
-.clicked {
-    background: lightblue;
-
-}
 
 
 
@@ -120,19 +20,6 @@ body {
     font-family: "Ariel", "Helvetica", monospace;
 }
 
-
-
-.outer-day{
-    font-weight: bold;
-    color: darkgray;
-    font-size: 0.75em;
-}
-
-.day{
-    font-weight: bold;
-    color: black;
-    font-size: 1em;
-}
 
 .hidden {
   visibility: hidden;

@@ -35,10 +35,10 @@ class ItemForm(FlaskForm):
     currencies = json_loader(True, "settings", "general", "currencies")
 
     item = StringField('Item', validators=[DataRequired()])
-    price = DecimalField('Price', validators=[DataRequired()])
+    price = DecimalField('Price', validators=[DataRequired()])              #TODO is it?
     currency = SelectField('Currency', choices=currencies, validators=[DataRequired()])
-    category = StringField('Category', validators=[DataRequired()])
+    category = StringField('Category', validators=[DataRequired()])         #TODO is it?
     date = DateField('Time', default=datetime.date.today(), format='%Y-%m-%d', validators=[DataRequired()])         #TODO format is acting fishy
     submit = SubmitField('Submit')
 
-    #TODO - surely some validators here
+    #TODO - surely some custom validators here

@@ -50,6 +50,7 @@ class Item(db.Model, Upmodel):
     id = db.Column(db.Integer, primary_key=True)
     _name = db.Column(db.String(64), index=True)
     date = db.Column(db.Date, index=True, default=datetime.utcnow)              #TODO maybe a string?
+    #pseudo_count                  ####TODO - unique denoting of an element!
 
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))               #TODO nullable=false?
     _category = db.relationship('Category', back_populates='items', innerjoin=True)
@@ -83,7 +84,7 @@ class Item(db.Model, Upmodel):
 
     @hybrid_property
     def price(self):
-        return str(round(self.prices[0].price, 2)) + ' ' + self.prices[0].currency
+        return str(round(self.prices[0].price, 2)) + ' ' + self.prices[0].currency              #TODO filter-out
 
     @price.setter
     def price(self, price_object):
@@ -91,7 +92,7 @@ class Item(db.Model, Upmodel):
 
     @price.expression                                #TODO recheck
     def price(cls):
-        return select([Price.price]).where(cls.id == Price.item_id).as_scalar()
+        return select([Price.price]).where(cls.id == Price.item_id).as_scalar()                 #TODO filter-out
 
     @hybrid_property
     def currency(self):
@@ -110,6 +111,7 @@ class Price(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     price = db.Column(db.Numeric)                         #TODO Float?
     currency = db.Column(db.String(64))
+    first_entry = db.Column(db.Boolean, default=False)
 
     item_id = db.Column(db.Integer, db.ForeignKey('item.id'))  # TODO nullable=false?
     item = db.relationship('Item', back_populates='prices')
