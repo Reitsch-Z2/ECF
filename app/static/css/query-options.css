@@ -1,0 +1,110 @@
+
+
+#type-query-container button{
+  width: 50%;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+  text-overflow: ellipsis;
+    box-sizing:border-box;
+
+}
+
+#type-query-container {
+    white-space: nowrap;
+      box-sizing:border-box;
+      width: 25%;
+
+}
+
+#type-query{
+  width: 100%;
+  box-sizing:border-box;
+}
+
+/*
+#query-options {
+
+    position: relative;
+    border: 0.1px solid black;
+    width: 100%;
+    padding: 15px 30px 15px 30px;
+    margin-bottom: 2%;
+    box-sizing:border-box;
+    display:flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 5%;
+    flex-wrap: no-wrap;
+    overflow: auto;
+}
+*/
+
+
+.poly {
+    flex-growth: 1;
+    display: inline-block;
+    box-sizing:border-box;
+
+
+}
+
+#query-options label {
+  white-space: nowrap;
+
+}
+
+
+
+.poly2 {
+
+    display: inline-block;
+    box-sizing:border-box;
+}
+
+.experiment{
+  display:flex;
+  align-items: flex-end;
+  flex-wrap: no-wrap;
+  gap: 10px;
+}
+
+.submit {
+  height: 25px;
+
+}
+
+.form-error{
+  position: absolute;
+  height: auto;
+  display: inline-block;
+  width: 100%;
+  margin-top: 3em;
+  margin-left: -100%;
+  z-index: -1;
+}
+
+
+
+.form {
+    border: 0.1px solid black;
+    border-radius: 2em;
+    position: absolute;
+    height: auto;
+    max-width: 300px;
+    width: 50%;
+    padding: 15px 30px 15px 30px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%)
+}
+
+.form-field{
+    width: 100%;
+    box-sizing:border-box;
+
+}
+
+.chosen{
+  background: lightblue;
+}

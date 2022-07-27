@@ -36,3 +36,5 @@ license?
 #TODO file-naming, identation, quotes!
 
 #TODO time format in Upmodel class - could be better?
+
+#TODO add button type to all buttons

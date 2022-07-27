@@ -1,5 +1,5 @@
 from app import app, db
-from app.models import User, Item, Category, Price
+from app.models import User, Item, Category, Price, UserSetting
 from flask import render_template, url_for, redirect, flash, request
 from flask_login import current_user, login_user, logout_user, login_required
 from app.forms import LoginForm, RegistrationForm, ItemForm
@@ -10,7 +10,7 @@ from sqlalchemy import func
 from datetime import datetime
 
 from app.utils.orms import AjaxQuery
-from app.utils.helpers import currency_converter_api
+from app.utils.helpers import currency_converter_api, json_loader
 
 
 
@@ -22,8 +22,6 @@ def autosuggest():
     requests = dict(json.loads(request.get_data()))
     property = requests['property']
     value = requests['value']
-
-
     test = User.query.filter_by(id = current_user.id).first()
     lista = getattr(test, property)
     lista = [element.name for element in lista if element.name.lower().startswith(value.lower())]
@@ -31,7 +29,6 @@ def autosuggest():
 
     return {
         'data': lista
-
     }
 
 @app.route('/api/auto-fill', methods=['POST'])
@@ -48,6 +45,27 @@ def autofill():
     return {
         'data': str(aufofill_value)
     }
+
+@app.route('/api/user-settings', methods=['POST'])
+@login_required
+def usersettings():
+
+
+    requests = dict(json.loads(request.get_data()))
+    setting_name = requests['setting_name']
+    setting_value = requests['setting']
+
+
+    # user = User.query.filter_by(id = current_user.id).first()
+
+    setting = UserSetting.query.filter_by(user_id = current_user.id, setting_name = setting_name).first()
+
+    setting.setting = setting_value
+    db.session.add(setting)
+    db.session.commit()
+
+
+    return setting_value
 
 
 
@@ -195,8 +213,19 @@ def entries():
 @app.route('/overview')
 
 def overview():
-    form = ItemForm()
-    return render_template('overview.html', form=form)
+
+    presets = json_loader(True, "settings", "general")
+    presets_loader = {}
+    presets_loader['pagination'] = presets['pagination']
+    currencies = presets['currencies']
+    query_types = presets['currency_query']
+    query_types.extend(currencies)
+    presets_loader['currency_query'] = query_types
+
+
+
+
+    return render_template('overview.html', presets_loader = presets_loader)
 
 @app.route('/inception', methods=['GET', 'POST'])
 def inception():

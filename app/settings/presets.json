@@ -6,7 +6,10 @@
         }
     },
     "general": {
-        "currencies":["RSD", "EUR", "USD"]
+        "currencies":["RSD", "EUR", "USD"],
+        "currency_query":["Total - base currency", "Total - combined currencies"],
+        "pagination":[10, 25, 50]
+
     }
 }
-    }
+}

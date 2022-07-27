@@ -3,11 +3,9 @@
 function queryTableMaker(id, responseObject){
   var holder = document.getElementById(id)
 
-
   responseObject = JSON.parse(responseObject)
   var rows = responseObject["data"]["rows"]
   var columns = responseObject["data"]["columns"]
-
 
   var table = document.createElement("table")
   var headers = document.createElement("thead")
@@ -24,7 +22,6 @@ function queryTableMaker(id, responseObject){
   }
   headers.append(headerRow)
 
-
   for (let i = 0; i < rows.length; i++){
     var tableRow = document.createElement("tr")
     for (let x = 0; x < columns.length; x++){
@@ -39,7 +36,10 @@ function queryTableMaker(id, responseObject){
   table.append(headers)
   table.append(body)
 
-  holder.innerHTML=''
-  holder.append(table)
+  previous = document.getElementById("table-costs")
+  if (previous){
+    previous.remove()
+  }
 
+  holder.append(table)
 }

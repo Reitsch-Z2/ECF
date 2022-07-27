@@ -1,21 +1,22 @@
 #month-nav {
   list-style: none;
 
-  width: 50%;
+  width: 100%;
   height: 10%;
-  margin: 5% 25% 5% 25%;
+  margin: 5% auto 5% auto;
   padding-left: 0;
   display: flex;                  /**   TODO convert to GRID?       **/
   flex-direction: row;
   justify-content: center;
+  flex-wrap: no-wrap;
 }
 
 #month-nav li {
-  display: inline-block;
+  display: flex-item;
   color: red;
-  padding-left: 5%;
-  padding-right: 5%;
-  font-size: 1.5em;
+  padding-left: 1%;
+  padding-right: 1%;
+  font-size: 1.2em;
 
 
 }

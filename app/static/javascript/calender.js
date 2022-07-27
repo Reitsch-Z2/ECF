@@ -3,6 +3,9 @@
 
 let today = new Date()
 datePacker = {}
+paginationPacker = {}
+queryTypePacker = {}
+
 let mode = 'week'                                                           //TODO outside???
 
 
@@ -12,7 +15,8 @@ reqPack = function(){
   var package = {}
   package['data'] = {}
   package.data['time'] = datePacker
-
+  package.data['pagination'] = paginationPacker
+  package.data['query types'] = queryTypePacker
   return package
 }
 
@@ -40,6 +44,22 @@ function xhrSend(package, responseFunction, ...args){
     }
   }
 }
+
+
+var selta = function(){
+alert(JSON.stringify(reqPack()))
+var test = typeof(reqPack()['data']['time']['dates'])
+if (test != 'undefined'){
+  alert('yes')
+  xhrSend(reqPack(), queryTableMaker, 'queried-holder')
+} else {
+  alert('no')
+}
+
+}
+
+
+selta()
 
 
 function Calender(year, month=(new Date(today).getMonth()), day=(new Date(today).getDay())){
@@ -282,7 +302,7 @@ function timeMarker(){
       //pass //alert('')
     }
     datePacker['mode'] = mode
-    xhrSend(reqPack(), queryTableMaker, 'queried')
+    selta()
   })
 }
 

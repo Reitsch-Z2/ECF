@@ -20,7 +20,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(128), index=True, unique=True)
     password_hash = db.Column(db.String(128))
 
-    settings = db.relationship('UserSettings', back_populates='users')
+    settings = db.relationship('UserSetting', back_populates='users')
     items = db.relationship('Item', back_populates='user')
     categories = db.relationship('Category', back_populates='user')
 
@@ -30,15 +30,24 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
+    @hybrid_method
+    def setting(self, setting_name):
+        query = UserSetting.query.filter_by(user_id=self.id, setting_name = setting_name).first()
+        return getattr(query, 'setting')
+
+    @setting.expression                                     #TODO CHECK WHEN THE NEW USERS ARE INSERTED!
+    def setting(cls, setting_name):
+        return select([UserSetting.setting]).where(cls.id == UserSetting.user_id).where(UserSetting.setting_name == setting_name).as_scalar()
 
 
 
-class UserSettings(db.Model):
-    __tablename__ = 'user_settings'
+
+class UserSetting(db.Model):
+    __tablename__ = 'user_setting'
 
     id = db.Column(db.Integer, primary_key=True)
-    settings = db.Column(db.PickleType)
-    settings_name = db.Column(db.String(64), index=True)
+    setting = db.Column(db.String(128))
+    setting_name = db.Column(db.String(64), index=True)
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     users = db.relationship("User", back_populates="settings")
@@ -82,9 +91,14 @@ class Item(db.Model, Upmodel):
     def category(cls):
         return select([Category.name]).where(cls.category_id == Category.id).as_scalar()
 
+
+
+
     @hybrid_property
     def price(self):
-        return str(round(self.prices[0].price, 2)) + ' ' + self.prices[0].currency              #TODO filter-out
+        if self.user.setting('query currency').strip() in ['RSD', 'EUR', 'USD']:
+            price = list(filter(lambda x: x.currency == 'EUR', self.prices))[0].price
+            return str(round(price, 2)) + ' ' + 'EUR'             #TODO filter-out
 
     @price.setter
     def price(self, price_object):
@@ -92,15 +106,16 @@ class Item(db.Model, Upmodel):
 
     @price.expression                                #TODO recheck
     def price(cls):
-        return select([Price.price]).where(cls.id == Price.item_id).as_scalar()                 #TODO filter-out
+        temp_currency = self.user.setting('query currency').strip()
+        if temp_currency in ['RSD', 'EUR', 'USD']:
+            return select([Price.price]).where(cls.id == Price.item_id).as_scalar()                 #TODO filter-out
+
+
+
 
     @hybrid_property
     def currency(self):
         return self.prices[0].currency
-
-    # @currency.setter
-    # def currency(self, item_currency):
-    #     self._currency = item_currency
 
     @currency.expression                                #TODO recheck
     def currency(cls):

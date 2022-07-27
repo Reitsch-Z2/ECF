@@ -1,9 +1,17 @@
 <div id="calender-holder"></div>
-
 <hr>
-<div id="queried"></div>
+<div id="queried-holder"></div>
 
-<script type="text/javascript" charset="utf8" src="/static/javascript/table-query.js"></script>
+<script id="preset_loader">
+var presets = {{presets_loader|tojson}}
+document.getElementById('preset_loader').remove()
+</script>
+
 <script type="text/javascript" charset="utf8" src="/static/javascript/calender.js"></script>
+<script type="text/javascript" charset="utf8" src="/static/javascript/auto-fill.js"></script>
+<script type="text/javascript" charset="utf8" src="/static/javascript/query-table.js"></script>
+<script type="text/javascript" charset="utf8" src="/static/javascript/query-options.js"></script>
+
+
 
 

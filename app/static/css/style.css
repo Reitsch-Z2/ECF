@@ -2,7 +2,8 @@
 @import "month-navbar.css";
 @import "forms.css";
 @import "calender.css";
-@import "table-query.css";
+@import "query-table.css";
+@import "query-options.css";
 @import "auto-fill.css";
 
 
@@ -23,4 +24,8 @@ body {
 
 .hidden {
   visibility: hidden;
+}
+
+.disappeared {
+  display: none;
 }

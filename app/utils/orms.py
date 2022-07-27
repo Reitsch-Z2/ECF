@@ -1,4 +1,4 @@
-from app.models import Item
+from app.models import Item, Price
 from flask_login import current_user
 
 
@@ -9,6 +9,9 @@ class AjaxQuery():
         self.requests_dict = requests['data']
         self.time_mode = self.requests_dict['time']['mode']
         self.dates = self.requests_dict['time']['dates']
+        self.pagination = self.requests_dict['pagination']
+        if 'limit' in self.pagination:
+            self.limit = self.pagination['limit']
         # self.day = date_dict['day']
         # self.month = date_dict['month']
         # self.year = date_dict['year']
@@ -24,6 +27,11 @@ class AjaxQuery():
             query = query.filter(Item.date == self.dates)
         else:
             query = query.filter(Item.date.between(min(self.dates), max(self.dates)))
+
+        if hasattr(self, 'limit'):
+            query = query.limit(self.limit)
+
+        query = query.join(Price).filter_by(currency='EUR')
 
 
 

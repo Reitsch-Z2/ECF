@@ -1,4 +1,14 @@
 
+#type-query-suggestions{
+
+  position: absolute;
+  width: 100%;
+  display: list-item;
+  overflow: auto;
+
+
+}
+
 
 #item-suggestions{
 
