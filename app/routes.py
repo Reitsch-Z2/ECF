@@ -157,6 +157,7 @@ def logout():
 
 def entries():
     form = ItemForm()
+    form.currency.data = current_user.setting('base currency')                  #TODO BRAVO! softcode it
     if form.validate_on_submit():
         item = Item(
             name = form.item.data,
@@ -169,9 +170,8 @@ def entries():
             first_entry = True
         )
 
-        currency = form.currency.data
+        currency = form.currency.data               #TODO SUPERFLUOUS???
         if  currency != 'RSD':                      #TODO try block + de-hardcode
-
             converted_price = currency_converter_api(currency, 'RSD', form.date.data, form.price.data)
             price2 = Price(
                 price=converted_price,
@@ -179,19 +179,11 @@ def entries():
                 first_entry=False
             )
             item.prices.append(price2)
-
-
-
-
-
         category = Category.query.filter_by(name=form.category.data, user_id=current_user.id).first()            #TODO superfluous? re-check
         if category is None:
             category = Category(
                 name = form.category.data
             )
-
-
-
 
         item.prices.append(price)
         category.items.append(item)
@@ -204,14 +196,55 @@ def entries():
             db.session.add(item)
 
         db.session.commit()
-        return redirect(url_for('entries'))
+        return redirect(url_for('overview'))
 
 
     return render_template('entries.html', form=form)
 
+@app.route('/<username>/items/<item>/<item_id>', methods=['GET', 'POST'])
+@login_required
+def item_edit(username, item, item_id):
+
+    form = ItemForm()
+    # user = User.query.filter_by(id=current_user.id).first()
+    item = Item.query.filter_by(id=item_id, user_id=current_user.id).first()
+    price = Price.query.filter_by(item_id=item_id, first_entry=True).first()
+    category = Category.query.filter_by(id=item.category_id).first()
+
+    # if request.form['action'] == 'Download':          #TODO submit changes/delete/cancel.... + micro modal popup confirmation
+
+
+    if form.validate_on_submit():
+        if item.name != form.item.data or item.date != form.date.data:
+            item.name = form.item.data
+            item.date = form.date.data
+            db.session.add(item)
+        if category.name != form.category.data:
+            category.name = form.category.data
+            db.session.add(category)
+        if price.price != form.price.data or price.currency != form.currency.data:
+            prices = Price.query.filter_by(item_id=item_id, first_entry=0).all()
+            price.price = form.price.data
+            price.currency = form.currency.data
+            for prc in prices:
+                db.session.delete(prc)
+            db.session.commit()
+            db.session.add(price)
+        db.session.commit()
+        return redirect(url_for('overview'))
+
+    elif request.method == "GET":
+
+        form.item.data = item._name
+        form.price.data = price.price
+        form.currency.data = price.currency
+        form.category.data = item.category
+        form.date.data = item.date
+
+    return render_template('entries.html', form=form)
 
 @app.route('/overview')
-
+@login_required
 def overview():
 
     presets = json_loader(True, "settings", "general")
@@ -222,46 +255,18 @@ def overview():
     query_types.extend(currencies)
     presets_loader['currency_query'] = query_types
 
-
-
-
     return render_template('overview.html', presets_loader = presets_loader)
+
+
+
+
+
+
 
 @app.route('/inception', methods=['GET', 'POST'])
 def inception():
     user = User(username='Marko', email='marko@ecf.com')
     user.set_password('Alesund')
-
-    # item = Item(
-    #     name='cvekla',
-    #     date='2022/07/018'
-    # )
-    #
-    # price = Price(
-    #     price=320,
-    #     currency='RSD'
-    # )
-    #
-    # category = Category.query.filter_by(name=form.category.data).first()
-    # if category is None:
-    #     category = Category(
-    #         name=form.category.data
-    #     )
-    #
-    # item.prices.append(price)
-    # category.items.append(item)
-    # current_user.categories.append(category)
-    # current_user.items.append(item)
-    # db.session.commit()
-
-
-
-
-
-
-
-
-
     db.session.add(user)
     db.session.commit()
     user = User.query.filter_by(username='Marko').first()

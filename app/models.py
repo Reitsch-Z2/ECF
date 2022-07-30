@@ -2,10 +2,13 @@ from app import db
 from app import login
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, current_user
+from flask import url_for
 from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
 from datetime import datetime
 from sqlalchemy.sql import case, select
 from sqlalchemy import and_
+from markupsafe import Markup
+
 
 from app.utils.mixins import Upmodel
 
@@ -67,9 +70,15 @@ class Item(db.Model, Upmodel):
     user = db.relationship('User', back_populates='items')
     prices = db.relationship('Price', back_populates='item')
 
+
     @hybrid_property
     def name(self):
-        return self._name
+
+        url = (url_for('item_edit', username=current_user.username, item=self._name, item_id=self.id))
+
+        return Markup(f"<a href='{url}'>{self._name}</a>")
+        # return self._name
+
 
     @name.setter
     def name(self, item_name):
@@ -96,9 +105,20 @@ class Item(db.Model, Upmodel):
 
     @hybrid_property
     def price(self):
-        if self.user.setting('query currency').strip() in ['RSD', 'EUR', 'USD']:
-            price = list(filter(lambda x: x.currency == 'EUR', self.prices))[0].price
-            return str(round(price, 2)) + ' ' + 'EUR'             #TODO filter-out
+
+        query_currency = self.user.setting('query currency')
+        base_currency =  self.user.setting('base currency')
+        if query_currency == 'Total - base currency':
+            price = list(filter(lambda x: x.currency == base_currency, self.prices))[0]
+        elif query_currency == 'Total - combined currencies':
+            price = list(filter(lambda x: x.first_entry == True, self.prices))[0]
+        else:
+            price = list(filter(lambda x: x.currency == query_currency and x.first_entry == True, self.prices))[0]
+        return str(round(price.price, 2)) + ' ' + price.currency
+
+
+
+
 
     @price.setter
     def price(self, price_object):
@@ -106,9 +126,7 @@ class Item(db.Model, Upmodel):
 
     @price.expression                                #TODO recheck
     def price(cls):
-        temp_currency = self.user.setting('query currency').strip()
-        if temp_currency in ['RSD', 'EUR', 'USD']:
-            return select([Price.price]).where(cls.id == Price.item_id).as_scalar()                 #TODO filter-out
+        return select([Price.price]).where(cls.id == Price.item_id).as_scalar()                 #TODO filter-out
 
 
 

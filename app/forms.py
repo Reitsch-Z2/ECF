@@ -3,7 +3,11 @@ from wtforms import StringField, PasswordField, BooleanField, SubmitField, Integ
 from wtforms.validators import DataRequired, EqualTo, ValidationError, Email        #TODO any superfluous?
 from app.utils.helpers import json_loader
 from app.models import User
+
+from app import login
+from flask_login import current_user
 import datetime
+
 
 
 class LoginForm(FlaskForm):

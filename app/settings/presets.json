@@ -8,7 +8,7 @@
     "general": {
         "currencies":["RSD", "EUR", "USD"],
         "currency_query":["Total - base currency", "Total - combined currencies"],
-        "pagination":[10, 25, 50]
+        "pagination":[1, 10, 25, 50]
 
     }
 }

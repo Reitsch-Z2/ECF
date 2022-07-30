@@ -1,18 +1,15 @@
 
 var presets = presets
 var presets_pagination = presets['pagination']
-//var presets_query_currency = presets['query_currency']
 var presets_currency_query = presets['currency_query']
 
-
-//alert(presets_currency_query)
 
 
 function createQueryOptions(id){
   var holder = document.getElementById(id)
   var navContainer = document.createElement('div')
   navContainer.id = 'query-options'
-  navContainer.classList.add('form-alt')
+  navContainer.classList.add('form-alt2')
   var queryOptions = document.createElement('div')
   queryOptions.classList.add('experiment')
 
@@ -39,6 +36,8 @@ function createQueryOptions(id){
     pagination.append(option)
   }
   paginationContainer.append(label, br(), pagination)
+  paginationPacker['limit'] = pagination.value
+  paginationPacker['page'] = 1
 
   var typeQueryContainer = document.createElement('span')            //TODO span or div? tbd
   typeQueryContainer.id = 'type-query-container'
@@ -55,29 +54,48 @@ function createQueryOptions(id){
   categoryButton.textContent = 'Category'
   var buttonGroup = document.createElement('span')
   buttonGroup.id = 'type-query-buttons'
-  var inputField = document.createElement('input')
-  inputField.id = 'type-query'
-  inputField.type = 'text'
-  inputField.classList.add('disappeared')
   buttonGroup.append(itemButton, categoryButton)
-  typeQueryContainer.append(typeLabel, buttonGroup, br(), inputField)
+  typeQueryContainer.append(typeLabel, buttonGroup, br())
   buttonGroup.addEventListener('click', function(e){
+    queryTypePacker={}
+    selta()
+    var temp = document.getElementById('type-query')
     var target = e.target
     if (target.matches('.chosen')){
       target.classList.remove('chosen')
-      inputField.classList.add('disappeared')
       typeLabel.classList.remove('disappeared')
-
-
+      if (temp){temp.remove()}
+      queryTypePacker[query_type]={}
+      alert('here1')
     } else {
+      if (temp){temp.remove()}
+      var inputField = document.createElement('input')
+      inputField.id = 'type-query'
+      inputField.type = 'text'
       var buttons = buttonGroup.querySelectorAll('button')
       buttons.forEach(button => {button.classList.remove('chosen')})
       target.classList.add('chosen')
-      inputField.classList.remove('disappeared')
       typeLabel.classList.add('disappeared')
-      if (target.textContent = 'Item'){
+      query_type = target.textContent
+      if (query_type == 'Item'){
+        typeQueryContainer.append(inputField)
+        alert('here2')
         autoSuggest('type-query', '#type-query-container', 'items')
+      } else {
+        typeQueryContainer.append(inputField)
+        alert('here3')
+        autoSuggest('type-query', '#type-query-container', 'categories')
       }
+      inputField.addEventListener('blur', function(){
+        if (!buttonGroup.matches(':hover')){
+        alert(inputField.value)
+        queryTypePacker={}
+        queryTypePacker[query_type]=inputField.value
+        selta()
+
+        }
+
+      })
 
     }
   }
@@ -101,7 +119,7 @@ function createQueryOptions(id){
     currencyQuery.append(option)
   }
   currencyQueryContainer.append(label, br(), currencyQuery)
-
+  currencyTypePacker['currency'] = currencyQuery.value
 
 
 
@@ -114,6 +132,7 @@ function createQueryOptions(id){
 
   pagination.addEventListener('change', function(){
     paginationPacker['limit'] = pagination.value
+    paginationPacker['page'] = 1
     selta()
   })
 
@@ -127,30 +146,11 @@ function createQueryOptions(id){
 
     xhr.onload = function() {
     if (xhr.status == 200){
-      queryTypePacker['currency'] = xhr.response
+      currencyTypePacker['currency'] = xhr.response
     }
   }
-
-
-
-
-
     selta()
   })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
 
 

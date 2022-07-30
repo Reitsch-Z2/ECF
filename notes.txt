@@ -38,3 +38,11 @@ license?
 #TODO time format in Upmodel class - could be better?
 
 #TODO add button type to all buttons
+
+#TODO FLASK ITEM FORM HAS TO TAKE USER.SETTING(BSCURRENCY) VIA SUPER/CREATING INSTANCES/SOME OTHER OPTION LIKE JS
+
+#TODO ERRORS! EMAIL!
+
+#TODO modal + ephemeral flash message as a sliding dissappearing pop up
+
+#TODO month modes separately from calender + month ----- global var mode remains valid while browsing through calender

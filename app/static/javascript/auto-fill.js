@@ -15,7 +15,7 @@ function autoSuggest(id, containerSelector, property){
   )
 
   inputField.addEventListener('input', function(){
-    if (inputField.value.length != 0){
+      if (inputField.value.length != 0){
       inputSuggestions.innerHTML=''
       var xhr = new XMLHttpRequest()                                              //TODO global or local
       xhr.open('POST', '/api/auto-suggest', true)
@@ -46,7 +46,7 @@ function autoSuggest(id, containerSelector, property){
     }
   })
   inputField.addEventListener('blur', function(e){
-  inputSuggestions.remove()
+    inputSuggestions.remove()
   })
 }
 

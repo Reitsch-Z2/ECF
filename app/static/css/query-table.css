@@ -15,6 +15,22 @@
 
 }
 
+#query-table-pointer{
+    position: relative;
+    margin: 5px;
+    margin-bottom: 10px;
+    font-size : 0.75em;
+    font-style : italic
+}
+
+
+#query-table-paginator{
+    position: relative;
+    margin: 5px;
+    margin-top: 10px;
+    font-size : 0.8em;
+    color: lightblue;
+}
 
 
 #table-costs td, th {
@@ -37,8 +53,27 @@
 
 }
 
+#no-results{
+  display: inline-block;
+  margin: 0 auto 0 auto;
+}
 
+.page {
+  display: inline-block;
+  padding: 5px
+}
 
+.hidden-pages {
+  display: inline-block;
+  padding: 5px
+}
+
+.current-page {
+  display: inline-block;
+  padding: 5px;
+  color: steelblue;
+  font-style: bold;
+}
 
 
 

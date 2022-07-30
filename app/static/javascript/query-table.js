@@ -3,9 +3,37 @@
 function queryTableMaker(id, responseObject){
   var holder = document.getElementById(id)
 
+  previous = document.getElementById("table-costs")
+  previousInfo = document.getElementById("no-results")
+  previousPointer = document.getElementById("query-table-pointer")
+  previousPaginator = document.getElementById("query-table-paginator")
+  if (previous){
+    previous.remove()
+  }
+  if (previousInfo){
+    previousInfo.remove()
+  }
+  if (previousPointer){
+    previousPointer.remove()
+  }
+  if (previousPaginator){
+    previousPaginator.remove()
+  }
+
+
   responseObject = JSON.parse(responseObject)
   var rows = responseObject["data"]["rows"]
   var columns = responseObject["data"]["columns"]
+  if (rows.length ==0){
+    var info = document.createElement("div")
+    info.textContent = "no matching results found"
+    info.id = "no-results"
+    holder.append(info)
+    return
+  }
+  var limit = responseObject["data"]["limit"]
+  var page = responseObject["data"]["page"]
+  var count = responseObject["data"]["count"]
 
   var table = document.createElement("table")
   var headers = document.createElement("thead")
@@ -27,19 +55,125 @@ function queryTableMaker(id, responseObject){
     for (let x = 0; x < columns.length; x++){
       var td = document.createElement("td")
       var container = document.createElement("div")
-      container.textContent = rows[i][columns[x]]
+      container.innerHTML = rows[i][columns[x]]         //TODO maybe only do this for the ones with a link
       td.append(container)
       tableRow.append(td)
     }
     body.append(tableRow)
   }
+
+
+
   table.append(headers)
   table.append(body)
 
-  previous = document.getElementById("table-costs")
-  if (previous){
-    previous.remove()
+  holder.append(showPosition(limit, page, count))
+  holder.append(table)
+  holder.append(showPages(limit, page, count))
+
+
+}
+
+
+function showPosition(limit, page, count){
+
+  var pointer = document.createElement("div")
+  pointer.id = "query-table-pointer"
+  var offset = (page-1)*limit
+  var startingPoint = 1 + offset
+  var endPoint = startingPoint+limit-1
+
+  count <= (startingPoint+limit-1) ? (endPoint = count) : (endPont = startingPoint + limit)
+  endPoint = (endPoint == 1) ? " " : " - " + String(endPoint)
+
+  var message = "Page " + String(page)
+  message += " - Showing results "+ String(startingPoint) + endPoint
+  message += " out of " + String(count) +" total"
+
+  pointer.textContent = message
+
+  return pointer
+}
+
+
+
+function showPages(limit, page, count){
+  var paginator = document.createElement("div")
+  paginator.id = "query-table-paginator"
+  var numberOfPages = Math.ceil(count/limit)
+  if (numberOfPages <= 1){
+    return ' '
+  }
+  var pages = [...Array(numberOfPages+1).keys()].slice(1)
+  var currentPage = parseInt(page)
+  var paginated = []
+    alert(pages)
+    if ((currentPage <= 4) && (numberOfPages >= 10)){
+      paginated.push(...pages.slice(0,5))
+      paginated.push('...')
+      paginated.push(pages[pages.length-1])
+    } else if ((numberOfPages - currentPage <= 3) && (numberOfPages >= 10)){
+      paginated.push(1)
+      paginated.push('...')
+      paginated.push(...pages.slice(-5))
+    } else if (numberOfPages >= 10){
+      paginated.push(1)
+      paginated.push('...')
+      paginated.push(currentPage - 1)
+      paginated.push(currentPage)
+      paginated.push(currentPage + 1)
+      paginated.push('...')
+      paginated.push(pages[pages.length-1])
+    } else {
+      paginated.push(...pages)
+    }
+
+
+  alert('HERE')
+
+
+  for (let i = 0; i < paginated.length; i++){
+    var pageHolder = document.createElement('span')
+    pageHolder.textContent = paginated[i]
+
+    if ((paginated[i] != '...') && (paginated[i] != currentPage)){
+      pageHolder.classList.add('page')
+    } else if (paginated[i] == currentPage){
+      pageHolder.classList.add('current-page')
+    } else {
+      pageHolder.classList.add('hidden-pages')
+    }
+
+    paginator.append(pageHolder)
   }
 
-  holder.append(table)
+  paginator.addEventListener('click', function(e){
+    var target = e.target
+    if (target.matches('.page')){
+      paginationPacker['page'] = target.textContent
+      selta()
+    }
+  })
+
+  return paginator
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

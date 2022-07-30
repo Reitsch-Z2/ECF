@@ -108,3 +108,24 @@
 .chosen{
   background: lightblue;
 }
+
+.form-alt2 {
+
+    border: 0.1px solid black;
+    position: relative;
+    height: auto;
+    width: 100%;
+    padding: 15px 30px 15px 30px;
+    margin-bottom: 5%;
+    box-sizing:border-box;
+
+}
+
+#table-costs{
+
+}
+
+#table-costs a {
+  text-decoration:none;
+  color: cornflowerblue;
+}
