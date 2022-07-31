@@ -73,13 +73,13 @@ def usersettings():
 @login_required
 def tables():
     requests = dict(json.loads(request.get_data()))
-    columns = ['name', 'price', 'currency']
+
     # filters = {'name' : 'dezodorans'}                 #TODO TURN INTO COMBINATION OF MODES FOR FILTERING OUT!
 
     dates=requests['data']['time']
     # AQ = AjaxQuery(dates)
 
-    columns = ['name', 'category', 'price', 'date']
+    columns = ['item', 'category', 'price', 'date']
 
     test = AjaxQuery(requests)
     test = test.querier(columns)
@@ -235,7 +235,7 @@ def item_edit(username, item, item_id):
 
     elif request.method == "GET":
 
-        form.item.data = item._name
+        form.item.data = item.name
         form.price.data = price.price
         form.currency.data = price.currency
         form.category.data = item.category

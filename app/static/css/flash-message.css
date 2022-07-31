@@ -1,0 +1,29 @@
+.flash-message {
+  --bottom-flex: 25px;
+  position: fixed;
+  line-height:30px;
+  height: 30px;
+  background: lightgray;
+  padding: 5px 25px 5px 25px;
+  bottom: var(--bottom-flex);
+  right: 25px;
+  opacity: 0.75;
+  border: solid darkgray 0.1px;
+
+}
+
+.flash-pop {
+  animation-name: flash-pop;
+}
+
+.flash-fade {
+  animation-name: flash-fade;
+}
+
+@keyframes flash-pop {
+  from {bottom: -30px;} to {bottom: var(--bottom-flex);}
+}
+
+@keyframes flash-fade {
+  from {opacity: 0.75;} to {opacity: 0;}
+}

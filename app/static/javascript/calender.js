@@ -63,7 +63,7 @@ if (test != "undefined"){
 selta()
 
 
-function Calender(year, month=(new Date(today).getMonth()), day=(new Date(today).getDay())){
+function Calender(year=(new Date(today).getFullYear()), month=(new Date(today).getMonth()), day=(new Date(today).getDay())){
 
   const days = [ "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -143,13 +143,12 @@ function Calender(year, month=(new Date(today).getMonth()), day=(new Date(today)
 
 }
 
-function generateCalender(year, month=(new Date(today).getMonth()), day=(new Date(today).getDay())){
+function generateCalender(year=(new Date(today).getFullYear()), month=(new Date(today).getMonth()), day=(new Date(today).getDay())){
 
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
   window["monthGlobal"]=month+1                   //TODO Careful around this one! Real enum vs. JS month enum
   window["yearGlobal"]=year
-//  alert(JSON.stringify(datePacker))
 
   function dayLooper(theWeek, boolean=0){         //TODO only add the function to this.function instead of pre-naming?
       theWeek.forEach(day => {
@@ -185,9 +184,8 @@ function generateCalender(year, month=(new Date(today).getMonth()), day=(new Dat
   var calenderHolder = document.getElementById("calender-holder")
   calenderHolder.append(table)
   var content = new Calender(year, month, day)
-                                            //TODO as a function
 
-  for (let i=0; i < content.weeks.length; i++){           //TODO let?
+  for (let i=0; i < content.weeks.length; i++){
     var row = document.createElement("tr")
     row.classList.add("week")
     body.append(row)
@@ -417,15 +415,12 @@ function monthModes(){
     }
 
     var outers = document.body.querySelectorAll(".outer-day div")
-//    alert(outers.length)
+
     if (target.id == "week-mode"){
       outers.forEach(day => {day.classList.remove("hidden")})
     } else {
       outers.forEach(day => {day.classList.add("hidden")})
     }
-
-
-
 
     if (target.tagName=="BUTTON"){
       var holder = target.closest("#modes-group")
@@ -456,6 +451,7 @@ function monthModes(){
 
 generateCalender(2022, 6)
 monthModes()
+
 
 
 

@@ -3,25 +3,14 @@
 function queryTableMaker(id, responseObject){
   var holder = document.getElementById(id)
 
-  previous = document.getElementById("table-costs")
-  previousInfo = document.getElementById("no-results")
-  previousPointer = document.getElementById("query-table-pointer")
-  previousPaginator = document.getElementById("query-table-paginator")
-  if (previous){
-    previous.remove()
-  }
-  if (previousInfo){
-    previousInfo.remove()
-  }
-  if (previousPointer){
-    previousPointer.remove()
-  }
-  if (previousPaginator){
-    previousPaginator.remove()
-  }
+  holder.innerHTML=""
+
+
 
 
   responseObject = JSON.parse(responseObject)
+  alert(responseObject["data"]["total"])
+  alert(total)
   var rows = responseObject["data"]["rows"]
   var columns = responseObject["data"]["columns"]
   if (rows.length ==0){
@@ -34,6 +23,8 @@ function queryTableMaker(id, responseObject){
   var limit = responseObject["data"]["limit"]
   var page = responseObject["data"]["page"]
   var count = responseObject["data"]["count"]
+  var total = responseObject["data"]["total"]
+
 
   var table = document.createElement("table")
   var headers = document.createElement("thead")
@@ -62,14 +53,17 @@ function queryTableMaker(id, responseObject){
     body.append(tableRow)
   }
 
-
+  var footer = document.createElement('div')
+  footer.id = "pagination-sum"
+  footer.append(showPages(limit, page, count))
+  footer.append(showSumTotal(total))
 
   table.append(headers)
   table.append(body)
 
   holder.append(showPosition(limit, page, count))
   holder.append(table)
-  holder.append(showPages(limit, page, count))
+  holder.append(footer)
 
 
 }
@@ -98,7 +92,7 @@ function showPosition(limit, page, count){
 
 
 function showPages(limit, page, count){
-  var paginator = document.createElement("div")
+  var paginator = document.createElement("span")
   paginator.id = "query-table-paginator"
   var numberOfPages = Math.ceil(count/limit)
   if (numberOfPages <= 1){
@@ -107,7 +101,6 @@ function showPages(limit, page, count){
   var pages = [...Array(numberOfPages+1).keys()].slice(1)
   var currentPage = parseInt(page)
   var paginated = []
-    alert(pages)
     if ((currentPage <= 4) && (numberOfPages >= 10)){
       paginated.push(...pages.slice(0,5))
       paginated.push('...')
@@ -127,10 +120,6 @@ function showPages(limit, page, count){
     } else {
       paginated.push(...pages)
     }
-
-
-  alert('HERE')
-
 
   for (let i = 0; i < paginated.length; i++){
     var pageHolder = document.createElement('span')
@@ -159,6 +148,17 @@ function showPages(limit, page, count){
 
 }
 
+
+
+function showSumTotal(total){
+  var sumTotal = document.createElement("span")
+  sumTotal.id = "query-table-sum"
+  sumTotal.textContent = total
+
+
+  return sumTotal
+
+}
 
 
 

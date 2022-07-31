@@ -60,7 +60,7 @@ class UserSetting(db.Model):
 
 class Item(db.Model, Upmodel):
     id = db.Column(db.Integer, primary_key=True)
-    _name = db.Column(db.String(64), index=True)
+    name = db.Column(db.String(64), index=True)
     date = db.Column(db.Date, index=True, default=datetime.utcnow)              #TODO maybe a string?
     #pseudo_count                  ####TODO - unique denoting of an element!
 
@@ -72,21 +72,14 @@ class Item(db.Model, Upmodel):
 
 
     @hybrid_property
-    def name(self):
+    def item(self):
 
-        url = (url_for('item_edit', username=current_user.username, item=self._name, item_id=self.id))
+        url = (url_for('item_edit', username=current_user.username, item=self.name, item_id=self.id))
+        return Markup(f"<a href='{url}'>{self.name}</a>")
 
-        return Markup(f"<a href='{url}'>{self._name}</a>")
-        # return self._name
-
-
-    @name.setter
-    def name(self, item_name):
-        self._name = item_name
-
-    @name.expression                                #TODO recheck
-    def name(cls):
-        return cls._name
+    @item.expression
+    def item(cls):
+        return cls.name
 
     @hybrid_property
     def category(self):
@@ -96,12 +89,9 @@ class Item(db.Model, Upmodel):
     def category(self, category_object):
         self._category = category_object
 
-    @category.expression                                #TODO recheck
+    @category.expression
     def category(cls):
         return select([Category.name]).where(cls.category_id == Category.id).as_scalar()
-
-
-
 
     @hybrid_property
     def price(self):

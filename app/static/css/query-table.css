@@ -26,10 +26,25 @@
 
 #query-table-paginator{
     position: relative;
+    float: left;
     margin: 5px;
     margin-top: 10px;
     font-size : 0.8em;
     color: lightblue;
+}
+
+#query-table-sum{
+    position: relative;
+
+    display: inline-block;
+    right: 0px;
+    margin: 5px;
+    margin-left: auto;
+    padding: 5px;
+    margin-top: 10px;
+    font-size : 0.8em;
+    font-style : italic;
+    color: darkgray;
 }
 
 
@@ -38,19 +53,19 @@
     text-align: center;
 }
 
-#table-costs td {
-
-    position: relative;
-    width: auto;
-
-
+#table-costs th div {
+    margin: 3% 0% 3% auto;
 }
 
 
 #table-costs td div {
     margin: 1% 0% 1% auto;
+}
 
 
+#pagination-sum{
+  display: flex;
+  justify-content: space-between;
 }
 
 #no-results{

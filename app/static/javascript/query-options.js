@@ -12,6 +12,8 @@ function createQueryOptions(id){
   navContainer.classList.add('form-alt2')
   var queryOptions = document.createElement('div')
   queryOptions.classList.add('experiment')
+  var resultsContainer = document.createElement('div')
+  resultsContainer.id = 'queried-results'
 
 
   function br(){
@@ -128,6 +130,7 @@ function createQueryOptions(id){
   queryOptions.append(typeQueryContainer)
   navContainer.append(queryOptions)
   holder.prepend(navContainer)
+  holder.append(resultsContainer)
 
 
   pagination.addEventListener('change', function(){

@@ -1,6 +1,6 @@
 from app.models import Item, Price
 from flask_login import current_user
-
+from sqlalchemy import func
 
 
 
@@ -20,8 +20,6 @@ class AjaxQuery():
     def querier(self, columns):
         query = Item.query.filter_by(user_id = current_user.id)
 
-
-
         if self.time_mode == 'day':
             query = query.filter(Item.date == self.dates)
         else:
@@ -34,24 +32,32 @@ class AjaxQuery():
             else:
                 query = query.filter_by(category = value)
 
-
         query = query.join(Price)
 
         query_currency = current_user.setting('query currency')
         base_currency = current_user.setting('base currency')
+        total = {}
         if query_currency == 'Total - base currency':
             query = query.filter_by(currency = base_currency)
+            if query.count()>0:
+                total[current_user.setting('base currency')] =  float(query.with_entities(func.sum(Price.price)).scalar())
         elif query_currency == 'Total - combined currencies':
             query = query.filter_by(first_entry = True)
+            if query.count() > 0:
+                currencies = query.with_entities(Price.currency).distinct()
+                for currency in currencies:
+                    currency = currency[0]
+                    total[currency]=float(query.filter(Price.currency==currency).with_entities(func.sum(Price.price)).scalar())
         else:
             query = query.filter_by(currency = query_currency, first_entry = True)
+            if query.count() > 0:
+                total[query_currency] = float(query.with_entities(func.sum(Price.price)).scalar())
 
         count = query.count()
         if hasattr(self, 'page'):
             query = query.offset(self.limit*(self.page-1))
         if hasattr(self, 'limit'):
             query = query.limit(self.limit)
-
 
         final={}
         rows = [x.to_dict(columns) for x in query.all()]
@@ -63,18 +69,10 @@ class AjaxQuery():
         if hasattr(self, 'page'):
             final['page'] = self.page
 
-
+        total = [f"{k} = {v}" for k, v in total.items()]
+        total = "TOTAL : " + " | ".join(total)
+        final['total'] = str(total)
 
         return final
 
 
-
-
-
-# __name__ == "__main__":
-#
-#     currency_list_api('EUR', 'RSD', '2022-07-09', 200, 4)
-
-    # x=json_loader(True, "settings", "general", "currencies")
-    #
-    # print(x)
