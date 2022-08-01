@@ -15,7 +15,17 @@
 
   {% block content %}
     {% include "_login.html" %}
+
   {% endblock %}
+
+         {% block submit %}
+    <p>test</p>
+      {% endblock %}
+
+  {%block contentsubmit%}
+      <p>test</p>
+            <span><a href="{{url_for('register')}}">Register</a></span>
+  {%endblock%}
 
   </main>
 </body>

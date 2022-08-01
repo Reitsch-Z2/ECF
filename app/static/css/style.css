@@ -7,21 +7,11 @@
 @import "auto-fill.css";
 @import "flash-message.css";
 
-
-
-
-
-
-
-
-
-
 body {
     padding: 0px;
     margin: 0px;
     font-family: "Ariel", "Helvetica", monospace;
 }
-
 
 .hidden {
   visibility: hidden;
@@ -30,3 +20,10 @@ body {
 .disappeared {
   display: none;
 }
+
+.url-link {
+    text-decoration: none;
+    font-size: 0.85em;
+    display: inline-block;
+}
+

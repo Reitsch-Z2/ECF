@@ -55,9 +55,6 @@ def usersettings():
     setting_name = requests['setting_name']
     setting_value = requests['setting']
 
-
-    # user = User.query.filter_by(id = current_user.id).first()
-
     setting = UserSetting.query.filter_by(user_id = current_user.id, setting_name = setting_name).first()
 
     setting.setting = setting_value
@@ -74,38 +71,12 @@ def usersettings():
 def tables():
     requests = dict(json.loads(request.get_data()))
 
-    # filters = {'name' : 'dezodorans'}                 #TODO TURN INTO COMBINATION OF MODES FOR FILTERING OUT!
-
     dates=requests['data']['time']
-    # AQ = AjaxQuery(dates)
 
     columns = ['item', 'category', 'price', 'date']
 
     test = AjaxQuery(requests)
     test = test.querier(columns)
-
-    # dime = datetime.strptime('21 June, 2018', "%d %B, %Y")
-    # x = user.query.join(user_settings, users.id == user_settings.user_id)
-    # x = Item.query.filter_by(date >= '2022/02/02').all()
-    # x = Item.query.filter_by(name= 'cvekla').all()
-
-    # Query = Item.query.
-    # x = Item.query.filter(Item.date >= '2022-07-17').filter_by(name='cvekla').all()
-
-
-    # x = Item.query.filter(Item.date >= '2022-07-17').filter_by(name='cvekla').all()               #proper
-
-
-    # x = Item.query.filter(Item.date.between('2022-07-17', '2022-09-17')).all()                      #proper
-
-    # x = Item.query.filter_by(user_id = current_user.id).all()
-
-    # for item in x.prices:
-    #     if item.currency == 'RSD':
-    #         final = x
-    # xx = x.to_dict(['name',['price', 'RSD'], 'category'])
-
-
 
     return {
         'data': test
@@ -127,6 +98,9 @@ def register():
         return redirect(url_for('login'))
     return render_template('register.html', form=form)
 
+
+@app.route('/', methods=['GET', 'POST'])
+@app.route('/index', methods=['GET', 'POST'])
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 
@@ -149,13 +123,13 @@ def logout():
 
 
 
-@app.route('/')
-@app.route('/index')                                                #TODO why???
+                                            #TODO why???
 @app.route('/entries', methods=['GET', 'POST'])
 
 @login_required
 
 def entries():
+
     form = ItemForm()
     form.currency.data = current_user.setting('base currency')                  #TODO BRAVO! softcode it
     if form.validate_on_submit():
@@ -198,7 +172,6 @@ def entries():
         db.session.commit()
         return redirect(url_for('overview'))
 
-
     return render_template('entries.html', form=form)
 
 @app.route('/<username>/items/<item>/<item_id>', methods=['GET', 'POST'])
@@ -206,13 +179,11 @@ def entries():
 def item_edit(username, item, item_id):
 
     form = ItemForm()
-    # user = User.query.filter_by(id=current_user.id).first()
     item = Item.query.filter_by(id=item_id, user_id=current_user.id).first()
     price = Price.query.filter_by(item_id=item_id, first_entry=True).first()
     category = Category.query.filter_by(id=item.category_id).first()
 
     # if request.form['action'] == 'Download':          #TODO submit changes/delete/cancel.... + micro modal popup confirmation
-
 
     if form.validate_on_submit():
         if item.name != form.item.data or item.date != form.date.data:
@@ -256,12 +227,6 @@ def overview():
     presets_loader['currency_query'] = query_types
 
     return render_template('overview.html', presets_loader = presets_loader)
-
-
-
-
-
-
 
 @app.route('/inception', methods=['GET', 'POST'])
 def inception():

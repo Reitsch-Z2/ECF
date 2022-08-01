@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+    <script type="text/javascript" charset="utf8" src="/static/javascript/_flash-message.js"></script>
 </head>
 <body>
 
@@ -12,15 +13,17 @@
     {% block navbar %}
         {% include 'navbar/_navbar_root.html' %}
     {% endblock %}
-      {% with messages = get_flashed_messages() %}
+
+
+    {% with messages = get_flashed_messages() %}
       {% if messages %}
-      <ul>
+
         {% for message in messages %}
-            <li>{{ message }}</li>
+            <script>createFlashMessage('{{ message }}')</script>
         {% endfor %}
-      </ul>
+
       {% endif %}
-  {% endwith %}
+    {% endwith %}
 
 
     <div></div>

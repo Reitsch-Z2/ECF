@@ -8,7 +8,6 @@ queryTypePacker = {}
 currencyTypePacker = {}
 let mode = "week"                                                           //TODO outside???
 
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 reqPack = function(){
@@ -24,21 +23,12 @@ reqPack = function(){
 
 
 
-
-
-
-
-
-
-
-
 function xhrSend(package, responseFunction, ...args){
   var xhr = new XMLHttpRequest()                                              //TODO global or local
   xhr.open("POST", "/api/tables", true)
   xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8")      //TODO recheck if mandatory
   xhr.setRequestHeader("Accept", "application/json;charset=UTF-8")            //TODO recheck if mandatory
   xhr.send(JSON.stringify(package))
-
   xhr.onload = function() {
     if (xhr.status == 200){
       responseFunction(...args, xhr.response)
@@ -48,15 +38,21 @@ function xhrSend(package, responseFunction, ...args){
 
 
 var selta = function(){
-alert(JSON.stringify(reqPack()))
-var test = typeof(reqPack()["data"]["time"]["dates"])
-if (test != "undefined"){
-  alert("yes")
-  xhrSend(reqPack(), queryTableMaker, "queried-holder")
-} else {
-  alert("no")
-}
-
+  alert(JSON.stringify(reqPack()))
+  var test = typeof(reqPack()["data"]["time"]["dates"])
+  if (test != "undefined"){
+    xhrSend(reqPack(), queryTableMaker, "queried-results")
+  } else {
+    var holder = document.getElementById("queried-results")
+    alert(holder)
+    if (holder != null){
+      holder.innerHTML = " "
+      var info = document.createElement("div")
+      info.textContent = "no dates selected"
+      info.id = "no-results"
+      holder.append(info)
+    }
+  }
 }
 
 
@@ -182,6 +178,7 @@ function generateCalender(year=(new Date(today).getFullYear()), month=(new Date(
   }
 
   var calenderHolder = document.getElementById("calender-holder")
+  monthNav()
   calenderHolder.append(table)
   var content = new Calender(year, month, day)
 
@@ -191,13 +188,10 @@ function generateCalender(year=(new Date(today).getFullYear()), month=(new Date(
     body.append(row)
 
     var week = content.weeks[i]
-
     if ((i==0 ) && content.preWeek){
       dayLooper(content.preWeek, true)
     }
-
     dayLooper(week)
-
     if ((i==(content.weeks.length-1) ) && content.postWeek){
       dayLooper(content.postWeek, true)
     }
@@ -216,49 +210,8 @@ function generateCalender(year=(new Date(today).getFullYear()), month=(new Date(
       body.append(row)                                                //TODO FOUR-WEEK FEBRUARY 2021 ARGHHH!!!
   }
 
-  function monthNav(){
-
-    var month = document.createElement("nav")
-    month.id="month-nav-container"
-    var navList = document.createElement("ul")
-    navList.id = "month-nav"
-    var larr = document.createElement("li")
-    larr.id = "prev-month"; larr.textContent = "<"
-    var monthName = document.createElement("li")
-    monthName.id = "month-name"; monthName.textContent = (content.month_named + " " + content.year)
-    var rarr = document.createElement("li")
-    rarr.id = "next-month"; rarr.textContent = ">"
 
 
-    navList.append(larr, monthName, rarr)
-    month.append(navList)
-    calenderHolder.prepend(month)
-    var modes = monthModes()
-    calenderHolder.prepend(modes)
-
-    larr.addEventListener("click", function(){
-      calenderHolder.innerHTML=""
-      var year = content.year
-      var month = content.month-1
-      if (content.month == 0){
-        month = 11
-        year = year -1
-      }
-      generateCalender(year, month)         //TODO this maybe should get passed into monthNav
-    })
-
-    rarr.addEventListener("click", function(){
-      calenderHolder.innerHTML=""
-      var year = content.year
-      var month = content.month+1
-      if (content.month == 11){
-        month = 0
-        year = year +1
-      }
-      generateCalender(year, month)
-    })
-  }
-  monthNav()
   timeMarker()
 }
 
@@ -367,12 +320,7 @@ function monthDatesParser(Y, M, D){
 
 }
 
-
-
-
-
 function datePipeline(Y, M, D, mode, additional=0){                       //TODO switsch statement with "mode" as an arg instead of type-parsing
-
   switch(mode){
     case "day":
       return dateFormat(Y, M, D)
@@ -404,13 +352,13 @@ function monthModes(){
 
   month.addEventListener("click", function(e){
     var target = e.target
-
-
     if (month.querySelectorAll(".clicked")[0]){                             //TODO experimental
       current = month.querySelectorAll(".clicked")[0]
       if (target.id != current.id){
         var cleaner = document.querySelectorAll(".clicked")
         cleaner.forEach(day => {day.classList.remove("clicked")})
+        datePacker={}
+        selta()
       }
     }
 
@@ -434,7 +382,7 @@ function monthModes(){
 
   })
 
-  return month
+  document.getElementById('calender-holder').prepend(month)
 
 }
 
@@ -448,6 +396,65 @@ function monthModes(){
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function monthNav(){
+
+  var calenderHolder = document.getElementById('calender-holder')
+  var content = new Calender(yearGlobal, monthGlobal - 1)
+//  alert(content.month)
+//  alert(content.year)
+
+  var month = document.createElement("nav")
+  month.id="month-nav-container"
+  var navList = document.createElement("ul")
+  navList.id = "month-nav"
+  var larr = document.createElement("li")
+  larr.id = "prev-month"; larr.textContent = "<"
+  var monthName = document.createElement("li")
+  monthName.id = "month-name"; monthName.textContent = (content.month_named + " " + content.year)
+  var rarr = document.createElement("li")
+  rarr.id = "next-month"; rarr.textContent = ">"
+
+
+  navList.append(larr, monthName, rarr)
+  month.append(navList)
+  calenderHolder.append(month)
+
+
+  larr.addEventListener("click", function(){
+    var x = document.getElementById("month-nav-container")
+    x.remove()
+    calender.remove()
+    var year = content.year
+    var month = content.month - 1
+    if (content.month == 0){
+      month = 11
+      year = year -1
+    }
+    generateCalender(year, month)         //TODO this maybe should get passed into monthNav
+
+
+  })
+
+  rarr.addEventListener("click", function(){
+    var x = document.getElementById("month-nav-container")
+    x.remove()
+    calender.remove()
+    var year = content.year
+    var month = content.month +1
+    if (content.month == 11){
+      month = 0
+      year = year + 2
+    }
+    generateCalender(year, month)
+  })
+}
+
+
+
+
+
+
 
 generateCalender(2022, 6)
 monthModes()

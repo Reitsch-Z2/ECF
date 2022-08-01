@@ -15,7 +15,6 @@ function createQueryOptions(id){
   var resultsContainer = document.createElement('div')
   resultsContainer.id = 'queried-results'
 
-
   function br(){
     return document.createElement("br")
   }

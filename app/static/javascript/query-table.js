@@ -5,9 +5,6 @@ function queryTableMaker(id, responseObject){
 
   holder.innerHTML=""
 
-
-
-
   responseObject = JSON.parse(responseObject)
   alert(responseObject["data"]["total"])
   alert(total)
@@ -24,7 +21,6 @@ function queryTableMaker(id, responseObject){
   var page = responseObject["data"]["page"]
   var count = responseObject["data"]["count"]
   var total = responseObject["data"]["total"]
-
 
   var table = document.createElement("table")
   var headers = document.createElement("thead")

@@ -46,12 +46,12 @@ function createFlashMessage(text, popIn=1.5, pause=1, fadeAway=4){
   }, (popIn+pause+fadeAway)*1000)
 }
 
-createFlashMessage('evo ga prvi')
-
-createFlashMessage('evo ga drugi')
-createFlashMessage('evo ga treci')
-createFlashMessage('evo ga cetvrti')
-
-
-
-document.body.addEventListener("click", function(){createFlashMessage('testy')})
+//createFlashMessage('evo ga prvi')
+//
+//createFlashMessage('evo ga drugi')
+//createFlashMessage('evo ga treci')
+//createFlashMessage('evo ga cetvrti')
+//
+//
+//
+//document.body.addEventListener("click", function(){createFlashMessage('testy')})
