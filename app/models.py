@@ -1,13 +1,14 @@
-from app import db
-from app import login
+from time import time
+from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
+import jwt
 from flask_login import UserMixin, current_user
 from flask import url_for
 from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
-from datetime import datetime
 from sqlalchemy.sql import case, select
-from sqlalchemy import and_
-from markupsafe import Markup
+from app import app, db, login
+#TODO done
+
 
 
 from app.utils.mixins import Upmodel
@@ -42,7 +43,20 @@ class User(UserMixin, db.Model):
     def setting(cls, setting_name):
         return select([UserSetting.setting]).where(cls.id == UserSetting.user_id).where(UserSetting.setting_name == setting_name).as_scalar()
 
+    def get_reset_password_token(self, expires_in=600):
+        return jwt.encode(
+            {'reset_password': self.id, 'exp': time() + expires_in},
+            app.config['SECRET_KEY'],
+            algorithm = 'HS256')
 
+
+    @staticmethod
+    def verify_reset_password_token(token):
+        try:
+            id = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])['reset_password']
+        except:
+            return
+        return User.query.get(id)
 
 
 class UserSetting(db.Model):
@@ -73,9 +87,8 @@ class Item(db.Model, Upmodel):
 
     @hybrid_property
     def item(self):
-
         url = (url_for('item_edit', username=current_user.username, item=self.name, item_id=self.id))
-        return Markup(f"<a href='{url}'>{self.name}</a>")
+        return f"<a href='{url}'>{self.name}</a>"           #TODO superfluous
 
     @item.expression
     def item(cls):
@@ -106,10 +119,6 @@ class Item(db.Model, Upmodel):
             price = list(filter(lambda x: x.currency == query_currency and x.first_entry == True, self.prices))[0]
         return str(round(price.price, 2)) + ' ' + price.currency
 
-
-
-
-
     @price.setter
     def price(self, price_object):
         self.prices.append(price_object)
@@ -117,9 +126,6 @@ class Item(db.Model, Upmodel):
     @price.expression                                #TODO recheck
     def price(cls):
         return select([Price.price]).where(cls.id == Price.item_id).as_scalar()                 #TODO filter-out
-
-
-
 
     @hybrid_property
     def currency(self):

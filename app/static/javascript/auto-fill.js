@@ -4,6 +4,7 @@ function autoSuggest(id, containerSelector, property){
   var inputField = document.getElementById(id)
   var inputSuggestions = document.createElement('div')
   var name = id+'-'+'suggestions'
+  inputSuggestions.classList.add('suggestions')
   inputSuggestions.id = name
   var container = inputField.closest(containerSelector)   //superfluous
 

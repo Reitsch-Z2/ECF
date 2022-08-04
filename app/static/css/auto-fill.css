@@ -1,39 +1,19 @@
 
-#type-query-suggestions{
-
+.suggestions{
   position: absolute;
   width: 100%;
   display: list-item;
   overflow: auto;
-
-
-}
-
-
-#item-suggestions{
-
-  position: absolute;
-  width: 100%;
-  display: list-item;
-  overflow: auto;
-
-
-}
-
-#category-suggestions{
-
-  position: absolute;
-  width: 100%;
-  display: list-item;
-  overflow: auto;
-
+  z-index: 500;
+    outline: 2px solid white;
+    outline-offset: -1.5px;
 
 }
 
 .choice{
   background: white;
-  opacity: 0.95;
-  margin-top: 0.2em;
+  opacity: 0.9;
+  padding-top: 0.2em;
   z-index: 100;
 
 }

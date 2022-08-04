@@ -1,12 +1,16 @@
-from app.models import Item, Price
+import json
+
 from flask_login import current_user
 from sqlalchemy import func
+from app import db
+from app.models import Item, Price, UserSetting, User
 
 
 
 class AjaxQuery():
     def __init__(self, requests):
         self.requests_dict = requests['data']
+        self.time = self.requests_dict['time']
         self.time_mode = self.requests_dict['time']['mode']
         self.dates = self.requests_dict['time']['dates']
         self.pagination = self.requests_dict['pagination']
@@ -59,6 +63,8 @@ class AjaxQuery():
         if hasattr(self, 'limit'):
             query = query.limit(self.limit)
 
+
+
         final={}
         rows = [x.to_dict(columns) for x in query.all()]
         final['columns'] = columns
@@ -72,6 +78,27 @@ class AjaxQuery():
         total = [f"{k} = {v}" for k, v in total.items()]
         total = "TOTAL : " + " | ".join(total)
         final['total'] = str(total)
+
+
+
+        if True:            #TODO edit later on
+            saved = final.copy()
+            for key in ['rows', 'columns', 'total']:
+                if key in saved:
+                    del saved[key]
+            saved['time']=self.time
+            # saved['query_type'] = self.query_type
+
+            saved = json.dumps(saved)
+            user = User.query.filter_by(id=current_user.id).first()
+            setting = UserSetting.query.filter_by(setting_name='last_query').first()
+            if setting is None:
+                setting = UserSetting(setting_name='last_query', setting=saved)
+                user.settings.append(setting)
+            else:
+                setting.setting = saved
+
+            db.session.commit()
 
         return final
 

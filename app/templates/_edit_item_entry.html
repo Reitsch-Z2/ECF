@@ -36,16 +36,24 @@
                 {% endfor %}
             </span>
 
-            <span class="poly">
+            <span class="poly2">
                 {{form.date.label}}<br>
                 {{form.date(class= "form-field-alt")}}
                 {% for error in form.date.errors %}
                 <span class="form-error">[{{error}}]</span>
                 {% endfor %}
             </span>
-            <span class="poly2">
-                <span>{{form.submit(class = "submit")}}</span>
+
+            <span class="submit-group">
+
+                <span class="submit">{{form.submit(value='Edit')}}</span>
+
+                <span class="submit">{{form.submit(value='Delete')}}</span>
+
+                <span class="submit">{{form.submit(value='Cancel')}}</span>
+
             </span>
+
             </div>
         </form>
     </div>

@@ -41,49 +41,10 @@
 */
 
 
-.poly {
-    flex-growth: 1;
-    display: inline-block;
-    box-sizing:border-box;
-
-
-}
-
 #query-options label {
   white-space: nowrap;
 
 }
-
-
-
-.poly2 {
-
-    display: inline-block;
-    box-sizing:border-box;
-}
-
-.experiment{
-  display:flex;
-  align-items: flex-end;
-  flex-wrap: no-wrap;
-  gap: 10px;
-}
-
-.submit {
-  height: 25px;
-
-}
-
-.form-error{
-  position: absolute;
-  height: auto;
-  display: inline-block;
-  width: 100%;
-  margin-top: 3em;
-  margin-left: -100%;
-  z-index: -1;
-}
-
 
 
 .form {
@@ -109,21 +70,7 @@
   background: lightblue;
 }
 
-.form-alt2 {
 
-    border: 0.1px solid black;
-    position: relative;
-    height: auto;
-    width: 100%;
-    padding: 15px 30px 15px 30px;
-    margin-bottom: 5%;
-    box-sizing:border-box;
-
-}
-
-#table-costs{
-
-}
 
 #table-costs a {
   text-decoration:none;

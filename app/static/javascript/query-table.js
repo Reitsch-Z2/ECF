@@ -6,8 +6,6 @@ function queryTableMaker(id, responseObject){
   holder.innerHTML=""
 
   responseObject = JSON.parse(responseObject)
-  alert(responseObject["data"]["total"])
-  alert(total)
   var rows = responseObject["data"]["rows"]
   var columns = responseObject["data"]["columns"]
   if (rows.length ==0){
@@ -61,7 +59,7 @@ function queryTableMaker(id, responseObject){
   holder.append(table)
   holder.append(footer)
 
-
+//  table.addEventListener        //TODO!!!
 }
 
 
@@ -143,17 +141,11 @@ function showPages(limit, page, count){
   return paginator
 
 }
-
-
-
 function showSumTotal(total){
   var sumTotal = document.createElement("span")
   sumTotal.id = "query-table-sum"
   sumTotal.textContent = total
-
-
   return sumTotal
-
 }
 
 

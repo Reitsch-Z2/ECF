@@ -1,13 +1,9 @@
+import datetime
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, IntegerField, SelectField, DecimalField, DateField #TODO any superfluous?
 from wtforms.validators import DataRequired, EqualTo, ValidationError, Email        #TODO any superfluous?
-from app.utils.helpers import json_loader
 from app.models import User
-
-from app import login
-from flask_login import current_user
-import datetime
-
+from app.utils.helpers import json_loader
 
 
 class LoginForm(FlaskForm):
@@ -16,12 +12,13 @@ class LoginForm(FlaskForm):
     remember_me = BooleanField('Remember me')
     submit = SubmitField('Log in')
 
-
 class RegistrationForm(FlaskForm):
+    currencies = json_loader(True, "settings", "general", "currencies")
     username = StringField('Username', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
     password2 = PasswordField('Repeat the password', validators=[DataRequired(), EqualTo('password')])
+    currency = SelectField('Base currency', choices=currencies, validators=[DataRequired()])
     submit = SubmitField('Register')
 
     def validate_username (self, username):
@@ -41,8 +38,17 @@ class ItemForm(FlaskForm):
     item = StringField('Item', validators=[DataRequired()])
     price = DecimalField('Price', validators=[DataRequired()])              #TODO is it?
     currency = SelectField('Currency', choices=currencies, validators=[DataRequired()])
-    category = StringField('Category', validators=[DataRequired()])         #TODO is it?
-    date = DateField('Time', default=datetime.date.today(), format='%Y-%m-%d', validators=[DataRequired()])         #TODO format is acting fishy
+    category = StringField('Category', validators=[DataRequired()])
+    date = DateField('Time', default=datetime.date.today(), format='%Y-%m-%d', validators=[DataRequired()])
     submit = SubmitField('Submit')
 
-    #TODO - surely some custom validators here
+class ResetPasswordRequestForm(FlaskForm):
+
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    submit = SubmitField('Request password reset')
+
+class ResetPasswordForm(FlaskForm):
+
+    password = PasswordField('Password', validators=[DataRequired()])
+    password2 = PasswordField('Repeat the password', validators=[DataRequired(), EqualTo('password')])
+    submit = SubmitField('Request password reset')

@@ -32,6 +32,57 @@
 
 }
 
+
+
+.form-alt {
+    border: 0.1px solid black;
+    position: absolute;
+    height: auto;
+    width: 90%;
+    padding: 15px 30px 15px 30px;
+    margin-bottom: 5%;
+    box-sizing:border-box;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%)
+}
+
+.form-alt2 {
+    border: 0.1px solid black;
+    position: relative;
+    height: auto;
+    width: 100%;
+    padding: 15px 15px 15px 15px;
+    margin-bottom: 5%;
+    box-sizing:border-box;
+}
+
+.experiment{
+  display:flex;
+  align-items: flex-end;
+  flex-wrap: no-wrap;
+  gap: 10px;
+  overflow: auto;
+
+
+}
+
+.submit input{
+  height: 25px;
+  font-size: 0.75em;
+
+}
+
+.form-error{
+
+  position:absolute;
+  margin-top: 3em;
+  margin-left: 0;
+  width: 100%;
+  margin-left: -100%;
+  z-index: -1;
+}
+
 .poly {
     position: relative;
     display: inline-block;
@@ -44,40 +95,38 @@
     flex-grow: 1;
 }
 
-.form-alt {
-
-    border: 0.1px solid black;
-    position: absolute;
-    height: auto;
-    width: 90%;
-    padding: 15px 30px 15px 30px;
-    margin-bottom: 5%;
-    box-sizing:border-box;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%)
-
+.submit-group {
+    display: flex;
+    flex-direction: row;
 }
 
-.experiment{
-  display:flex;
-  align-items: flex-end;
-  flex-wrap: no-wrap;
-  gap: 10px;
+
+
+
+
+
+@media only screen and (max-width: 650px) {
+    .form-alt {
+        width: auto;
+    }
+
+  .experiment{
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+  }
+
+  .poly, .poly2, .submit-group  {
+        align-self: start;
+  }
+
+  .form-error{
+    position:relative;
+    margin-top: 0;
+    margin-left: 0;
+    width: 100%;
+    margin-left: 0;
+    z-index: -1;
+  }
+
 }
-
-.submit {
-  height: 25px;
-
-}
-
-.form-error{
-  position: absolute;
-  height: auto;
-  display: inline-block;
-  width: 100%;
-  margin-top: 3em;
-  margin-left: -100%;
-  z-index: -1;
-}
-

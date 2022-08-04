@@ -1,6 +1,7 @@
 
 <div class="form-container">
     <div class="form">
+        <h2>Log in</h2>
         <form action="" method="post" novalidate>
             {{form.hidden_tag()}}
             <p>
@@ -35,8 +36,19 @@
                 {% endfor %}
             </p>
             <br>
-            <p>{{form.submit}}</p>
+            <p>
+                {{form.currency.label}}<br>
+                {{form.currency(class= "form-field")}}
+                {% for error in form.currency.errors %}
+                <span>[{{error}}]</span>
+                {% endfor %}
+            </p>
+            <br>
+
+            <p>{{form.submit()}}</p>
         </form>
         <a href="{{url_for('login')}}" class="url-link">Already registered?</a>
     </div>
 </div>
+
+

@@ -2,6 +2,7 @@
 var presets = presets
 var presets_pagination = presets['pagination']
 var presets_currency_query = presets['currency_query']
+var presets_currency_query_choice = presets['currency_query_choice']
 
 
 
@@ -119,6 +120,7 @@ function createQueryOptions(id){
     option.textContent = value
     currencyQuery.append(option)
   }
+  currencyQuery.value = presets_currency_query_choice
   currencyQueryContainer.append(label, br(), currencyQuery)
   currencyTypePacker['currency'] = currencyQuery.value
 
@@ -157,4 +159,3 @@ function createQueryOptions(id){
 
 
 
-createQueryOptions('queried-holder')

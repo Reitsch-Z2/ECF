@@ -38,13 +38,11 @@ function xhrSend(package, responseFunction, ...args){
 
 
 var selta = function(){
-  alert(JSON.stringify(reqPack()))
   var test = typeof(reqPack()["data"]["time"]["dates"])
   if (test != "undefined"){
     xhrSend(reqPack(), queryTableMaker, "queried-results")
   } else {
     var holder = document.getElementById("queried-results")
-    alert(holder)
     if (holder != null){
       holder.innerHTML = " "
       var info = document.createElement("div")
@@ -230,10 +228,14 @@ function timeMarker(){
       remover.forEach(day => {day.classList.remove("clicked")})
       targetChild.classList.add("clicked")
       day = targetChild.textContent
-      day = datePipeline(yearGlobal, monthGlobal, day, mode)
-      datePacker["dates"] = day
+      date = datePipeline(yearGlobal, monthGlobal, day, mode)
+      datePacker["dates"] = date
+      datePacker["day"] = day
     } else if (mode == "week"){
       var target = e.target.closest("tr.week")
+
+      var weeks = document.body.getElementsByClassName('week')
+      var weekNo = [...weeks].indexOf(target) + 1
       var days = target.querySelectorAll("div")
       var days = Array.from(days)
       var remover = this.querySelectorAll("td div")
@@ -250,6 +252,7 @@ function timeMarker(){
       days = days.map(x => x.textContent)
       dates = datePipeline(yearGlobal, monthGlobal, days, mode, additional)
       datePacker["dates"] = dates
+      datePacker["week"] = weekNo
     } if (mode == "month"){
       var target = e.target.closest("tbody")
       var days = target.querySelectorAll(".day div")
@@ -261,9 +264,13 @@ function timeMarker(){
 
       dates = datePipeline(yearGlobal, monthGlobal, days, mode)
       datePacker["dates"] = dates
+
+
     } else {
       //pass
     }
+    datePacker["year"] = yearGlobal         //TODO should be revised (moved up) if "period" mode is introduced
+    datePacker["month"] = monthGlobal
     datePacker["mode"] = mode
     selta()
   })
@@ -311,8 +318,6 @@ function weekDatesParser(Y, M, D, additional){
 }
 
 function monthDatesParser(Y, M, D){
-  alert('oi')
-  alert(D.length)
   var firstDay = D[0]
   var lastDay = D[D.length-1]
   var monthScope = [dateFormat(Y, M, firstDay), dateFormat(Y, M, lastDay)]
@@ -452,13 +457,54 @@ function monthNav(){
 
 
 
-
-
-
-
-generateCalender(2022, 6)
 monthModes()
+createQueryOptions('queried-holder')
 
+if (lastQuery !="undefined"){
+  queryUnpacker(lastQuery)
+
+} else {
+  generateCalender()
+}
+
+
+
+function queryUnpacker(query){
+
+
+  generateCalender(query.time.year, query.time.month-1)
+
+
+  alert(JSON.stringify(query))
+  pagination = document.getElementById('pagination')
+  alert(pagination)
+
+  switch(query.time.mode){
+    case('day'):
+      //pass
+      break
+
+
+
+    case('week'):
+      //pass
+      break
+
+
+
+    case('month'):
+      //pass
+      break
+  }
+
+
+
+
+
+
+
+
+}
 
 
 

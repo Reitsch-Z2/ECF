@@ -1,21 +1,7 @@
-<!DOCTYPE html >
-<head>
+{% extends '_base_visitor.html' %}
 
-  <link rel="stylesheet" type="text/css" href="/static/css/style.css">            <!--TODO hardcoded app name x2!!-->
+{% block content %}
+  {% include "_register.html" %}
+{% endblock %}
 
-  {% if title%}
-  <title>ECF - {{title}}</title>                                            <!--TODO hardcoded app name x2!!-->
-  {%else%}
-  <title>ECF</title>
-  {%endif%}
 
-</head>
-<body>
-  <main>
-
-  {% block content %}
-    {% include "_register.html" %}
-  {% endblock %}
-
-  </main>
-</body>
