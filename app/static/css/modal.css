@@ -1,0 +1,13 @@
+.modalFrame{
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  border: 1px solid black;
+  background: white;
+  text-align: center;
+}
+
+.modalContent{
+  padding: 20px;
+}

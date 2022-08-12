@@ -1,10 +1,9 @@
 
 var presets = presets
+alert(JSON.stringify(presets))
 var presets_pagination = presets['pagination']
 var presets_currency_query = presets['currency_query']
 var presets_currency_query_choice = presets['currency_query_choice']
-
-
 
 function createQueryOptions(id){
   var holder = document.getElementById(id)
@@ -63,12 +62,12 @@ function createQueryOptions(id){
     selta()
     var temp = document.getElementById('type-query')
     var target = e.target
+
     if (target.matches('.chosen')){
       target.classList.remove('chosen')
       typeLabel.classList.remove('disappeared')
       if (temp){temp.remove()}
-      queryTypePacker[query_type]={}
-      alert('here1')
+      queryTypePacker={}
     } else {
       if (temp){temp.remove()}
       var inputField = document.createElement('input')
@@ -81,24 +80,24 @@ function createQueryOptions(id){
       query_type = target.textContent
       if (query_type == 'Item'){
         typeQueryContainer.append(inputField)
-        alert('here2')
         autoSuggest('type-query', '#type-query-container', 'items')
       } else {
         typeQueryContainer.append(inputField)
-        alert('here3')
         autoSuggest('type-query', '#type-query-container', 'categories')
       }
-      inputField.addEventListener('blur', function(){
+
+      inputField.addEventListener('change', function(){
         if (!buttonGroup.matches(':hover')){
         alert(inputField.value)
         queryTypePacker={}
         queryTypePacker[query_type]=inputField.value
         selta()
-
+        } else {
+          queryTypePacker={}
+          queryTypePacker[query_type]=inputField.value
+          selta()
         }
-
       })
-
     }
   }
   )
@@ -124,15 +123,12 @@ function createQueryOptions(id){
   currencyQueryContainer.append(label, br(), currencyQuery)
   currencyTypePacker['currency'] = currencyQuery.value
 
-
-
   queryOptions.append(paginationContainer)
   queryOptions.append(currencyQueryContainer)
   queryOptions.append(typeQueryContainer)
   navContainer.append(queryOptions)
   holder.prepend(navContainer)
   holder.append(resultsContainer)
-
 
   pagination.addEventListener('change', function(){
     paginationPacker['limit'] = pagination.value
@@ -141,13 +137,11 @@ function createQueryOptions(id){
   })
 
   currencyQuery.addEventListener('change', function(){
-
     var xhr = new XMLHttpRequest()                                              //TODO global or local
     xhr.open('POST', '/api/user-settings', true)
     xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8")      //TODO recheck if mandatory
     xhr.setRequestHeader("Accept", "application/json;charset=UTF-8")            //TODO recheck if mandatory
-    xhr.send(JSON.stringify({'setting_name': 'query currency', 'setting': currencyQuery.value}))
-
+    xhr.send(JSON.stringify({'setting_name': 'query_currency', 'setting': currencyQuery.value}))
     xhr.onload = function() {
     if (xhr.status == 200){
       currencyTypePacker['currency'] = xhr.response

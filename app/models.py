@@ -5,10 +5,8 @@ import jwt
 from flask_login import UserMixin, current_user
 from flask import url_for
 from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
-from sqlalchemy.sql import case, select
+from sqlalchemy.sql import select, case #TODO
 from app import app, db, login
-#TODO done
-
 
 
 from app.utils.mixins import Upmodel
@@ -17,13 +15,11 @@ from app.utils.mixins import Upmodel
 def load_user(id):
     return User.query.get(int(id))
 
-
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(128), index=True, unique=True)
     password_hash = db.Column(db.String(128))
-
     settings = db.relationship('UserSetting', back_populates='users')
     items = db.relationship('Item', back_populates='user')
     categories = db.relationship('Category', back_populates='user')
@@ -39,6 +35,14 @@ class User(UserMixin, db.Model):
         query = UserSetting.query.filter_by(user_id=self.id, setting_name = setting_name).first()
         return getattr(query, 'setting')
 
+    def set_setting(self, setting_name, setting_value):
+        new_setting = UserSetting.query.filter_by(user_id=self.id, setting_name = setting_name).first()
+        if new_setting == None:
+            new_setting = UserSetting(setting_name=setting_name, setting=setting_value)
+            self.settings.append(new_setting)
+        else:
+            new_setting.setting = setting_value
+
     @setting.expression                                     #TODO CHECK WHEN THE NEW USERS ARE INSERTED!
     def setting(cls, setting_name):
         return select([UserSetting.setting]).where(cls.id == UserSetting.user_id).where(UserSetting.setting_name == setting_name).as_scalar()
@@ -49,7 +53,6 @@ class User(UserMixin, db.Model):
             app.config['SECRET_KEY'],
             algorithm = 'HS256')
 
-
     @staticmethod
     def verify_reset_password_token(token):
         try:
@@ -58,32 +61,24 @@ class User(UserMixin, db.Model):
             return
         return User.query.get(id)
 
-
 class UserSetting(db.Model):
     __tablename__ = 'user_setting'
 
     id = db.Column(db.Integer, primary_key=True)
     setting = db.Column(db.String(128))
     setting_name = db.Column(db.String(64), index=True)
-
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     users = db.relationship("User", back_populates="settings")
 
-
-
-
 class Item(db.Model, Upmodel):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)                #TODO - unique denoting of an element! UUID in Postgres
     name = db.Column(db.String(64), index=True)
-    date = db.Column(db.Date, index=True, default=datetime.utcnow)              #TODO maybe a string?
-    #pseudo_count                  ####TODO - unique denoting of an element!
-
-    category_id = db.Column(db.Integer, db.ForeignKey('category.id'))               #TODO nullable=false?
+    date = db.Column(db.Date, index=True, default=datetime.utcnow)
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
     _category = db.relationship('Category', back_populates='items', innerjoin=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     user = db.relationship('User', back_populates='items')
     prices = db.relationship('Price', back_populates='item')
-
 
     @hybrid_property
     def item(self):
@@ -98,19 +93,18 @@ class Item(db.Model, Upmodel):
     def category(self):
         return self._category.name
 
-    @category.setter
-    def category(self, category_object):
-        self._category = category_object
-
     @category.expression
     def category(cls):
         return select([Category.name]).where(cls.category_id == Category.id).as_scalar()
 
+    @category.setter
+    def category(self, category_object):
+        self._category = category_object
+
     @hybrid_property
     def price(self):
-
-        query_currency = self.user.setting('query currency')
-        base_currency =  self.user.setting('base currency')
+        query_currency = self.user.setting('query_currency')
+        base_currency =  self.user.setting('base_currency')
         if query_currency == 'Total - base currency':
             price = list(filter(lambda x: x.currency == base_currency, self.prices))[0]
         elif query_currency == 'Total - combined currencies':
@@ -141,16 +135,13 @@ class Price(db.Model):
     price = db.Column(db.Numeric)                         #TODO Float?
     currency = db.Column(db.String(64))
     first_entry = db.Column(db.Boolean, default=False)
-
     item_id = db.Column(db.Integer, db.ForeignKey('item.id'))  # TODO nullable=false?
     item = db.relationship('Item', back_populates='prices')
 
-
-
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), index=True, unique=True)
-
+    name = db.Column(db.String(64), index=True)
     items = db.relationship('Item', back_populates='_category')      #TODO lazy though?
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     user = db.relationship('User', back_populates='categories')
+    __table_args__ = (db.Index('index_category_user', 'name', 'user_id', unique=True),)

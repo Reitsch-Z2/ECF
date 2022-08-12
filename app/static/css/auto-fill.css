@@ -1,13 +1,11 @@
-
 .suggestions{
   position: absolute;
   width: 100%;
   display: list-item;
   overflow: auto;
   z-index: 500;
-    outline: 2px solid white;
-    outline-offset: -1.5px;
-
+  outline: 2px solid white;
+  outline-offset: -1.5px;
 }
 
 .choice{
@@ -15,5 +13,4 @@
   opacity: 0.9;
   padding-top: 0.2em;
   z-index: 100;
-
 }

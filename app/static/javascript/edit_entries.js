@@ -1,0 +1,1 @@
+addModal('submit-delete')

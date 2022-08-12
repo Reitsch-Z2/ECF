@@ -1,60 +1,53 @@
-
 .form-container {
   position: relative;
   height: 100vh;
 }
 
 .form {
-    border: 0.1px solid black;
-    border-radius: 2em;
-    position: absolute;
-    height: auto;
-    max-width: 300px;
-    width: 50%;
-    padding: 15px 30px 15px 30px;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%)
+  border: 0.1px solid black;
+  border-radius: 2em;
+  position: absolute;
+  height: auto;
+  max-width: 300px;
+  width: 50%;
+  padding: 15px 30px 15px 30px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%)
 }
 
 .form-field{
-    width: 100%;
-    box-sizing:border-box;
-
+  width: 100%;
+  box-sizing:border-box;
 }
-
-
 
 .form-field-alt{
-    height: 25px;
-    width: 100%;
-    box-sizing:border-box;
-
+  height: 25px;
+  width: 100%;
+  box-sizing:border-box;
 }
 
-
-
 .form-alt {
-    border: 0.1px solid black;
-    position: absolute;
-    height: auto;
-    width: 90%;
-    padding: 15px 30px 15px 30px;
-    margin-bottom: 5%;
-    box-sizing:border-box;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%)
+  border: 0.1px solid black;
+  position: absolute;
+  height: auto;
+  width: 90%;
+  padding: 15px 30px 15px 30px;
+  margin-bottom: 5%;
+  box-sizing:border-box;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%)
 }
 
 .form-alt2 {
-    border: 0.1px solid black;
-    position: relative;
-    height: auto;
-    width: 100%;
-    padding: 15px 15px 15px 15px;
-    margin-bottom: 5%;
-    box-sizing:border-box;
+  border: 0.1px solid black;
+  position: relative;
+  height: auto;
+  width: 100%;
+  padding: 15px 15px 15px 15px;
+  margin-bottom: 5%;
+  box-sizing:border-box;
 }
 
 .experiment{
@@ -62,19 +55,14 @@
   align-items: flex-end;
   flex-wrap: no-wrap;
   gap: 10px;
-  overflow: auto;
-
-
 }
 
 .submit input{
   height: 25px;
   font-size: 0.75em;
-
 }
 
 .form-error{
-
   position:absolute;
   margin-top: 3em;
   margin-left: 0;
@@ -84,31 +72,27 @@
 }
 
 .poly {
-    position: relative;
-    display: inline-block;
-    flex-grow: 3;
+  position: relative;
+  display: inline-block;
+  flex-grow: 3;
 }
 
 .poly2 {
-    position: relative;
-    display: inline-block;
-    flex-grow: 1;
+  position: relative;
+  display: inline-block;
+  flex-grow: 1;
 }
 
 .submit-group {
-    display: flex;
-    flex-direction: row;
+  display: flex;
+  flex-direction: row;
 }
 
 
-
-
-
-
 @media only screen and (max-width: 650px) {
-    .form-alt {
-        width: auto;
-    }
+  .form-alt {
+    width: auto;
+  }
 
   .experiment{
     display: flex;
@@ -117,7 +101,7 @@
   }
 
   .poly, .poly2, .submit-group  {
-        align-self: start;
+    align-self: start;
   }
 
   .form-error{

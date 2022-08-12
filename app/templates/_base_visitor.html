@@ -5,7 +5,7 @@
   <script type="text/javascript" charset="utf8" src="/static/javascript/_flash-message.js"></script>
 
   {% if title%}
-  <title>ECF - {{title}}</title>                                            <!--TODO hardcoded app name x2!!-->
+  <title>ECF - {{title}}</title>
   {%else%}
   <title>ECF</title>
   {%endif%}
@@ -16,16 +16,13 @@
 
   {% block content %}
     {% include "_login.html" %}
-
   {% endblock %}
 
   {% with messages = get_flashed_messages() %}
     {% if messages %}
-
       {% for message in messages %}
           <script>createFlashMessage('{{ message }}')</script>
       {% endfor %}
-
     {% endif %}
   {% endwith %}
 

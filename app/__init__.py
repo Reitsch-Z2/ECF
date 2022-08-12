@@ -8,13 +8,15 @@ from flask_mail import Mail
 
 
 
-
 app = Flask(__name__)
 app.config.from_object(Config)
 db=SQLAlchemy(app)
 migrate = Migrate(app, db, render_as_batch=True)
 login = LoginManager(app)
 mail = Mail(app)
+
+from app.errors import bp as errors_bp
+app.register_blueprint(errors_bp)
 
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 465

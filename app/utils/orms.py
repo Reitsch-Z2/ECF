@@ -1,11 +1,8 @@
 import json
-
 from flask_login import current_user
 from sqlalchemy import func
 from app import db
 from app.models import Item, Price, UserSetting, User
-
-
 
 class AjaxQuery():
     def __init__(self, requests):
@@ -23,7 +20,6 @@ class AjaxQuery():
 
     def querier(self, columns):
         query = Item.query.filter_by(user_id = current_user.id)
-
         if self.time_mode == 'day':
             query = query.filter(Item.date == self.dates)
         else:
@@ -37,14 +33,13 @@ class AjaxQuery():
                 query = query.filter_by(category = value)
 
         query = query.join(Price)
-
-        query_currency = current_user.setting('query currency')
-        base_currency = current_user.setting('base currency')
+        query_currency = current_user.setting('query_currency')
+        base_currency = current_user.setting('base_currency')
         total = {}
         if query_currency == 'Total - base currency':
             query = query.filter_by(currency = base_currency)
             if query.count()>0:
-                total[current_user.setting('base currency')] =  float(query.with_entities(func.sum(Price.price)).scalar())
+                total[current_user.setting('base_currency')] =  float(query.with_entities(func.sum(Price.price)).scalar())
         elif query_currency == 'Total - combined currencies':
             query = query.filter_by(first_entry = True)
             if query.count() > 0:
@@ -63,8 +58,6 @@ class AjaxQuery():
         if hasattr(self, 'limit'):
             query = query.limit(self.limit)
 
-
-
         final={}
         rows = [x.to_dict(columns) for x in query.all()]
         final['columns'] = columns
@@ -79,26 +72,26 @@ class AjaxQuery():
         total = "TOTAL : " + " | ".join(total)
         final['total'] = str(total)
 
-
-
-        if True:            #TODO edit later on
+        if True:            #TODO - not save
             saved = final.copy()
             for key in ['rows', 'columns', 'total']:
                 if key in saved:
                     del saved[key]
             saved['time']=self.time
-            # saved['query_type'] = self.query_type
+            if hasattr(self, 'query_type'):
+                saved['query_type'] = self.query_type
 
             saved = json.dumps(saved)
             user = User.query.filter_by(id=current_user.id).first()
-            setting = UserSetting.query.filter_by(setting_name='last_query').first()
+            setting = UserSetting.query.filter_by(user_id= current_user.id, setting_name='last_query').first()
             if setting is None:
                 setting = UserSetting(setting_name='last_query', setting=saved)
                 user.settings.append(setting)
             else:
                 setting.setting = saved
+            final['saved'] = 'saved'
 
-            db.session.commit()
+        db.session.commit()
 
         return final
 

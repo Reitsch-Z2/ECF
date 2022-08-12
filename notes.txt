@@ -19,20 +19,6 @@ license?
 
 #TODO count existing number of the same items for the user when inserting new items with that name.... new column, used for item edit view naming
 
-    @hybrid_property
-    def category(self):
-        return self._category.name
-
-    @category.setter
-    def category(self, category_object):
-        self._category = category_object
-
-    @category.expression                                #TODO recheck
-    def category(cls):
-        return select([Category.name]).where(cls.category_id == Category.id).as_scalar()
-
-
-
 #TODO file-naming, identation, quotes!
 
 #TODO time format in Upmodel class - could be better?
@@ -46,3 +32,7 @@ license?
 #TODO modal + ephemeral flash message as a sliding dissappearing pop up
 
 #TODO month modes separately from calender + month ----- global var mode remains valid while browsing through calender
+
+#TODO history on going back refresh page properly with deleted results
+
+#TODO ITEM DATE CANNOT BE PLACED IN THE FUTURE!!!!

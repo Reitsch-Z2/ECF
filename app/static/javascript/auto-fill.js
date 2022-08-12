@@ -51,16 +51,6 @@ function autoSuggest(id, containerSelector, property){
   })
 }
 
-
-
-
-
-
-
-
-
-
-//
 function autoFill(eventNodeId, targetId, property){
   eventNode = document.getElementById(eventNodeId)
 

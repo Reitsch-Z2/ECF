@@ -1,5 +1,12 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+(function () {
+	window.onpageshow = function(event) {
+		if (event.persisted) {
+			window.location.reload();
+		}
+	};
+})()
 
 let today = new Date()
 datePacker = {}
@@ -24,12 +31,15 @@ reqPack = function(){
 
 
 function xhrSend(package, responseFunction, ...args){
+  alert(JSON.stringify(package))
   var xhr = new XMLHttpRequest()                                              //TODO global or local
   xhr.open("POST", "/api/tables", true)
   xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8")      //TODO recheck if mandatory
   xhr.setRequestHeader("Accept", "application/json;charset=UTF-8")            //TODO recheck if mandatory
   xhr.send(JSON.stringify(package))
+
   xhr.onload = function() {
+
     if (xhr.status == 200){
       responseFunction(...args, xhr.response)
     }
@@ -38,9 +48,13 @@ function xhrSend(package, responseFunction, ...args){
 
 
 var selta = function(){
+
   var test = typeof(reqPack()["data"]["time"]["dates"])
+
   if (test != "undefined"){
+
     xhrSend(reqPack(), queryTableMaker, "queried-results")
+
   } else {
     var holder = document.getElementById("queried-results")
     if (holder != null){
@@ -195,10 +209,8 @@ function generateCalender(year=(new Date(today).getFullYear()), month=(new Date(
     }
     }
         if (content.weeks.length==5){
-
       var row = document.createElement("tr")
       body.append(row)
-
       for (let i=0; i<7; i++){
               var td = document.createElement("td")
       var div = document.createElement("div")
@@ -207,15 +219,8 @@ function generateCalender(year=(new Date(today).getFullYear()), month=(new Date(
       }
       body.append(row)                                                //TODO FOUR-WEEK FEBRUARY 2021 ARGHHH!!!
   }
-
-
-
   timeMarker()
 }
-
-
-
-
 
 function timeMarker(){
   var cal = document.getElementById("calender")
@@ -233,7 +238,6 @@ function timeMarker(){
       datePacker["day"] = day
     } else if (mode == "week"){
       var target = e.target.closest("tr.week")
-
       var weeks = document.body.getElementsByClassName('week')
       var weekNo = [...weeks].indexOf(target) + 1
       var days = target.querySelectorAll("div")
@@ -253,7 +257,7 @@ function timeMarker(){
       dates = datePipeline(yearGlobal, monthGlobal, days, mode, additional)
       datePacker["dates"] = dates
       datePacker["week"] = weekNo
-    } if (mode == "month"){
+    } else if (mode == "month"){
       var target = e.target.closest("tbody")
       var days = target.querySelectorAll(".day div")
       var days = Array.from(days)
@@ -264,8 +268,6 @@ function timeMarker(){
 
       dates = datePipeline(yearGlobal, monthGlobal, days, mode)
       datePacker["dates"] = dates
-
-
     } else {
       //pass
     }
@@ -275,7 +277,6 @@ function timeMarker(){
     selta()
   })
 }
-
 
 function dateFormat(Y, M, D){
   var D = D, M = String(M)
@@ -391,23 +392,11 @@ function monthModes(){
 
 }
 
-
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 function monthNav(){
 
   var calenderHolder = document.getElementById('calender-holder')
   var content = new Calender(yearGlobal, monthGlobal - 1)
-//  alert(content.month)
-//  alert(content.year)
+
 
   var month = document.createElement("nav")
   month.id="month-nav-container"
@@ -420,29 +409,30 @@ function monthNav(){
   var rarr = document.createElement("li")
   rarr.id = "next-month"; rarr.textContent = ">"
 
-
   navList.append(larr, monthName, rarr)
   month.append(navList)
   calenderHolder.append(month)
 
-
   larr.addEventListener("click", function(){
     var x = document.getElementById("month-nav-container")
+    datePacker = {}
+    selta()
     x.remove()
     calender.remove()
+
     var year = content.year
     var month = content.month - 1
     if (content.month == 0){
       month = 11
       year = year -1
     }
+
     generateCalender(year, month)         //TODO this maybe should get passed into monthNav
-
-
   })
-
   rarr.addEventListener("click", function(){
     var x = document.getElementById("month-nav-container")
+    datePacker = {}
+    selta()
     x.remove()
     calender.remove()
     var year = content.year
@@ -456,55 +446,88 @@ function monthNav(){
 }
 
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+function queryUnpacker(query){
+  query = JSON.parse(query)
+  generateCalender(query.time.year, query.time.month-1)
+  var noResults = document.getElementById('pagination')
+  noResults.value = query.limit
+  noResults.dispatchEvent(new Event("change"))
+  if (query.query_type){
+    var qtype = query.query_type
+    var noResults = document.getElementById('type-query-buttons').children
+    var key = Object.keys(qtype)[0]
+    var value = qtype[key]
+    var button = [...noResults].filter(element => (element.textContent == key))[0]
+    button.click()
+    var input = document.getElementById('type-query')
+    input.value = value
+    input.dispatchEvent(new Event('change'))
+  }
+
+  document.getElementById(query.time.mode + '-mode').click()
+  switch(query.time.mode){
+    case('day'):
+      var days = document.querySelectorAll('.day')
+      var day = [...days].filter(day => (day.textContent == '28'))[0]
+      day.click()
+      break
+
+    case('week'):
+      var weeks = document.querySelectorAll('.week')
+      var week = [...weeks][query.time.week - 1]
+      week.click()
+      break
+
+    case('month'):
+      document.querySelectorAll('.day')[0].click()
+      break
+  }
+
+  let observer = new MutationObserver(callFunc)
+  function callFunc(mutationList, observer){
+    for (let i=0; i<mutationList.length; i++){
+      var target = document.getElementById('#query-table-paginator')
+      if (target != null){
+        if (target.hasChildNodes){
+          target = target.children
+          var element = [...target].filter(page => (page.textContent == query.page))[0]
+          element.click()
+          observer.disconnect()
+        return
+        }
+      } else{
+        observer.disconnect()
+      }
+    }
+  }
+  var target = document.querySelector('#queried-results')
+  observer.observe(target, {childList: true, subtree: true})
+}
+
+
+
 
 monthModes()
 createQueryOptions('queried-holder')
+alert(JSON.parse(lastQuery))
 
-if (lastQuery !="undefined"){
+
+if (Object.keys(lastQuery).length != 0 ){
+  alert(lastQuery.time)
   queryUnpacker(lastQuery)
-
 } else {
   generateCalender()
 }
 
-
-
-function queryUnpacker(query){
-
-
-  generateCalender(query.time.year, query.time.month-1)
-
-
-  alert(JSON.stringify(query))
-  pagination = document.getElementById('pagination')
-  alert(pagination)
-
-  switch(query.time.mode){
-    case('day'):
-      //pass
-      break
-
-
-
-    case('week'):
-      //pass
-      break
-
-
-
-    case('month'):
-      //pass
-      break
-  }
-
-
-
-
-
-
-
-
-}
 
 
 

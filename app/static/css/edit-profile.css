@@ -1,0 +1,33 @@
+#options-container{
+  position: relative;
+  width: auto;
+  display: inline-flex;
+  width: 120%;
+  margin-left: -10%;
+  background: lightgray;
+  margin-bottom: 10%;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.form {
+  border : 0.5px solid black;
+  top: 25%;
+  left: 50%;
+  transform: translate(-50%, 0%);
+}
+
+.profile-option{
+  padding: 5% 0 5% 0;
+  flex: 1;
+  box-sizing: border-box;
+  border-top: 0.5px solid black;
+  border-bottom: 0.5px solid black;
+}
+
+.chosen-option{
+  margin: 0 -1px 0 -1px;
+  border: 0.5px black solid;
+  background: white;
+  box-sizing: border-box;
+}

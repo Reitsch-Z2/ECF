@@ -6,11 +6,13 @@
 @import "query-options.css";
 @import "auto-fill.css";
 @import "flash-message.css";
+@import "modal.css";
+@import "edit-profile.css";
 
 body {
-    padding: 0px;
-    margin: 0px;
-    font-family: "Ariel", "Helvetica", monospace;
+  padding: 0px;
+  margin: 0px;
+  font-family: "Ariel", "Helvetica", monospace;
 }
 
 .hidden {
@@ -22,8 +24,8 @@ body {
 }
 
 .url-link {
-    text-decoration: none;
-    font-size: 0.85em;
-    display: inline-block;
+  text-decoration: none;
+  font-size: 0.85em;
+  display: inline-block;
 }
 

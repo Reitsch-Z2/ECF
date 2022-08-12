@@ -1,0 +1,21 @@
+
+
+<form action="" method="post" novalidate>
+    {{form.hidden_tag()}}
+    <p>
+        {{form.currency.label}}<br>
+        {{form.currency(class= "form-field")}}
+        {% for error in form.currency.errors %}
+        <span>[{{error}}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{form.save_query.label}}<br>
+        {{form.save_query(class= "form-field")}}
+        {% for error in form.save_query.errors %}
+        <span>[{{error}}]</span>
+        {% endfor %}
+    </p>
+    <br>
+    <p>{{form.submit(id='submit-settings')}}</p>
+</form>

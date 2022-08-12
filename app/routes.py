@@ -1,12 +1,13 @@
 import json
-from flask import render_template, url_for, redirect, flash, request
+from flask import render_template, url_for, redirect, flash, request, render_template_string
 from flask_login import current_user, login_user, logout_user, login_required
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, ItemForm, ResetPasswordRequestForm, ResetPasswordForm
+from app.forms import LoginForm, RegistrationForm, ItemForm, ResetPasswordRequestForm, ResetPasswordForm, \
+    EditUserPersonalForm, EditUserPasswordForm, EditUserSettingsForm
 from app.email import send_password_reset_email
 from app.models import User, Item, Category, Price, UserSetting
 from app.utils.orms import AjaxQuery
-from app.utils.helpers import currency_converter_api, json_loader
+from app.utils.helpers import currency_converter_api, json_loader, choice_list
 
 
 @app.route('/api/auto-suggest', methods=['POST'])
@@ -25,10 +26,10 @@ def autosuggest():
 @login_required
 def autofill():
     requests = dict(json.loads(request.get_data()))                     #TODO model dictionary at the beginning,
-    property = requests['property']                                     # as to not hardcode model name
+    property = requests['property']                                     # as to not hardcode the model name
     value = requests['value']
     test = Item.query.filter_by(user_id = current_user.id, name = value).first()
-    aufofill_value = getattr(test, property)
+    aufofill_value = getattr(test, property, '')
     return {'data': str(aufofill_value)}
 
 @app.route('/api/user-settings', methods=['POST'])
@@ -62,8 +63,11 @@ def register():
     form = RegistrationForm()
     if form.validate_on_submit():
         user = User(username=form.username.data, email=form.email.data)
-        setting = UserSetting(setting_name='base currency', setting=form.currency.data)
-        user.settings.append(setting)
+        user.set_setting('base_currency', form.currency.data)
+        user.set_setting('query_currency', 'Total - base currency')
+        user.set_setting('save_query', 'no')
+        user.set_setting('temp_query', 'no')
+        user.set_setting('last_query', '{}')
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
@@ -72,7 +76,6 @@ def register():
     return render_template('register.html', form=form)
 
 @app.route('/', methods=['GET', 'POST'])
-@app.route('/index', methods=['GET', 'POST'])
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -123,12 +126,11 @@ def reset_password(token):
 @app.route('/entries', methods=['GET', 'POST'])
 @login_required
 def entries():
-    base_currency = current_user.setting('base currency')
-    currencies = json_loader(True, "settings", "general", "currencies")
-    currencies.remove(base_currency)
-    choices = [base_currency, *currencies]
+    base_currency = current_user.setting('base_currency')
+    choices = choice_list(base_currency, json_loader(True, "settings", "general", "currencies"))
     form = ItemForm()
     form.currency.choices = choices                 #TODO BRAVO! softcode it
+
     if form.validate_on_submit():
         item = Item(
             name = form.item.data,
@@ -141,10 +143,10 @@ def entries():
         )
         currency = form.currency.data
         if  currency != base_currency:
-            converted_price = currency_converter_api(currency, 'RSD', form.date.data, form.price.data)
+            converted_price = currency_converter_api('EUR', base_currency, form.date.data, form.price.data)
             price2 = Price(
                 price=converted_price,
-                currency='RSD',
+                currency=base_currency,
                 first_entry=False
             )
             item.prices.append(price2)
@@ -162,27 +164,24 @@ def entries():
             item.category = category
             db.session.add(item)
         db.session.commit()
-        return redirect(url_for('overview'))
+        return redirect(url_for('entries'))
     return render_template('entries.html', form=form)
 
 @app.route('/<username>/items/<item>/<item_id>', methods=['GET', 'POST'])
 @login_required
 def item_edit(username, item, item_id):
 
-
-
-
     form = ItemForm()
     item = Item.query.filter_by(id=item_id, user_id=current_user.id).first()
     price = Price.query.filter_by(item_id=item_id, first_entry=True).first()
     category = Category.query.filter_by(id=item.category_id).first()
-    # if request.form['action'] == 'Download':          #TODO submit changes/delete/cancel.... + micro modal popup confirmation
-
     if request.method == 'POST':
 
-                                                                #TODO #TODO #TODO #TODO
+        current_user.set_setting('temp_query', 'yes')
+        db.session.commit()
         requested = (request.form.to_dict())
         if requested['submit'] == 'Cancel':
+
             return redirect(url_for('overview'))
 
         if requested['submit'] == 'Delete':
@@ -212,7 +211,7 @@ def item_edit(username, item, item_id):
                     price.currency = form.currency.data
                     for prc in prices:
                         db.session.delete(prc)
-                    base_currency = current_user.setting('base currency')
+                    base_currency = current_user.setting('base_currency')
                     if price.currency != base_currency:
                         converted_price = currency_converter_api(price.currency, base_currency, form.date.data, form.price.data)
                         price2 = Price(
@@ -241,28 +240,116 @@ def overview():
     query_types = presets['currency_query']
     query_types.extend(currencies)
     presets_loader['currency_query'] = query_types
-    presets_loader['currency_query_choice'] = current_user.setting('query currency')
+    presets_loader['currency_query_choice'] = current_user.setting('query_currency')
 
-    if True:                    #TODO #TODO #TODO #TODO
-
-        last_query = dict(json.loads(current_user.setting('last_query')))
-    # last_query={}
-
+    if current_user.setting('temp_query')=='yes':
+        last_query = current_user.setting('last_query')
+    else:
+        last_query = {}
+    if current_user.setting('save_query') != 'yes':
+        current_user.set_setting('temp_query', 'no')
+        db.session.commit()
     return render_template('overview.html', title='test_main', presets_loader = presets_loader, last_query=last_query)
 
+@app.route('/profile/<username>', methods=['GET', 'POST'])
+@login_required
+def profile(username):                          #TODO argument only for the URL, not used in the view function
+    user = User.query.filter_by(username=current_user.username).first()
+    if request.method == 'POST':
+        requests = dict(json.loads(request.get_data()))
+        submit_button = requests['submit']
+        form_data = dict(json.loads(requests['data']))
 
+        if submit_button == 'submit-personal':
+            form = EditUserPersonalForm()
+            form.username.data = form_data['username']
+            form.email.data = form_data['email']
+            form.csrf_token.data = form_data['csrf_token']
+            if form.validate_on_submit():
+                if user.username != form_data['username'] or user.email !=form_data['email']:
+                    user.username = form_data['username']
+                    user.email = form_data['email']
+                    db.session.commit()
+                    return {'data': ''}
+                else:
+                    return {'data': '-'}
+            else:
+                formErrors = render_template('forms/_edit_user_personal.html',form=form)
+                return {'data': formErrors}
+        if submit_button == 'submit-password':
+            form = EditUserPasswordForm(current_user.username)
+            form.old_password.data = form_data['old_password']
+            form.password.data = form_data['password']
+            form.password2.data = form_data['password2']
+            form.csrf_token.data = form_data['csrf_token']
+            if form.validate_on_submit():
+                if user.check_password(password) != True:
+                    db.session.commit()
+                    return {'data': ''}
+                else:
+                    return {'data': '-'}
+            else:
+                formErrors = render_template('forms/_edit_user_password.html',form=form)
+                return {'data': formErrors}
+        if submit_button == 'submit-settings':
+            form = EditUserSettingsForm()
+            currencies = json_loader(True, "settings", "general", "currencies")
+            form.currency.choices = choice_list(form_data['currency'], currencies)
+            form.save_query.choices = ['yes', 'no']
+            form.currency.data = form_data['currency']
+            form.save_query.data = form_data['save_query']
+            form.csrf_token.data = form_data['csrf_token']
+            if form.validate_on_submit():
+                if user.setting('save_query') != form.save_query.data or user.setting('base_currency') != form.currency.data:
+                    if user.setting('save_query') != form.save_query.data:
+                        user.set_setting('save_query', form.save_query.data)            #TODO could have sub-if-else
+                    if user.setting('base_currency') != form.currency.data:
+                        user.set_setting('base_currency', form.currency.data)
 
-@app.route('/inception', methods=['GET', 'POST'])
-def inception():
-    user = User(username='Marko', email='marko@ecf.com')
-    user.set_password('Alesund')
-    db.session.add(user)
-    db.session.commit()
-    user = User.query.filter_by(username='Marko').first()
-    login_user(user, remember=True)
-    form=ItemForm()
-    return redirect(url_for('entries'))
+                        # for item in base_items:
+                        #     if 'USD' not in [x.currency for x in item.prices]:
+                        #     price = Price(currency='USD', price=function)
+                        #     item.append(price)
 
+                                #TODO CONVERT ALL THE PRICES
+                    db.session.commit()
+                    return {'data': ''}
+                else:
+                    return {'data': '-'}
+            else:
+                flash('not confirmed')
 
+                formErrors = render_template('forms/_edit_user_settings.html',form=form)
+                return {'data': formErrors}
+
+    form = ''           #TODO pre-load a form?
+    return render_template('edit_profile.html', form=form)
+
+@app.route('/api/edit-profile', methods=['POST'])
+def edit_profile():
+    requests = dict(json.loads(request.get_data()))
+    value = requests['value']
+
+    if value == 'Personal':
+        form = EditUserPersonalForm()
+        form.username.data = current_user.username
+        form.email.data = current_user.email
+        string = render_template('forms/_edit_user_personal.html', form=form)
+        return {'data': string}
+
+    if value == 'Password':
+        form = EditUserPasswordForm(current_user.username)
+        string = render_template('forms/_edit_user_password.html', form=form)
+        return {'data': string}
+
+    if value == 'Settings':
+        form = EditUserSettingsForm(current_user.username)
+        base_currency = current_user.setting('base_currency')
+        currencies = json_loader(True, "settings", "general", "currencies")
+        form.currency.choices = choice_list(base_currency, currencies)
+        save_query = current_user.setting('save_query')
+        form.save_query.choices = choice_list(save_query)
+        string = render_template('forms/_edit_user_settings.html', form=form)
+        return {'data': string}
 
 
