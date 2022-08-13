@@ -6,6 +6,7 @@ from app.models import Item, Price, UserSetting, User
 
 class AjaxQuery():
     def __init__(self, requests):
+        self.request = json.dumps(requests)
         self.requests_dict = requests['data']
         self.time = self.requests_dict['time']
         self.time_mode = self.requests_dict['time']['mode']
@@ -36,6 +37,7 @@ class AjaxQuery():
         query_currency = current_user.setting('query_currency')
         base_currency = current_user.setting('base_currency')
         total = {}
+
         if query_currency == 'Total - base currency':
             query = query.filter_by(currency = base_currency)
             if query.count()>0:
@@ -53,7 +55,7 @@ class AjaxQuery():
                 total[query_currency] = float(query.with_entities(func.sum(Price.price)).scalar())
 
         count = query.count()
-        if hasattr(self, 'page'):
+        if hasattr(self, 'page'):               #TODO - always has pagination elements?
             query = query.offset(self.limit*(self.page-1))
         if hasattr(self, 'limit'):
             query = query.limit(self.limit)
@@ -63,7 +65,7 @@ class AjaxQuery():
         final['columns'] = columns
         final['rows'] = rows
         final['count'] = count
-        if hasattr(self, 'limit'):
+        if hasattr(self, 'limit'):          #TODO - always has pagination elements?
             final['limit'] = self.limit
         if hasattr(self, 'page'):
             final['page'] = self.page
@@ -72,26 +74,17 @@ class AjaxQuery():
         total = "TOTAL : " + " | ".join(total)
         final['total'] = str(total)
 
-        if True:            #TODO - not save
-            saved = final.copy()
-            for key in ['rows', 'columns', 'total']:
-                if key in saved:
-                    del saved[key]
-            saved['time']=self.time
-            if hasattr(self, 'query_type'):
-                saved['query_type'] = self.query_type
 
-            saved = json.dumps(saved)
-            user = User.query.filter_by(id=current_user.id).first()
+        if True:            #TODO
             setting = UserSetting.query.filter_by(user_id= current_user.id, setting_name='last_query').first()
             if setting is None:
-                setting = UserSetting(setting_name='last_query', setting=saved)
+                setting = UserSetting(setting_name='last_query', setting=self.request)
                 user.settings.append(setting)
             else:
-                setting.setting = saved
-            final['saved'] = 'saved'
+                setting.setting = self.request
+            db.session.commit()
 
-        db.session.commit()
+        final['saved'] = self.request
 
         return final
 

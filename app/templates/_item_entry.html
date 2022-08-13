@@ -1,54 +1,49 @@
-
 <div class="form-container">
-    <div class="form-alt">
-        <form action="" method="post" novalidate>
-            <div class="experiment">
-            {{form.hidden_tag()}}
-            <span class="poly">
-                {{form.item.label}}<br>
-                {{form.item(class= "form-field-alt", autocomplete="off")}}
-                {% for error in form.item.errors %}
-                <span class="form-error">[{{error}}]</span>
-                {% endfor %}
-            </span>
-
-            <span class="poly2">
-                {{form.price.label}}<br>
-                {{form.price(class= "form-field-alt")}}
-                {% for error in form.price.errors %}
-                <span class="form-error">[{{error}}]</span>
-                {% endfor %}
-            </span>
-
-            <span class="poly2">
-                {{form.currency.label}}<br>
-                {{form.currency(class= "form-field-alt")}}
-                {% for error in form.currency.errors %}
-                <span>[{{error}}]</span>
-                {% endfor %}
-            </span>
-
-            <span class="poly">
-                {{form.category.label}}<br>
-                {{form.category(class= "form-field-alt", autocomplete="off")}}
-                {% for error in form.category.errors %}
-                <span class="form-error">[{{error}}]</span>
-                {% endfor %}
-            </span>
-
-            <span class="poly">
-                {{form.date.label}}<br>
-                {{form.date(class= "form-field-alt")}}
-                {% for error in form.date.errors %}
-                <span class="form-error">[{{error}}]</span>
-                {% endfor %}
-            </span>
-            <span class="poly2">
-                <span>{{form.submit(class = "submit")}}</span>
-            </span>
-            </div>
-        </form>
-    </div>
+  <div class="form-alt">
+    <form action="" method="post" novalidate>
+      <div class="experiment">
+        {{form.hidden_tag()}}
+        <span class="poly">
+          {{form.item.label}}<br>
+          {{form.item(class= "form-field-alt", autocomplete="off")}}
+          {% for error in form.item.errors %}
+            <span class="form-error">[{{error}}]</span>
+          {% endfor %}
+        </span>
+        <span class="poly2">
+          {{form.price.label}}<br>
+          {{form.price(class= "form-field-alt")}}
+          {% for error in form.price.errors %}
+            <span class="form-error">[{{error}}]</span>
+          {% endfor %}
+        </span>
+        <span class="poly2">
+          {{form.currency.label}}<br>
+          {{form.currency(class= "form-field-alt")}}
+          {% for error in form.currency.errors %}
+            <span>[{{error}}]</span>
+          {% endfor %}
+        </span>
+        <span class="poly">
+          {{form.category.label}}<br>
+          {{form.category(class= "form-field-alt", autocomplete="off")}}
+          {% for error in form.category.errors %}
+            <span class="form-error">[{{error}}]</span>
+          {% endfor %}
+        </span>
+        <span class="poly">
+          {{form.date.label}}<br>
+          {{form.date(class= "form-field-alt")}}
+          {% for error in form.date.errors %}
+            <span class="form-error">[{{error}}]</span>
+          {% endfor %}
+        </span>
+        <span class="poly2">
+          <span>{{form.submit(class = "submit")}}</span>
+        </span>
+      </div>
+    </form>
+  </div>
 </div>
 
 <script type="text/javascript" charset="utf8" src="/static/javascript/auto-fill.js"></script>

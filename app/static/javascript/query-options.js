@@ -1,6 +1,4 @@
-
 var presets = presets
-alert(JSON.stringify(presets))
 var presets_pagination = presets['pagination']
 var presets_currency_query = presets['currency_query']
 var presets_currency_query_choice = presets['currency_query_choice']
@@ -14,12 +12,10 @@ function createQueryOptions(id){
   queryOptions.classList.add('experiment')
   var resultsContainer = document.createElement('div')
   resultsContainer.id = 'queried-results'
-
   function br(){
     return document.createElement("br")
   }
-
-  var paginationContainer = document.createElement('span')          //TODO span or div? tbd
+  var paginationContainer = document.createElement('span')
   paginationContainer.id = 'pagination-container'
   paginationContainer.classList.add('poly')                         //TODO new one
   var pagination = document.createElement('select')
@@ -102,7 +98,7 @@ function createQueryOptions(id){
   }
   )
 
-  var currencyQueryContainer = document.createElement('span')          //TODO span or div? tbd
+  var currencyQueryContainer = document.createElement('span')
   currencyQueryContainer.id = 'currency-query-container'
   currencyQueryContainer.classList.add('poly')                         //TODO new one
   var currencyQuery = document.createElement('select')
@@ -137,10 +133,10 @@ function createQueryOptions(id){
   })
 
   currencyQuery.addEventListener('change', function(){
-    var xhr = new XMLHttpRequest()                                              //TODO global or local
+    var xhr = new XMLHttpRequest()
     xhr.open('POST', '/api/user-settings', true)
-    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8")      //TODO recheck if mandatory
-    xhr.setRequestHeader("Accept", "application/json;charset=UTF-8")            //TODO recheck if mandatory
+    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
+    xhr.setRequestHeader("Accept", "application/json;charset=UTF-8")
     xhr.send(JSON.stringify({'setting_name': 'query_currency', 'setting': currencyQuery.value}))
     xhr.onload = function() {
     if (xhr.status == 200){

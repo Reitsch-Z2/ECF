@@ -10,7 +10,14 @@
   box-sizing: border-box;
 }
 
-.form {
+.profile-form {
+  border: 0.1px solid black;
+  border-radius: 2em;
+  position: absolute;
+  height: auto;
+  max-width: 300px;
+  width: 50%;
+  padding: 15px 30px 15px 30px;
   border : 0.5px solid black;
   top: 25%;
   left: 50%;

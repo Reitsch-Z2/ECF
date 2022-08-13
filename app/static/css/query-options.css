@@ -22,23 +22,7 @@
   box-sizing:border-box;
 }
 
-/*
-#query-options {
 
-    position: relative;
-    border: 0.1px solid black;
-    width: 100%;
-    padding: 15px 30px 15px 30px;
-    margin-bottom: 2%;
-    box-sizing:border-box;
-    display:flex;
-    justify-content: center;
-    align-items: flex-start;
-    gap: 5%;
-    flex-wrap: no-wrap;
-    overflow: auto;
-}
-*/
 
 
 #query-options label {
@@ -47,18 +31,7 @@
 }
 
 
-.form {
-    border: 0.1px solid black;
-    border-radius: 2em;
-    position: absolute;
-    height: auto;
-    max-width: 300px;
-    width: 50%;
-    padding: 15px 30px 15px 30px;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%)
-}
+
 
 .form-field{
     width: 100%;

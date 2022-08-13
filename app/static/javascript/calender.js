@@ -1,5 +1,3 @@
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 (function () {
 	window.onpageshow = function(event) {
 		if (event.persisted) {
@@ -13,7 +11,6 @@ datePacker = {}
 paginationPacker = {}
 queryTypePacker = {}
 currencyTypePacker = {}
-let mode = "week"                                                           //TODO outside???
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -27,19 +24,13 @@ reqPack = function(){
   return package
 }
 
-
-
-
 function xhrSend(package, responseFunction, ...args){
-  alert(JSON.stringify(package))
   var xhr = new XMLHttpRequest()                                              //TODO global or local
   xhr.open("POST", "/api/tables", true)
   xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8")      //TODO recheck if mandatory
   xhr.setRequestHeader("Accept", "application/json;charset=UTF-8")            //TODO recheck if mandatory
   xhr.send(JSON.stringify(package))
-
   xhr.onload = function() {
-
     if (xhr.status == 200){
       responseFunction(...args, xhr.response)
     }
@@ -48,13 +39,10 @@ function xhrSend(package, responseFunction, ...args){
 
 
 var selta = function(){
-
+  alert(JSON.stringify(reqPack()))
   var test = typeof(reqPack()["data"]["time"]["dates"])
-
   if (test != "undefined"){
-
     xhrSend(reqPack(), queryTableMaker, "queried-results")
-
   } else {
     var holder = document.getElementById("queried-results")
     if (holder != null){
@@ -66,10 +54,6 @@ var selta = function(){
     }
   }
 }
-
-
-selta()
-
 
 function Calender(year=(new Date(today).getFullYear()), month=(new Date(today).getMonth()), day=(new Date(today).getDay())){
 
@@ -152,12 +136,9 @@ function Calender(year=(new Date(today).getFullYear()), month=(new Date(today).g
 }
 
 function generateCalender(year=(new Date(today).getFullYear()), month=(new Date(today).getMonth()), day=(new Date(today).getDay())){
-
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-
   window["monthGlobal"]=month+1                   //TODO Careful around this one! Real enum vs. JS month enum
   window["yearGlobal"]=year
-
   function dayLooper(theWeek, boolean=0){         //TODO only add the function to this.function instead of pre-naming?
       theWeek.forEach(day => {
       var td = document.createElement("td")
@@ -225,7 +206,6 @@ function generateCalender(year=(new Date(today).getFullYear()), month=(new Date(
 function timeMarker(){
   var cal = document.getElementById("calender")
   cal.addEventListener("click", function(e){              //TODO pack this as a function that is to be called on every month changed
-
     if (mode == "day"){
       var target = e.target.closest("td.day")
       var targetChild = target.children[0]
@@ -265,7 +245,6 @@ function timeMarker(){
       remover.forEach(day => {day.classList.remove("clicked")})
       days.forEach(day => {day.classList.add("clicked")})
       days = days.map(x => x.textContent)
-
       dates = datePipeline(yearGlobal, monthGlobal, days, mode)
       datePacker["dates"] = dates
     } else {
@@ -343,9 +322,7 @@ function datePipeline(Y, M, D, mode, additional=0){                       //TODO
   }
 }
 
-
 function monthModes(){
-
   var month = document.createElement("div")
   month.id="modes-group"
   var buttonDay = document.createElement("button")
@@ -382,22 +359,15 @@ function monthModes(){
       holder.forEach(button => {button.classList.remove("clicked")})
       target.classList.add("clicked")                                       //TODO different click class for aesthetics
       mode = target.textContent
-
-
     }
-
   })
-
   document.getElementById('calender-holder').prepend(month)
-
 }
 
 function monthNav(){
 
   var calenderHolder = document.getElementById('calender-holder')
   var content = new Calender(yearGlobal, monthGlobal - 1)
-
-
   var month = document.createElement("nav")
   month.id="month-nav-container"
   var navList = document.createElement("ul")
@@ -419,14 +389,12 @@ function monthNav(){
     selta()
     x.remove()
     calender.remove()
-
     var year = content.year
     var month = content.month - 1
     if (content.month == 0){
       month = 11
       year = year -1
     }
-
     generateCalender(year, month)         //TODO this maybe should get passed into monthNav
   })
   rarr.addEventListener("click", function(){
@@ -456,12 +424,13 @@ function monthNav(){
 
 
 function queryUnpacker(query){
-  query = JSON.parse(query)
+  query = JSON.parse(query)["data"]
   generateCalender(query.time.year, query.time.month-1)
   var noResults = document.getElementById('pagination')
-  noResults.value = query.limit
+  noResults.value = query.pagination.limit
   noResults.dispatchEvent(new Event("change"))
-  if (query.query_type){
+
+  if (Object.keys(query.query_type).length != 0){
     var qtype = query.query_type
     var noResults = document.getElementById('type-query-buttons').children
     var key = Object.keys(qtype)[0]
@@ -472,7 +441,6 @@ function queryUnpacker(query){
     input.value = value
     input.dispatchEvent(new Event('change'))
   }
-
   document.getElementById(query.time.mode + '-mode').click()
   switch(query.time.mode){
     case('day'):
@@ -491,7 +459,6 @@ function queryUnpacker(query){
       document.querySelectorAll('.day')[0].click()
       break
   }
-
   let observer = new MutationObserver(callFunc)
   function callFunc(mutationList, observer){
     for (let i=0; i<mutationList.length; i++){
@@ -499,7 +466,7 @@ function queryUnpacker(query){
       if (target != null){
         if (target.hasChildNodes){
           target = target.children
-          var element = [...target].filter(page => (page.textContent == query.page))[0]
+          var element = [...target].filter(page => (page.textContent == query.pagination.page))[0]
           element.click()
           observer.disconnect()
         return
@@ -513,23 +480,13 @@ function queryUnpacker(query){
   observer.observe(target, {childList: true, subtree: true})
 }
 
-
-
-
 monthModes()
 createQueryOptions('queried-holder')
-alert(JSON.parse(lastQuery))
-
-
 if (Object.keys(lastQuery).length != 0 ){
-  alert(lastQuery.time)
   queryUnpacker(lastQuery)
 } else {
   generateCalender()
 }
-
-
-
 
 
 

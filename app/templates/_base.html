@@ -1,22 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-  <link rel="stylesheet" type="text/css" href="/static/css/style.css">            <!--TODO hardcoded app name x2!!-->
+  <link rel="stylesheet" type="text/css" href="/static/css/style.css">
   <script type="text/javascript" charset="utf8" src="/static/javascript/_flash-message.js"></script>
-
   {% if title%}
-  <title>ECF - {{title}}</title>
+    <title>ECF - {{title}}</title>
   {%else%}
-  <title>ECF</title>
+    <title>ECF</title>
   {%endif%}
-
 </head>
 <body>
-<header class="header">
-    {% block navbar %}
-      {% include 'navbar/_navbar_root.html' %}
+    {% block header %}
     {% endblock %}
+
     {% with messages = get_flashed_messages() %}
       {% if messages %}
         {% for message in messages %}
@@ -24,11 +20,8 @@
         {% endfor %}
       {% endif %}
     {% endwith %}
-</header>
+
     {% block content %}
     {% endblock %}
-    {% block widget %}
-    {% endblock %}
-
 </body>
 </html>

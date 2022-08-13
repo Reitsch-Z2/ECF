@@ -17,7 +17,7 @@ function queryTableMaker(id, responseObject){
   var footer = document.createElement('div')
   footer.id = "pagination-sum"
   footer.append(showPages(limit, page, count))
-  footer.append(showSumTotal(total))
+  footer.append(showSumTotal(total, count))
 
   holder.append(showPosition(limit, page, count))
   holder.append(createTable(rows, columns, responseObject))
@@ -94,7 +94,10 @@ function showPages(limit, page, count){
   return paginator
 }
 
-function showSumTotal(total){
+function showSumTotal(total, count){
+  if (count<1){
+    return ''
+  }
   var sumTotal = document.createElement("span")
   sumTotal.id = "query-table-sum"
   sumTotal.textContent = total
@@ -134,33 +137,8 @@ function createTable(rows, columns, responseObject){
     body.append(tableRow)
   }
 
-
-//  body.addEventListener("click", function(e){
-//
-//
-//    var target=e.target
-//    e.preventDefault()
-//    alert(target.tagName)
-//    if ((target.querySelector('a') != null) || (target.tagName == 'A')){
-//      alert('khm')
-//      var xhr = new XMLHttpRequest()                                              //TODO global or local
-//      xhr.open('POST', '/api/user-settings', true)
-//      xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8")      //TODO recheck if mandatory
-//      xhr.setRequestHeader("Accept", "application/json;charset=UTF-8")            //TODO recheck if mandatory
-//      xhr.send(JSON.stringify({'setting_name': 'last_query', 'setting': JSON.stringify(responseObject)}))
-//      xhr.onload = function() {
-//        if (xhr.status == 200){
-//          alert('kek')
-//        }
-//      }
-//    }
-//  })
-
   table.append(headers)
   table.append(body)
-
-
-
   return table
 }
 

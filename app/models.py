@@ -83,7 +83,7 @@ class Item(db.Model, Upmodel):
     @hybrid_property
     def item(self):
         url = (url_for('item_edit', username=current_user.username, item=self.name, item_id=self.id))
-        return f"<a href='{url}'>{self.name}</a>"           #TODO superfluous
+        return f"<a href='{url}'>{self.name}</a>"
 
     @item.expression
     def item(cls):

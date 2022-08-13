@@ -25,6 +25,11 @@
   line-height: 40px;
 }
 
+.nav-item img{
+  padding: 12.5% 0 12.5% 0;
+  height: 75%;
+}
+
 .nav-item:first-child {
   justify-self: start;
 }

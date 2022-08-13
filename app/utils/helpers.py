@@ -1,7 +1,6 @@
 import json
 import os
 import requests
-from datetime import datetime
 from datetime import timedelta
 
 
@@ -29,9 +28,10 @@ def currency_converter_api(base_currency, comparison_currency, date, quantity, d
         data = currency_converter_api(base_currency, comparison_currency, yesterday, quantity, decimals=2)
         return data
 
-def choice_list(choice, list=['yes', 'no']):
-    list.remove(choice)
-    return [choice, *list]
+def choice_list(choice, lista=['yes', 'no']):
+    choices = lista[:]
+    choices.remove(choice)
+    return [choice, *choices]
 
 if __name__ == "__main__":
 
