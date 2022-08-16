@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_mail import Mail
-
+from time import sleep
 
 
 
@@ -15,19 +15,75 @@ migrate = Migrate(app, db, render_as_batch=True)
 login = LoginManager(app)
 mail = Mail(app)
 
+
 from app.errors import bp as errors_bp
 app.register_blueprint(errors_bp)
 
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 465
-app.config['MAIL_USE_SSL'] = True
-app.config['MAIL_USERNAME'] = "markorajic.arch@gmail.com"
+from app.flask_celery.create_celery import create_celery      #TODO
+celery = create_celery(app)
+
+# celery.autodiscover_tasks(['app.flask_celery'], force=True)
+# from app.flask_celery.tasks import *
 
 
+from app.models import Price
 
-app.config['ADMINS'] = ["markorajic.arch@gmail.com"]
-mail = Mail(app)
+from celery import signature, chord
+from time import sleep
+import requests
 
 
+@celery.task(name='tester')
+def tester(secs, package):
+    sleep(secs)
+    choiz = f'{secs}: {package}'
+    return choiz
+
+@celery.task(name='rezultati')
+def rezultati(rez):
+    for item in rez:
+        price = Price(
+            price = item['converted_price'],
+            currency = item['comparison_currency'],
+            item_id = item['item_id'],
+            first_entry = False
+        )
+        db.session.add(price)
+    db.session.commit()
+
+    return rez
+
+@celery.task(name='hipoteza')
+def hipoteza(results):
+    chord(currency_converter_api.s(x) for x in results)(rezultati.s())
+
+@celery.task(name='currency_converter_api')
+def currency_converter_api(price_metadata, decimals=2):
+    id = price_metadata['item_id']
+    quantity = price_metadata['price']
+    date = price_metadata['date']
+    base_currency = price_metadata['base_currency']
+    comparison_currency = price_metadata['comparison_currency']
+
+    url = f'https://api.exchangerate.host/convert?from={base_currency}&to={comparison_currency}'
+    response = requests.get(url, {'amount': quantity, 'date': date})
+    data = response.json()
+    if 'result' in data:
+        price_metadata['converted_price'] = round(data['result'], decimals)
+        return price_metadata
+    else :
+        day_before = date - timedelta(days=1)
+        yesterday = str(day_before)
+        data = currency_converter_api(price_metadata, decimals=2)
+        return {'item_id': price_metadata['item_id'], 'currency':comparison_currency, 'price': data}
 
 from app import routes
+
+
+
+
+
+
+
+
+

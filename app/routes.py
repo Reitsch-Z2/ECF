@@ -1,6 +1,8 @@
 import json
 from flask import render_template, url_for, redirect, flash, request, render_template_string
 from flask_login import current_user, login_user, logout_user, login_required
+from sqlalchemy.sql import union, except_
+from sqlalchemy.orm import load_only
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, ItemForm, ResetPasswordRequestForm, ResetPasswordForm, \
     EditUserPersonalForm, EditUserPasswordForm, EditUserSettingsForm
@@ -8,6 +10,8 @@ from app.email import send_password_reset_email
 from app.models import User, Item, Category, Price, UserSetting
 from app.utils.orms import AjaxQuery
 from app.utils.helpers import currency_converter_api, json_loader, choice_list
+
+from app import currency_converter_api, hipoteza
 
 
 @app.route('/api/auto-suggest', methods=['POST'])
@@ -39,9 +43,6 @@ def usersettings():
     setting_name = requests['setting_name']
     setting_value = requests['setting']
     setting = UserSetting.query.filter_by(user_id = current_user.id, setting_name = setting_name).first()
-
-    #TODO if setting is NONE!
-
     setting.setting = setting_value
     db.session.add(setting)
     db.session.commit()
@@ -129,7 +130,7 @@ def entries():
     base_currency = current_user.setting('base_currency')
     choices = choice_list(base_currency, json_loader(True, "settings", "general", "currencies"))
     form = ItemForm()
-    form.currency.choices = choices                 #TODO BRAVO! softcode it
+    form.currency.choices = choices
 
     if form.validate_on_submit():
         item = Item(
@@ -185,9 +186,6 @@ def item_edit(username, item, item_id):
             return redirect(url_for('overview'))
 
         if requested['submit'] == 'Delete':
-            prices = Price.query.filter_by(item_id=item_id).all()
-            for price in prices:
-                db.session.delete(price)
             db.session.delete(item)
             db.session.commit()
             return redirect(url_for('overview'))
@@ -207,12 +205,24 @@ def item_edit(username, item, item_id):
                     category.items.append(item)
                 if price.price != form.price.data or price.currency != form.currency.data:
                     prices = Price.query.filter_by(item_id=item_id, first_entry=0).all()
-                    price.price = form.price.data
-                    price.currency = form.currency.data
                     for prc in prices:
                         db.session.delete(prc)
+                    price.price = form.price.data
+                    price.currency = form.currency.data
                     base_currency = current_user.setting('base_currency')
                     if price.currency != base_currency:
+                        # price_metadata={
+                        #     {
+                        #         'price': str(round(x[0], 2)),
+                        #         'item_id': x[1],
+                        #         'date': x[2].strftime('%Y-%m-%d'),
+                        #         'base_currency': base_currency,
+                        #         'comparison_currency': form.currency.data
+                        #     }
+                        #
+                        #
+                        # }
+
                         converted_price = currency_converter_api(price.currency, base_currency, form.date.data, form.price.data)
                         price2 = Price(
                             price=converted_price,
@@ -253,7 +263,7 @@ def overview():
 
 @app.route('/profile/<username>', methods=['GET', 'POST'])
 @login_required
-def profile(username):                          #TODO argument only for the URL, not used in the view function
+def profile(username):                          #argument only for the URL, not used in the view function
     user = User.query.filter_by(username=current_user.username).first()
     if request.method == 'POST':
         requests = dict(json.loads(request.get_data()))
@@ -304,14 +314,31 @@ def profile(username):                          #TODO argument only for the URL,
                     if user.setting('save_query') != form.save_query.data:
                         user.set_setting('save_query', form.save_query.data)            #TODO could have sub-if-else
                     if user.setting('base_currency') != form.currency.data:
+                        base_currency = user.setting('base_currency')
+
+                        items = Item.query.filter(Item.user_id == 1)
+                        items = items.join(Price)
+                        items_pre = items.filter(Price.currency == user.setting('base_currency'))
+                        items_post = items.filter(Price.currency == form.currency.data)
+                        filtered_items = items_pre.except_(items_post).with_entities(Item.id).all()
+                        items = db.session.query(Item, Price).outerjoin(Price, Item.id == Price.item_id).filter(Price.item_id.in_(([item[0] for item in filtered_items]))).filter(Price.currency=='RSD')
+
+                        final = items.with_entities(Price.price, Item.id, Item.date).all()
+                        final = [
+                            {
+                            'price': str(round(x[0], 2)),
+                            'item_id': x[1],
+                            'date': x[2].strftime('%Y-%m-%d'),
+                            'base_currency': base_currency,
+                            'comparison_currency': form.currency.data
+                            }
+                        for x in final]             #TODO
+
+                        result = hipoteza(final)
                         user.set_setting('base_currency', form.currency.data)
 
-                        # for item in base_items:
-                        #     if 'USD' not in [x.currency for x in item.prices]:
-                        #     price = Price(currency='USD', price=function)
-                        #     item.append(price)
+                        # return {'data': str(result)}
 
-                                #TODO CONVERT ALL THE PRICES
                     db.session.commit()
                     return {'data': ''}
                 else:
@@ -322,7 +349,6 @@ def profile(username):                          #TODO argument only for the URL,
                 formErrors = render_template('forms/_edit_user_settings.html',form=form)
                 return {'data': formErrors}
 
-    form = ''           #TODO pre-load a form?
     return render_template('edit_profile.html', form=form)
 
 @app.route('/api/edit-profile', methods=['POST'])
