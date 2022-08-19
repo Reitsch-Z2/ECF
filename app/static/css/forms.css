@@ -16,12 +16,12 @@
   transform: translate(-50%, -50%)
 }
 
-.form-field{
+.form-field {
   width: 100%;
   box-sizing:border-box;
 }
 
-.form-field-alt{
+.form-field-alt {
   height: 25px;
   width: 100%;
   box-sizing:border-box;
@@ -50,19 +50,19 @@
   box-sizing:border-box;
 }
 
-.experiment{
+.item-form {
   display:flex;
   align-items: flex-end;
   flex-wrap: no-wrap;
   gap: 10px;
 }
 
-.submit input{
+.submit input {
   height: 25px;
   font-size: 0.75em;
 }
 
-.form-error{
+.form-error {
   position:absolute;
   margin-top: 3em;
   margin-left: 0;
@@ -71,13 +71,14 @@
   z-index: -1;
 }
 
-.poly {
+.form-element {
   position: relative;
   display: inline-block;
   flex-grow: 3;
+
 }
 
-.poly2 {
+.form-element2 {
   position: relative;
   display: inline-block;
   flex-grow: 1;
@@ -88,23 +89,35 @@
   flex-direction: row;
 }
 
+.logo {
+  display: inline-block;
+  position: relative;
+  height: 50px;
+  top: 35px;
+  left: 35px;
+
+}
+
+.logo img{
+    height: 50px;
+}
 
 @media only screen and (max-width: 650px) {
   .form-alt {
     width: auto;
   }
 
-  .experiment{
+  .item-form {
     display: flex;
     flex-wrap: wrap;
     flex-direction: column;
   }
 
-  .poly, .poly2, .submit-group  {
+  .form-element, .form-element2, .submit-group {
     align-self: start;
   }
 
-  .form-error{
+  .form-error {
     position:relative;
     margin-top: 0;
     margin-left: 0;
@@ -113,4 +126,16 @@
     z-index: -1;
   }
 
+  .logo {
+    position: relative;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    margin-bottom: 60px;
+  }
+
+  .form {
+  position: relative;
+  top: 0;
+  transform: translate(-50%, 0%)
+  }
 }

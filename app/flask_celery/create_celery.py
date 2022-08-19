@@ -6,8 +6,6 @@ def create_celery(application):
         broker=application.config['CELERY_BROKER_URL'],          #TODO not-hardcode after testing it properly
         result_backend=application.config['RESULT_BACKEND']
     )
-
-    # celery.conf.update(application.config)
     class ContextTask(celery.Task):
         def __call__(self, *args, **kwargs):
             with application.app_context():

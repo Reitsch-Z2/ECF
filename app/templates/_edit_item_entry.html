@@ -1,49 +1,48 @@
 <div class="form-container">
   <div class="form-alt">
     <form action="" method="post" id="edit-item-form" novalidate>
-      <div class="experiment">
-      {{form.hidden_tag()}}
-      <span class="poly">
-        {{form.item.label}}<br>
-        {{form.item(class= "form-field-alt", autocomplete="off")}}
-        {% for error in form.item.errors %}
-          <span class="form-error">[{{error}}]</span>
-        {% endfor %}
-      </span>
-      <span class="poly2">
-        {{form.price.label}}<br>
-        {{form.price(class= "form-field-alt")}}
-        {% for error in form.price.errors %}
-          <span class="form-error">[{{error}}]</span>
-        {% endfor %}
-      </span>
-      <span class="poly2">
-        {{form.currency.label}}<br>
-        {{form.currency(class= "form-field-alt")}}
-        {% for error in form.currency.errors %}
-        <span>[{{error}}]</span>
-        {% endfor %}
-      </span>
-      <span class="poly">
-        {{form.category.label}}<br>
-        {{form.category(class= "form-field-alt", autocomplete="off")}}
-        {% for error in form.category.errors %}
-          <span class="form-error">[{{error}}]</span>
-        {% endfor %}
-      </span>
-      <span class="poly2">
-        {{form.date.label}}<br>
-        {{form.date(class= "form-field-alt")}}
-        {% for error in form.date.errors %}
-          <span class="form-error">[{{error}}]</span>
-        {% endfor %}
-      </span>
-      <span class="submit-group">
-        <span class="submit" >{{form.submit(value='Edit', id='submit-edit')}}</span>
-        <span class="submit" >{{form.submit(value='Delete', id='submit-delete')}}</span>
-        <span class="submit" >{{form.submit(value='Cancel', id='submit-cancel')}}</span>
-      </span>
-
+      <div class="item-form">
+        {{form.hidden_tag()}}
+        <span class="form-element">
+          {{form.item.label}}<br>
+          {{form.item(class= "form-field-alt", autocomplete="off")}}
+          {% for error in form.item.errors %}
+            <span class="form-error">[{{error}}]</span>
+          {% endfor %}
+        </span>
+        <span class="form-element2">
+          {{form.price.label}}<br>
+          {{form.price(class= "form-field-alt")}}
+          {% for error in form.price.errors %}
+            <span class="form-error">[{{error}}]</span>
+          {% endfor %}
+        </span>
+        <span class="form-element2">
+          {{form.currency.label}}<br>
+          {{form.currency(class= "form-field-alt")}}
+          {% for error in form.currency.errors %}
+          <span>[{{error}}]</span>
+          {% endfor %}
+        </span>
+        <span class="form-element">
+          {{form.category.label}}<br>
+          {{form.category(class= "form-field-alt", autocomplete="off")}}
+          {% for error in form.category.errors %}
+            <span class="form-error">[{{error}}]</span>
+          {% endfor %}
+        </span>
+        <span class="form-element2">
+          {{form.date.label}}<br>
+          {{form.date(class= "form-field-alt")}}
+          {% for error in form.date.errors %}
+            <span class="form-error">[{{error}}]</span>
+          {% endfor %}
+        </span>
+        <span class="submit-group">
+          <span class="submit" >{{form.submit(value='Edit', id='submit-edit')}}</span>
+          <span class="submit" >{{form.submit(value='Delete', id='submit-delete')}}</span>
+          <span class="submit" >{{form.submit(value='Cancel', id='submit-cancel')}}</span>
+        </span>
       </div>
     </form>
   </div>

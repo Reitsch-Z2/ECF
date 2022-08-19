@@ -1,17 +1,16 @@
 import json
 from flask import render_template, url_for, redirect, flash, request, render_template_string
+from sqlalchemy.sql import except_
 from flask_login import current_user, login_user, logout_user, login_required
-from sqlalchemy.sql import union, except_
-from sqlalchemy.orm import load_only
 from app import app, db
+from app import currency_converter_api, convert_prices
 from app.forms import LoginForm, RegistrationForm, ItemForm, ResetPasswordRequestForm, ResetPasswordForm, \
     EditUserPersonalForm, EditUserPasswordForm, EditUserSettingsForm
 from app.email import send_password_reset_email
 from app.models import User, Item, Category, Price, UserSetting
 from app.utils.orms import AjaxQuery
-from app.utils.helpers import currency_converter_api, json_loader, choice_list
+from app.utils.helpers import json_loader, choice_list
 
-from app import currency_converter_api, hipoteza
 
 
 @app.route('/api/auto-suggest', methods=['POST'])
@@ -211,22 +210,18 @@ def item_edit(username, item, item_id):
                     price.currency = form.currency.data
                     base_currency = current_user.setting('base_currency')
                     if price.currency != base_currency:
-                        # price_metadata={
-                        #     {
-                        #         'price': str(round(x[0], 2)),
-                        #         'item_id': x[1],
-                        #         'date': x[2].strftime('%Y-%m-%d'),
-                        #         'base_currency': base_currency,
-                        #         'comparison_currency': form.currency.data
-                        #     }
-                        #
-                        #
-                        # }
+                        price_metadata={
+                            'price': form.price.data,
+                            'item_id': item.id,
+                            'date': form.date.data,
+                            'base_currency': base_currency,
+                            'comparison_currency': form.currency.data
+                        }
 
-                        converted_price = currency_converter_api(price.currency, base_currency, form.date.data, form.price.data)
+                        converted_price = currency_converter_api(price_metadata)
                         price2 = Price(
-                            price=converted_price,
-                            currency=base_currency,
+                            price=converted_price['converted_price'],
+                            currency=converted_price['comparison_currency'],
                             first_entry=False
                         )
                         item.prices.append(price2)
@@ -334,7 +329,7 @@ def profile(username):                          #argument only for the URL, not 
                             }
                         for x in final]             #TODO
 
-                        result = hipoteza(final)
+                        result = convert_prices(final)
                         user.set_setting('base_currency', form.currency.data)
 
                         # return {'data': str(result)}

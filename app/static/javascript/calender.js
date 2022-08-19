@@ -6,16 +6,17 @@
 	};
 })()
 
+
 let today = new Date()
-datePacker = {}
-paginationPacker = {}
-queryTypePacker = {}
-currencyTypePacker = {}
+var datePacker = {}
+var paginationPacker = {}
+var queryTypePacker = {}
+var currencyTypePacker = {}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 reqPack = function(){
-  var package = {}
+  let package = {}
   package["data"] = {}
   package.data["time"] = datePacker
   package.data["pagination"] = paginationPacker
@@ -25,7 +26,7 @@ reqPack = function(){
 }
 
 function xhrSend(package, responseFunction, ...args){
-  var xhr = new XMLHttpRequest()                                              //TODO global or local
+  let xhr = new XMLHttpRequest()                                              //TODO global or local
   xhr.open("POST", "/api/tables", true)
   xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8")      //TODO recheck if mandatory
   xhr.setRequestHeader("Accept", "application/json;charset=UTF-8")            //TODO recheck if mandatory
@@ -40,14 +41,14 @@ function xhrSend(package, responseFunction, ...args){
 
 var selta = function(){
   alert(JSON.stringify(reqPack()))
-  var test = typeof(reqPack()["data"]["time"]["dates"])
+  let test = typeof(reqPack()["data"]["time"]["dates"])
   if (test != "undefined"){
     xhrSend(reqPack(), queryTableMaker, "queried-results")
   } else {
-    var holder = document.getElementById("queried-results")
+    let holder = document.getElementById("queried-results")
     if (holder != null){
       holder.innerHTML = " "
-      var info = document.createElement("div")
+      let info = document.createElement("div")
       info.textContent = "no dates selected"
       info.id = "no-results"
       holder.append(info)
@@ -61,10 +62,10 @@ function Calender(year=(new Date(today).getFullYear()), month=(new Date(today).g
   const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
   function daysMapper(year, month){                              //TODO move to exterior?
-    var daysTotal = new Date(year, month+1, 0).getDate()
-    var days = []
+    let daysTotal = new Date(year, month+1, 0).getDate()
+    let days = []
     for (let i=1; i < (daysTotal+1); i++){
-      var x = [i,(new Date(year, month, i).getDay())]
+      let x = [i,(new Date(year, month, i).getDay())]
       days.push(x)
     }
     return days
@@ -122,8 +123,8 @@ function Calender(year=(new Date(today).getFullYear()), month=(new Date(today).g
   }.bind(this))()
 
   this.postWeek = (function(){
-    var next = this.daysMapper(this.year, this.nextMonth)
-    var postLength = 7 - this.lastWeek.length
+    let next = this.daysMapper(this.year, this.nextMonth)
+    let postLength = 7 - this.lastWeek.length
     if (postLength !=0){
       return this.arraySlicer(next, 0, postLength)
     }
@@ -141,9 +142,9 @@ function generateCalender(year=(new Date(today).getFullYear()), month=(new Date(
   window["yearGlobal"]=year
   function dayLooper(theWeek, boolean=0){         //TODO only add the function to this.function instead of pre-naming?
       theWeek.forEach(day => {
-      var td = document.createElement("td")
-      var div = document.createElement("div")
-      var text = document.createTextNode(day[0])
+      let td = document.createElement("td")
+      let div = document.createElement("div")
+      let text = document.createTextNode(day[0])
       if (boolean) {
         td.classList.add("outer-day")
       } else {
@@ -153,27 +154,27 @@ function generateCalender(year=(new Date(today).getFullYear()), month=(new Date(
     })
   }
 
-  var table = document.createElement("table")
-  var header = document.createElement("thead")
-  var body = document.createElement("tbody")
-  var header_row = document.createElement("tr")
+  let table = document.createElement("table")
+  let header = document.createElement("thead")
+  let body = document.createElement("tbody")
+  let header_row = document.createElement("tr")
   table.append(header)
   table.append(body)
   header.append(header_row)
   table.id = "calender"
 
   for (let i=0; i < 7; i++){                //creating the calender TH/header cells
-    var cell = document.createElement("th")
-    var div = document.createElement("div")
+    let cell = document.createElement("th")
+    let div = document.createElement("div")
     cell.append(div)
     div.append(days[i].slice(0, 3))
     header.append(cell)
   }
 
-  var calenderHolder = document.getElementById("calender-holder")
+  let calenderHolder = document.getElementById("calender-holder")
   monthNav()
   calenderHolder.append(table)
-  var content = new Calender(year, month, day)
+  let content = new Calender(year, month, day)
 
   for (let i=0; i < content.weeks.length; i++){
     var row = document.createElement("tr")
@@ -188,41 +189,41 @@ function generateCalender(year=(new Date(today).getFullYear()), month=(new Date(
     if ((i==(content.weeks.length-1) ) && content.postWeek){
       dayLooper(content.postWeek, true)
     }
-    }
-        if (content.weeks.length==5){
-      var row = document.createElement("tr")
-      body.append(row)
-      for (let i=0; i<7; i++){
-              var td = document.createElement("td")
+  }
+  if (content.weeks.length==5){
+    var row = document.createElement("tr")
+    body.append(row)
+    for (let i=0; i<7; i++){
+      var td = document.createElement("td")
       var div = document.createElement("div")
-        td.append(div); row.append(td);
-        td.setAttribute("style", "border: 1px solid transparent")     //TODO ADD AS A CLASS TO PARENT!!!
-      }
-      body.append(row)                                                //TODO FOUR-WEEK FEBRUARY 2021 ARGHHH!!!
+      td.append(div); row.append(td);
+      td.setAttribute("style", "border: 1px solid transparent")     //TODO ADD AS A CLASS TO PARENT!!!
+    }
+    body.append(row)
   }
   timeMarker()
 }
 
 function timeMarker(){
-  var cal = document.getElementById("calender")
-  cal.addEventListener("click", function(e){              //TODO pack this as a function that is to be called on every month changed
+  let cal = document.getElementById("calender")
+  cal.addEventListener("click", function(e){
     if (mode == "day"){
-      var target = e.target.closest("td.day")
-      var targetChild = target.children[0]
-      var remover = this.querySelectorAll("td div")
+      let target = e.target.closest("td.day")
+      let targetChild = target.children[0]
+      let remover = this.querySelectorAll("td div")
       remover.forEach(day => {day.classList.remove("clicked")})
       targetChild.classList.add("clicked")
-      day = targetChild.textContent
-      date = datePipeline(yearGlobal, monthGlobal, day, mode)
+      let day = targetChild.textContent
+      let date = datePipeline(yearGlobal, monthGlobal, day, mode)
       datePacker["dates"] = date
       datePacker["day"] = day
     } else if (mode == "week"){
-      var target = e.target.closest("tr.week")
-      var weeks = document.body.getElementsByClassName('week')
-      var weekNo = [...weeks].indexOf(target) + 1
-      var days = target.querySelectorAll("div")
-      var days = Array.from(days)
-      var remover = this.querySelectorAll("td div")
+      let target = e.target.closest("tr.week")
+      let weeks = document.body.getElementsByClassName('week')
+      let weekNo = [...weeks].indexOf(target) + 1
+      let days = target.querySelectorAll("div")
+      days = Array.from(days)
+      let remover = this.querySelectorAll("td div")
       remover.forEach(day => {day.classList.remove("clicked")})
       days.forEach(day => {day.classList.add("clicked")})
       let additional
@@ -234,18 +235,18 @@ function timeMarker(){
         additional = "mid"
       }
       days = days.map(x => x.textContent)
-      dates = datePipeline(yearGlobal, monthGlobal, days, mode, additional)
+      let dates = datePipeline(yearGlobal, monthGlobal, days, mode, additional)
       datePacker["dates"] = dates
       datePacker["week"] = weekNo
     } else if (mode == "month"){
-      var target = e.target.closest("tbody")
-      var days = target.querySelectorAll(".day div")
-      var days = Array.from(days)
+      let target = e.target.closest("tbody")
+      let days = target.querySelectorAll(".day div")
+      days = Array.from(days)
       var remover = this.querySelectorAll("td div")
       remover.forEach(day => {day.classList.remove("clicked")})
       days.forEach(day => {day.classList.add("clicked")})
       days = days.map(x => x.textContent)
-      dates = datePipeline(yearGlobal, monthGlobal, days, mode)
+      let dates = datePipeline(yearGlobal, monthGlobal, days, mode)
       datePacker["dates"] = dates
     } else {
       //pass
@@ -257,15 +258,16 @@ function timeMarker(){
   })
 }
 
-function dateFormat(Y, M, D){
+function dateFormat(Y, M, D){               //TODO let instead of var
   var D = D, M = String(M)
-  var D = D.length < 2 ? (D = ("0"+ D)) : (D = D);
-  var M = M.length < 2 ? (M = ("0"+ M)) : (M = M);
+  D.length < 2 ? (D = ("0"+ D)) : (D = D);
+  M.length < 2 ? (M = ("0"+ M)) : (M = M);
 
   return (Y+"-"+ M + "-" + D)                           //TODO add sub-object with key=func for additional date formats
 }
 
 function weekDatesParser(Y, M, D, additional){
+  let innerDays, outerDays, dates
   switch(additional){
     case("mid"):
       dates = D.map(day => dateFormat(Y, M, day))
@@ -273,8 +275,8 @@ function weekDatesParser(Y, M, D, additional){
       break
     case("pre"):
     case("post"):
-      firstPart = []              //denoting the first part of the week
-      secondPart = []             //denoting the second part of the week
+      let firstPart = []              //denoting the first part of the week
+      let secondPart = []             //denoting the second part of the week
       for (let i = 0; i <D.length; i++){
         (parseInt(D[i])>parseInt(D[6])) ? firstPart.push(D[i]) : secondPart.push(D[i])
       }
@@ -288,6 +290,7 @@ function weekDatesParser(Y, M, D, additional){
         break
       case("post"):
         innerDays = firstPart.map(day => dateFormat(Y, M, day))
+        alert(window.innerDays)
         M == 12 ? (M = 11, Y = parseInt(Y)+1) : (M = parseInt(M)+1)
         outerDays = secondPart.map(day => dateFormat(Y, M, day))
         dates = innerDays.concat(outerDays)
@@ -298,9 +301,9 @@ function weekDatesParser(Y, M, D, additional){
 }
 
 function monthDatesParser(Y, M, D){
-  var firstDay = D[0]
-  var lastDay = D[D.length-1]
-  var monthScope = [dateFormat(Y, M, firstDay), dateFormat(Y, M, lastDay)]
+  let firstDay = D[0]
+  let lastDay = D[D.length-1]
+  let monthScope = [dateFormat(Y, M, firstDay), dateFormat(Y, M, lastDay)]
   return monthScope
 
 }
@@ -323,11 +326,11 @@ function datePipeline(Y, M, D, mode, additional=0){                       //TODO
 }
 
 function monthModes(){
-  var month = document.createElement("div")
+  let month = document.createElement("div")
   month.id="modes-group"
-  var buttonDay = document.createElement("button")
-  var buttonWeek = document.createElement("button")
-  var buttonMonth = document.createElement("button")
+  let buttonDay = document.createElement("button")
+  let buttonWeek = document.createElement("button")
+  let buttonMonth = document.createElement("button")
   buttonDay.id = "day-mode"; buttonDay.textContent = "day"
   buttonWeek.id = "week-mode"; buttonWeek.textContent = "week"
   buttonMonth.id = "month-mode"; buttonMonth.textContent = "month"
@@ -335,17 +338,17 @@ function monthModes(){
 
   month.addEventListener("click", function(e){
     var target = e.target
-    if (month.querySelectorAll(".clicked")[0]){                             //TODO experimental
+    if (month.querySelectorAll(".clicked")[0]){                             //TODO experimental... FIRST CLICK on a mode not working proper
       current = month.querySelectorAll(".clicked")[0]
       if (target.id != current.id){
-        var cleaner = document.querySelectorAll(".clicked")
+        let cleaner = document.querySelectorAll(".clicked")
         cleaner.forEach(day => {day.classList.remove("clicked")})
         datePacker={}
         selta()
       }
     }
 
-    var outers = document.body.querySelectorAll(".outer-day div")
+    let outers = document.body.querySelectorAll(".outer-day div")
 
     if (target.id == "week-mode"){
       outers.forEach(day => {day.classList.remove("hidden")})
@@ -354,10 +357,10 @@ function monthModes(){
     }
 
     if (target.tagName=="BUTTON"){
-      var holder = target.closest("#modes-group")
+      let holder = target.closest("#modes-group")
       holder = Array.from(holder.children)
       holder.forEach(button => {button.classList.remove("clicked")})
-      target.classList.add("clicked")                                       //TODO different click class for aesthetics
+      target.classList.add("clicked")
       mode = target.textContent
     }
   })
@@ -366,17 +369,17 @@ function monthModes(){
 
 function monthNav(){
 
-  var calenderHolder = document.getElementById('calender-holder')
-  var content = new Calender(yearGlobal, monthGlobal - 1)
-  var month = document.createElement("nav")
+  let calenderHolder = document.getElementById('calender-holder')
+  let content = new Calender(yearGlobal, monthGlobal - 1)
+  let month = document.createElement("nav")
   month.id="month-nav-container"
-  var navList = document.createElement("ul")
+  let navList = document.createElement("ul")
   navList.id = "month-nav"
-  var larr = document.createElement("li")
+  let larr = document.createElement("li")
   larr.id = "prev-month"; larr.textContent = "<"
-  var monthName = document.createElement("li")
+  let monthName = document.createElement("li")
   monthName.id = "month-name"; monthName.textContent = (content.month_named + " " + content.year)
-  var rarr = document.createElement("li")
+  let rarr = document.createElement("li")
   rarr.id = "next-month"; rarr.textContent = ">"
 
   navList.append(larr, monthName, rarr)
@@ -384,13 +387,13 @@ function monthNav(){
   calenderHolder.append(month)
 
   larr.addEventListener("click", function(){
-    var x = document.getElementById("month-nav-container")
+    let x = document.getElementById("month-nav-container")
     datePacker = {}
     selta()
     x.remove()
     calender.remove()
-    var year = content.year
-    var month = content.month - 1
+    let year = content.year
+    let month = content.month - 1
     if (content.month == 0){
       month = 11
       year = year -1
@@ -398,13 +401,13 @@ function monthNav(){
     generateCalender(year, month)         //TODO this maybe should get passed into monthNav
   })
   rarr.addEventListener("click", function(){
-    var x = document.getElementById("month-nav-container")
+    let x = document.getElementById("month-nav-container")
     datePacker = {}
     selta()
     x.remove()
     calender.remove()
-    var year = content.year
-    var month = content.month +1
+    let year = content.year
+    let month = content.month +1
     if (content.month == 11){
       month = 0
       year = year + 2
@@ -487,7 +490,6 @@ if (Object.keys(lastQuery).length != 0 ){
 } else {
   generateCalender()
 }
-
 
 
 

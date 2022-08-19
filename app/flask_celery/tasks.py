@@ -15,8 +15,8 @@ def rezultati(rez):
 
     return rez
 
-@shared_task(name='hipoteza')
-def hipoteza(results):
+@shared_task(name='convert_prices')
+def convert_prices(results):
     chord(tester(2, str(x)) for x in results)(rezultati.s()).get()
 
 @shared_task(name='currency_converter_api')

@@ -1,74 +1,66 @@
-
-#queried-holder{
-
-    position:relative;
-    width: 80%;
-    margin: 5% 10% 5% 10%;
-
+#queried-holder {
+  position:relative;
+  width: 80%;
+  margin: 5% 10% 5% 10%;
 }
 
-#table-costs{
-    position: relative;
-    margin: auto;
-    border-collapse: collapse;
-    width: 100%;
-
+#table-costs {
+  position: relative;
+  margin: auto;
+  border-collapse: collapse;
+  width: 100%;
 }
 
-#query-table-pointer{
-    position: relative;
-    margin: 5px;
-    margin-bottom: 10px;
-    font-size : 0.75em;
-    font-style : italic
+#query-table-pointer {
+  position: relative;
+  margin: 5px;
+  margin-bottom: 10px;
+  font-size : 0.75em;
+  font-style : italic
 }
 
-
-#query-table-paginator{
-    position: relative;
-    float: left;
-    margin: 5px;
-    margin-top: 10px;
-    font-size : 0.8em;
-    color: lightblue;
+#query-table-paginator {
+  position: relative;
+  float: left;
+  margin: 5px;
+  margin-top: 10px;
+  font-size : 0.8em;
+  color: lightblue;
 }
 
-#query-table-sum{
-    position: relative;
-
-    display: inline-block;
-    right: 0px;
-    margin: 5px;
-    margin-left: auto;
-    padding: 5px;
-    margin-top: 10px;
-    font-size : 0.8em;
-    font-style : italic;
-    color: darkgray;
+#query-table-sum {
+  position: relative;
+  display: inline-block;
+  right: 0px;
+  margin: 5px;
+  margin-left: auto;
+  padding: 5px;
+  margin-top: 10px;
+  font-size : 0.8em;
+  font-style : italic;
+  color: darkgray;
 }
-
 
 #table-costs td, th {
-    border: 0.5px gray solid;
-    text-align: center;
+  border: 0.5px gray solid;
+  text-align: center;
 }
 
 #table-costs th div {
-    margin: 3% 0% 3% auto;
+  margin: 3% 0% 3% auto;
 }
-
 
 #table-costs td div {
-    margin: 1% 0% 1% auto;
+  margin: 1% 0% 1% auto;
 }
 
-
-#pagination-sum{
+#pagination-sum {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
 }
 
-#no-results{
+#no-results {
   display: inline-block;
   margin: 0 auto 0 auto;
 }

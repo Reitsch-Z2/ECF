@@ -1,4 +1,4 @@
-.modalFrame{
+.modalFrame {
   position: fixed;
   top: 50%;
   left: 50%;
@@ -8,6 +8,6 @@
   text-align: center;
 }
 
-.modalContent{
+.modalContent {
   padding: 20px;
 }

@@ -1,47 +1,38 @@
+from celery import signature, chord
+from time import sleep
+from datetime import timedelta
+import requests
+
 from flask import Flask
 from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_mail import Mail
-from time import sleep
 
 
 
 app = Flask(__name__)
 app.config.from_object(Config)
 db=SQLAlchemy(app)
-migrate = Migrate(app, db, render_as_batch=True)
+migrate = Migrate(app, db)
 login = LoginManager(app)
 mail = Mail(app)
 
-
 from app.errors import bp as errors_bp
 app.register_blueprint(errors_bp)
-
-from app.flask_celery.create_celery import create_celery      #TODO
+from app.flask_celery.create_celery import create_celery
 celery = create_celery(app)
 
 # celery.autodiscover_tasks(['app.flask_celery'], force=True)
 # from app.flask_celery.tasks import *
 
 
+
 from app.models import Price
-
-from celery import signature, chord
-from time import sleep
-import requests
-
-
-@celery.task(name='tester')
-def tester(secs, package):
-    sleep(secs)
-    choiz = f'{secs}: {package}'
-    return choiz
-
-@celery.task(name='rezultati')
-def rezultati(rez):
-    for item in rez:
+@celery.task(name='convert_prices')
+def rezultati(response):
+    for item in response:
         price = Price(
             price = item['converted_price'],
             currency = item['comparison_currency'],
@@ -50,11 +41,10 @@ def rezultati(rez):
         )
         db.session.add(price)
     db.session.commit()
-
-    return rez
+    return response
 
 @celery.task(name='hipoteza')
-def hipoteza(results):
+def convert_prices(results):
     chord(currency_converter_api.s(x) for x in results)(rezultati.s())
 
 @celery.task(name='currency_converter_api')
@@ -64,7 +54,6 @@ def currency_converter_api(price_metadata, decimals=2):
     date = price_metadata['date']
     base_currency = price_metadata['base_currency']
     comparison_currency = price_metadata['comparison_currency']
-
     url = f'https://api.exchangerate.host/convert?from={base_currency}&to={comparison_currency}'
     response = requests.get(url, {'amount': quantity, 'date': date})
     data = response.json()
@@ -74,8 +63,9 @@ def currency_converter_api(price_metadata, decimals=2):
     else :
         day_before = date - timedelta(days=1)
         yesterday = str(day_before)
+        price_metadata['date'] = yesterday
         data = currency_converter_api(price_metadata, decimals=2)
-        return {'item_id': price_metadata['item_id'], 'currency':comparison_currency, 'price': data}
+        return data
 
 from app import routes
 

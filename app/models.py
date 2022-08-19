@@ -137,7 +137,7 @@ class Price(db.Model, Upmodel):
     price = db.Column(db.Numeric)  # TODO Float?
     currency = db.Column(db.String(64))
     first_entry = db.Column(db.Boolean, default=False)
-    item_id = db.Column(db.Integer, nullable=False, db.ForeignKey('item.id'))  # TODO nullable=false?
+    item_id = db.Column(db.Integer, db.ForeignKey('item.id'), nullable=False)  # TODO nullable=false?
     item = db.relationship('Item', back_populates='prices')
 
 

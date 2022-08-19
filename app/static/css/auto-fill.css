@@ -1,4 +1,4 @@
-.suggestions{
+.suggestions {
   position: absolute;
   width: 100%;
   display: list-item;
@@ -8,7 +8,7 @@
   outline-offset: -1.5px;
 }
 
-.choice{
+.choice {
   background: white;
   opacity: 0.9;
   padding-top: 0.2em;
