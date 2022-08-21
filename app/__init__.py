@@ -30,7 +30,7 @@ celery = create_celery(app)
 
 
 from app.models import Price
-@celery.task(name='convert_prices')
+@celery.task(name='rezultati')
 def rezultati(response):
     for item in response:
         price = Price(
@@ -43,7 +43,7 @@ def rezultati(response):
     db.session.commit()
     return response
 
-@celery.task(name='hipoteza')
+@celery.task(name='convert_prices')
 def convert_prices(results):
     chord(currency_converter_api.s(x) for x in results)(rezultati.s())
 
