@@ -1,5 +1,5 @@
 import json
-from flask import render_template, url_for, redirect, flash, request, render_template_string
+from flask import render_template, url_for, redirect, flash, request
 from sqlalchemy.sql import except_
 from flask_login import current_user, login_user, logout_user, login_required
 from app import app, db
@@ -11,8 +11,6 @@ from app.models import User, Item, Category, Price, UserSetting
 from app.utils.orms import AjaxQuery
 from app.utils.helpers import json_loader, choice_list
 
-
-
 @app.route('/api/auto-suggest', methods=['POST'])
 @login_required
 def autosuggest():
@@ -21,7 +19,7 @@ def autosuggest():
     value = requests['value']
     test = User.query.filter_by(id = current_user.id).first()
     lista = getattr(test, property)
-    lista = [element.name for element in lista if element.name.lower().startswith(value.lower())]
+    lista = [element.name for element in lista if element.name.lower().startswith(value.lower())]   #TODO maybe in the query above?
     lista = list(dict.fromkeys(lista))
     return {'data': lista}
 
@@ -275,9 +273,9 @@ def profile(username):                          #argument only for the URL, not 
                     user.username = form_data['username']
                     user.email = form_data['email']
                     db.session.commit()
-                    return {'data': ''}
+                    return {'data': 'updated'}
                 else:
-                    return {'data': '-'}
+                    return {'data': 'no change'}
             else:
                 formErrors = render_template('forms/_edit_user_personal.html',form=form)
                 return {'data': formErrors}
@@ -290,9 +288,9 @@ def profile(username):                          #argument only for the URL, not 
             if form.validate_on_submit():
                 if user.check_password(password) != True:
                     db.session.commit()
-                    return {'data': ''}
+                    return {'data': 'updated'}
                 else:
-                    return {'data': '-'}
+                    return {'data': 'no change'}
             else:
                 formErrors = render_template('forms/_edit_user_password.html',form=form)
                 return {'data': formErrors}
@@ -310,7 +308,6 @@ def profile(username):                          #argument only for the URL, not 
                         user.set_setting('save_query', form.save_query.data)            #TODO could have sub-if-else
                     if user.setting('base_currency') != form.currency.data:
                         base_currency = user.setting('base_currency')
-
                         items = Item.query.filter(Item.user_id == 1)
                         items = items.join(Price)
                         items_pre = items.filter(Price.currency == user.setting('base_currency'))
@@ -319,32 +316,26 @@ def profile(username):                          #argument only for the URL, not 
                         items = db.session.query(Item, Price).outerjoin(Price, Item.id == Price.item_id).filter(Price.item_id.in_(([item[0] for item in filtered_items]))).filter(Price.currency=='RSD')
 
                         final = items.with_entities(Price.price, Item.id, Item.date).all()
-                        final = [
-                            {
+                        final = [{
                             'price': str(round(x[0], 2)),
                             'item_id': x[1],
                             'date': x[2].strftime('%Y-%m-%d'),
                             'base_currency': base_currency,
                             'comparison_currency': form.currency.data
-                            }
-                        for x in final]             #TODO
+                        } for x in final]
 
-                        result = convert_prices(final)
+                        convert_prices(final)       #only works if celery worker is active
                         user.set_setting('base_currency', form.currency.data)
-
-                        # return {'data': str(result)}
-
                     db.session.commit()
-                    return {'data': ''}
+                    return {'data': 'updated'}
                 else:
-                    return {'data': '-'}
+                    return {'data': 'no change'}
             else:
                 flash('not confirmed')
-
                 formErrors = render_template('forms/_edit_user_settings.html',form=form)
                 return {'data': formErrors}
 
-    return render_template('edit_profile.html', form=form)
+    return render_template('edit_profile.html')
 
 @app.route('/api/edit-profile', methods=['POST'])
 def edit_profile():

@@ -1,13 +1,12 @@
 from time import time
 from datetime import datetime
-from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
-from flask_login import UserMixin, current_user
 from flask import url_for
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin, current_user
 from sqlalchemy.ext.hybrid import hybrid_property, hybrid_method
 from sqlalchemy.sql import select
 from app import app, db, login
-
 from app.utils.mixins import Upmodel
 
 
@@ -119,15 +118,15 @@ class Item(db.Model, Upmodel):
     def price(self, price_object):
         self.prices.append(price_object)
 
-    @price.expression  # TODO recheck
+    @price.expression
     def price(cls):
-        return select([Price.price]).where(cls.id == Price.item_id).as_scalar()  # TODO filter-out
+        return select([Price.price]).where(cls.id == Price.item_id).as_scalar()
 
     @hybrid_property
     def currency(self):
         return self.prices[0].currency
 
-    @currency.expression  # TODO recheck
+    @currency.expression
     def currency(cls):
         return select([Price.currency]).where(cls.id == Price.item_id).as_scalar()
 
@@ -137,14 +136,14 @@ class Price(db.Model, Upmodel):
     price = db.Column(db.Numeric)  # TODO Float?
     currency = db.Column(db.String(64))
     first_entry = db.Column(db.Boolean, default=False)
-    item_id = db.Column(db.Integer, db.ForeignKey('item.id'), nullable=False)  # TODO nullable=false?
+    item_id = db.Column(db.Integer, db.ForeignKey('item.id'), nullable=False)
     item = db.relationship('Item', back_populates='prices')
 
 
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True)
-    items = db.relationship('Item', back_populates='_category')  # TODO lazy though?
+    items = db.relationship('Item', back_populates='_category')
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     user = db.relationship('User', back_populates='categories')
     __table_args__ = (db.Index('index_category_user', 'name', 'user_id', unique=True),)

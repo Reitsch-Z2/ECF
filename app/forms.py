@@ -1,12 +1,9 @@
 import datetime
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, IntegerField, SelectField, DecimalField, DateField #TODO any superfluous?
-from wtforms.validators import DataRequired, EqualTo, ValidationError, Email        #TODO any superfluous?
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, DecimalField, DateField
+from wtforms.validators import DataRequired, EqualTo, ValidationError, Email
 from app.models import User
 from app.utils.helpers import json_loader
-from werkzeug.security import generate_password_hash, check_password_hash
-
-
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -33,17 +30,18 @@ class RegistrationForm(FlaskForm):
         if email is not None:
             raise ValidationError('Email already exists.')
 
-
-
-
 class ItemForm(FlaskForm):
     currencies = json_loader(True, "settings", "general", "currencies")
     item = StringField('Item', validators=[DataRequired()])
-    price = DecimalField('Price', validators=[DataRequired()])              #TODO is it?
+    price = DecimalField('Price', validators=[DataRequired()])              #TODO float?
     currency = SelectField('Currency', choices=currencies, validators=[DataRequired()])
     category = StringField('Category', validators=[DataRequired()])
     date = DateField('Time', default=datetime.date.today(), format='%Y-%m-%d', validators=[DataRequired()])
     submit = SubmitField('Submit')
+
+    def validate_date (self, date):
+        if date.data.strftime('%Y-%m-%d') > datetime.date.today().strftime('%Y-%m-%d'):
+            raise ValidationError('The date cannot be in the future')
 
 class ResetPasswordRequestForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
@@ -65,13 +63,13 @@ class EditUserPasswordForm(FlaskForm):
     password2 = PasswordField('Repeat the password', validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Submit')
 
-    def __init__(self, username, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, username, *args, **kwargs):  #used to pass the current user's username as the argument for
+        super().__init__(*args, **kwargs)           # identification in order to validate the old/current password
         self.username=username
 
     def validate_old_password (self, old_password):
         user = User.query.filter_by(username=self.username).first()
-        if user.check_password(old_password.data) != True:                      #TODO security here?
+        if user.check_password(old_password.data) != True:
             raise ValidationError('The current password is incorrect.')
 
 class EditUserSettingsForm(FlaskForm):

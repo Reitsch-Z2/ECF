@@ -3,7 +3,7 @@ import os
 
 def json_loader(path:bool or str, *args):               #TODO can we do this?
     if path == True:
-        settings_path = os.path.normpath(os.path.join(os.path.dirname(__file__), "..", "settings", "presets.json"))
+        settings_path = os.path.normpath(os.path.join(os.path.dirname(__file__), '..', 'settings', 'presets.json'))
     else:
         settings_path = os.path.normpath(os.path.join(os.path.dirname(__file__), path))
     with open(settings_path, "r") as config:
@@ -17,7 +17,7 @@ def choice_list(choice, lista=['yes', 'no']):
     choices.remove(choice)
     return [choice, *choices]
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     x = currency_converter_api('EUR', 'RSD', '2022-07-09', 200, 4)
     print(x)
 

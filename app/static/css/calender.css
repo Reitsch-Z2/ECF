@@ -84,3 +84,13 @@
   font-size: 1em;
 }
 
+@media only screen and (max-width: 650px) {
+  #calender th div, #calender td div {
+    font-size: 1.75vw;
+  }
+  #calender-holder {
+    width: 80%;
+    margin: 80px 10% 0% 10%;
+  }
+}
+

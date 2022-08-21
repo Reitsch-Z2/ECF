@@ -1,38 +1,38 @@
+function autoSuggest(id, property){
+  /**
+   * Function used to query for previous results based on the user data and offer suggestions while the user is typing
+   * It sends an ajax request (on input event) to an api route, which then returns the existing/previous results
+   * For the arguments, it takes the id of the input field to be monitored, and the property to be checked for
+   * Based on the characters entered, the api route finds the matching existing results starting with those characters,
+   *  using the property argument value to determine which database data to check for
+   */
+  let inputField = document.getElementById(id)
+  let inputSuggestions = document.createElement('div')
+  let name = id+'-'+'suggestions'
 
-
-function autoSuggest(id, containerSelector, property){
-  var inputField = document.getElementById(id)
-  var inputSuggestions = document.createElement('div')
-  var name = id+'-'+'suggestions'
-  inputSuggestions.classList.add('suggestions')
+  inputSuggestions.classList.add('suggestions')                       //create a dropdown list with suggestions
   inputSuggestions.id = name
-  var container = inputField.closest(containerSelector)   //superfluous
-
-  inputSuggestions.addEventListener('mousedown', function(e){
-    target = e.target
+  inputSuggestions.addEventListener('mousedown', function(e){         //populate the input field with the chosen
+    target = e.target                                                 // existing result
     choice = target.textContent
     inputField.value = choice
     }
   )
-
-  inputField.addEventListener('input', function(){
+  inputField.addEventListener('input', function(){  //on input send ajax request to check for matching existing results
       if (inputField.value.length != 0){
-      inputSuggestions.innerHTML=''
-      var xhr = new XMLHttpRequest()                                              //TODO global or local
+      inputSuggestions.innerHTML=''                                   //clear the previous results on every keystroke
+      let xhr = new XMLHttpRequest()
       xhr.open('POST', '/api/auto-suggest', true)
-      xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8")      //TODO recheck if mandatory
-      xhr.setRequestHeader("Accept", "application/json;charset=UTF-8")            //TODO recheck if mandatory
+      xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8')
+      xhr.setRequestHeader('Accept', 'application/json;charset=UTF-8')
       xhr.send(JSON.stringify({'value': inputField.value, 'property': property}))
 
       xhr.onload = function() {
         if (xhr.status == 200){
-
-
           parsed = JSON.parse(xhr.response)
           values = parsed['data']
-
-          if (values.lenght != 0){
-            for (let i = 0; i < values.length; i++){
+          if (values.length != 0){
+            for (let i = 0; i < values.length; i++){                  //generate suggestions in a dropdown element
               temp = document.createElement('div')
               temp.classList.add('choice')
               temp.textContent = values[i]
@@ -42,37 +42,40 @@ function autoSuggest(id, containerSelector, property){
         inputField.after(inputSuggestions)
         }
       }
+
     } else {
-      inputSuggestions.innerHTML=''
-    }
+      inputSuggestions.remove()       //if the user deleted the typed characters down to none, remove the suggestions,
+    }                                 // so that they do not remain for an empty input field
   })
-  inputField.addEventListener('blur', function(e){
+  inputField.addEventListener('blur', function(e){                    //on blur event, remove the current suggestions
     inputSuggestions.remove()
   })
 }
 
 function autoFill(eventNodeId, targetId, property){
+  /**
+   * Function used to populate one input field based on what the user typed in another input field - if there are
+   *  existing results for that relationship pattern
+   * For the arguments, it takes the id of the input field to be monitored for typing, the id for the input field to be
+   *  populated, and the name of the property to be checked for, in order to determine if the previous data exists
+   * Currently used to check if there is already a defined category for the item/article that the user is entering in
+   *  the first input field - the function sends an ajax request, and if there is a match, the category input field gets
+   *  automatically populated
+   */
   eventNode = document.getElementById(eventNodeId)
-
   eventNode.addEventListener('blur', function(){
-
     if (eventNode.value != 0){
-
-      var xhr = new XMLHttpRequest()                                              //TODO global or local
+      let xhr = new XMLHttpRequest()
       xhr.open('POST', '/api/auto-fill', true)
-      xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8")      //TODO recheck if mandatory
-      xhr.setRequestHeader("Accept", "application/json;charset=UTF-8")            //TODO recheck if mandatory
+      xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8')
+      xhr.setRequestHeader('Accept', 'application/json;charset=UTF-8')            /
       xhr.send(JSON.stringify({'value': eventNode.value, 'property': property}))
-
       xhr.onload = function() {
         if (xhr.status == 200){
-
           parsed = JSON.parse(xhr.response)
           value = parsed['data']
-
-          var inputField = document.getElementById(targetId)
+          let inputField = document.getElementById(targetId)
           inputField.value = value
-
         }
       }
     }
