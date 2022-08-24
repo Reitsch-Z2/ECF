@@ -106,10 +106,7 @@ function currencyQuery(presets_currency_query, presets_currency_query_choice) { 
     xhr.onload = function() {
       if (xhr.status == 200) {
         currencyTypePacker['currency'] = xhr.response
-        alert('almost')
-        alert(JSON.stringify(paginationPacker))
         paginationPacker['page'] = '1'
-        alert(JSON.stringify(paginationPacker))
       }
       postQuery()
     }
@@ -133,6 +130,7 @@ function typeQuery() {                                            //create an ht
   categoryButton.textContent = 'Category'
   let buttonGroup = document.createElement('span')
   buttonGroup.id = 'type-query-buttons'
+
   buttonGroup.append(itemButton, categoryButton)
   typeQueryContainer.append(typeLabel, buttonGroup, br())
 

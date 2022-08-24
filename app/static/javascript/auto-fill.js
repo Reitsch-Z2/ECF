@@ -68,14 +68,17 @@ function autoFill(eventNodeId, targetId, property){
       let xhr = new XMLHttpRequest()
       xhr.open('POST', '/api/auto-fill', true)
       xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8')
-      xhr.setRequestHeader('Accept', 'application/json;charset=UTF-8')            /
+      xhr.setRequestHeader('Accept', 'application/json;charset=UTF-8')
       xhr.send(JSON.stringify({'value': eventNode.value, 'property': property}))
+
       xhr.onload = function() {
         if (xhr.status == 200){
           parsed = JSON.parse(xhr.response)
           value = parsed['data']
           let inputField = document.getElementById(targetId)
           inputField.value = value
+        } else {
+          //pass
         }
       }
     }

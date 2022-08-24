@@ -73,7 +73,7 @@ function overrideSubmit(submitButton, formHolder) {
       if(value=='updated') {                                //   as html code, rendered back into the form container
         createFlashMessage('your profile has been updated ')
       }
-      if((value == 'updated') ||(value == 'no change')) {
+      if((value == 'updated') || (value == 'no change')) {
         let options = document.getElementById('options-container')      //reset the accordion appearance if there were
         options = [...options.children]                                 // no changes or the updates were made
         options.forEach(opt => opt.classList.remove('chosen-option'))

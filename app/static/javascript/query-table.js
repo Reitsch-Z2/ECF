@@ -8,7 +8,6 @@ function queryTableMaker(id, responseObject) {
    *   - pagination data - current page and pages total
    *   - sum of the queried costs
    */
-
   let holder = document.getElementById(id)
   responseObject = JSON.parse(responseObject)
   holder.innerHTML=''
@@ -43,8 +42,10 @@ function showPosition(limit, page, count) {               //create pointer/curso
   let offset = (page-1)*limit
   let startingPoint = 1 + offset
   let endPoint = startingPoint+limit-1
+
   count <= (startingPoint+limit-1) ? (endPoint = count) : (endPont = startingPoint + limit)
   endPoint = (endPoint == 1) ? ' ' : ' - ' + String(endPoint)
+
   let message = 'Page ' + String(page)
   message += ' - Showing results '+ String(startingPoint) + endPoint
   message += ' out of ' + String(count) +' total'
@@ -94,9 +95,10 @@ function showPages(limit, page, count) {                //create the page-naviga
   if (numberOfPages <= 1) {
     return ''
   }
+
   let pages = [...Array(numberOfPages+1).keys()].slice(1)
   let currentPage = parseInt(page)
-  let paginated = []
+  let paginated = []                                    //array that receives page navigation elements - Nos and "..."
 
   if ((currentPage <= 4) && (numberOfPages >= 10)) {    //formatting the start/beginning of the scope, i.e. the scenario
     paginated.push(...pages.slice(0,5))                 // where the user is browsing the first few pages
@@ -118,18 +120,19 @@ function showPages(limit, page, count) {                //create the page-naviga
     paginated.push(...pages)
   }
 
-  for (let i = 0; i < paginated.length; i++) {          //style the number of the current page
+  for (let i = 0; i < paginated.length; i++) {          //creates DOM nodes from the pagination elements
     let pageHolder = document.createElement('span')
     pageHolder.textContent = paginated[i]
     if ((paginated[i] != '...') && (paginated[i] != currentPage)) {
-      pageHolder.classList.add('page')
+      pageHolder.classList.add('page')                  //style the numbers representing the pages with results
     } else if (paginated[i] == currentPage) {
-      pageHolder.classList.add('current-page')
+      pageHolder.classList.add('current-page')          //style the number representing the current page
     } else {
-      pageHolder.classList.add('hidden-pages')
+      pageHolder.classList.add('hidden-pages')          //style hidden pages, represented as "..."
     }
     paginator.append(pageHolder)
   }
+
   paginator.addEventListener('click', function(e) {     //event listener that triggers a new ajax request, where the
     let target = e.target                               // response shows the different batch of results for the current
     if (target.matches('.page')) {                      // query, based on the page chosen
