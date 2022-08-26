@@ -162,7 +162,6 @@ class Item(db.Model, Upmodel):
     # def currency(self):
     #     """Hybrid property used to return the currency for item price -  """      #TODO
     #     return self.prices[0].currency
-    #
     # @currency.expression
     # def currency(cls):
     #     return select([Price.currency]).where(cls.id == Price.item_id).as_scalar()

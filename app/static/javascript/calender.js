@@ -210,6 +210,7 @@ function generateCalender(
   table.append(body)
   header.append(header_row)
   table.id = 'calender'
+
   for (let i = 0; i < 7; i++) {                      //creating the calender TH/header cells
     let cell = document.createElement('th')
     let div = document.createElement('div')
@@ -217,16 +218,19 @@ function generateCalender(
     div.append(days[i].slice(0, 3))               //first three letters of the name of the day for table headers
     header.append(cell)
   }
+
   let calenderHolder = document.getElementById('calender-holder')       //get the existing html node
   calenderHolder.append(monthNav())                   //appends the small month-navigation element
   calenderHolder.append(table)
   let content = new Calender(year, month, day)
+
   for (let i = 0; i < content.weeks.length; i++) {   //for each week create a table row, and populate it via the
     let row = document.createElement('tr')        // dayLooper function. The row gets populated via a combination
     row.classList.add('week')                     // of calls to the dayLooper function - it gets called once or twice
     body.append(row)
     let week = content.weeks[i]
-    if ((i==0 ) && content.preWeek) {              //if it is the first week and it contains days from the previous month
+
+    if ((i==0 ) && content.preWeek) {             //if it is the first week and it contains days from the previous month
       dayLooper(content.preWeek, row, true)
     }
 
@@ -236,6 +240,7 @@ function generateCalender(
       dayLooper(content.postWeek, row, true)                        // from the following month
     }
   }
+
   if (content.weeks.length==5) {                   //since a month can have 4 or 6 weeks (incomplete 6), this conditional
     var row = document.createElement('tr')        // creates 1 or 2 "phantom" placeholder rows, so that the position
     body.append(row)                              // of the elements on the page does not shift when the user browses

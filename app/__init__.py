@@ -11,10 +11,10 @@ from flask_login import LoginManager
 from flask_mail import Mail
 
 
-
 app = Flask(__name__)
 app.config.from_object(Config)
 db=SQLAlchemy(app)
+# db.create_all()
 migrate = Migrate(app, db)
 login = LoginManager(app)
 mail = Mail(app)
@@ -27,16 +27,13 @@ celery = create_celery(app)
 # celery.autodiscover_tasks(['app.flask_celery'], force=True)
 # from app.flask_celery.tasks import *
 
-
-
 from app.models import Price
 @celery.task(name='rezultati')
-def rezultati(response):
+def rezultati(response):                #TODO optional/boolean for the commit to happen inside or outside the function
     for item in response:
         price = Price(
             price = item['converted_price'],
             currency = item['comparison_currency'],
-            item_id = item['item_id'],
             first_entry = False
         )
         db.session.add(price)
@@ -49,7 +46,8 @@ def convert_prices(results):
 
 @celery.task(name='currency_converter_api')
 def currency_converter_api(price_metadata, decimals=2):
-    id = price_metadata['item_id']
+    if hasattr(price_metadata, 'item_id'):
+        id = price_metadata['item_id']
     quantity = price_metadata['price']
     date = price_metadata['date']
     base_currency = price_metadata['base_currency']
@@ -69,9 +67,7 @@ def currency_converter_api(price_metadata, decimals=2):
 
 from app import routes
 
-
-
-
+#https://ecf-expense-tracker.herokuapp.com/
 
 
 

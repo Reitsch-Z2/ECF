@@ -188,7 +188,7 @@ def reset_password_request():
     an email with the link for resetting the password is sent to the registered email address for the user.
     """
     if current_user.is_authenticated:
-        return redirect(url_for('index'))
+        return redirect(url_for('/'))
     form = ResetPasswordRequestForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
@@ -243,19 +243,6 @@ def entries():
             first_entry = True
         )
 
-        #if the item price is not entered in the default/base currency for the user, the second price in the main
-        # currency also gets defined here, via a celery background task that sends an api request to a website
-        # that returns that price converted to the default currency, with the exchange rate for the specified date
-        currency = form.currency.data
-        if  currency != base_currency:
-            converted_price = currency_converter_api(currency, base_currency, form.date.data, form.price.data)
-            price2 = Price(
-                price=converted_price,
-                currency=base_currency,
-                first_entry=False
-            )
-            item.prices.append(price2)
-
         #if the entered category exists, return it
         category = Category.query.filter_by(name=form.category.data, user_id=current_user.id).first()
         # if the entered category does not exist, create and commit it to the database
@@ -277,6 +264,22 @@ def entries():
                 item.category = category
                 db.session.add(item)
         db.session.commit()
+
+        #if the item price is not entered in the default/base currency for the user, the second price in the main   #TODO
+        # currency also gets defined here, via a celery background task that sends an api request to a website
+        # that returns that price converted to the default currency, with the exchange rate for the specified date
+        currency = form.currency.data
+        if  currency != base_currency:
+            item = Item.filter_by(category=form.category.data, user_id=current_user.id).all()[-1]
+            price_metadata = {
+                'price': form.price.data,
+                'item_id': item.id,
+                'date': form.date.data,
+                'base_currency': base_currency,
+                'comparison_currency': form.currency.data
+            }
+            currency_converter_api([price_metadata])
+
         return redirect(url_for('entries'))
     return render_template('entries.html', form=form)
 
@@ -297,6 +300,9 @@ def item_edit(username, item, item_id):
     """
 
     form = ItemForm()
+    base_currency = current_user.setting('base_currency')
+    choices = choice_list(base_currency, json_loader(True, "settings", "general", "currencies"))
+    form.currency.choices = choices
     #get the price/item/category data for the item, in order to pre-populate the form and subsequently
     # update the info for these db models in case the changes are made
     item = Item.query.filter_by(id=item_id, user_id=current_user.id).first()
@@ -310,7 +316,7 @@ def item_edit(username, item, item_id):
         current_user.set_setting('temp_query', 'yes')
         db.session.commit()
         requested = (request.form.to_dict())
-
+        flash(requested)
         if requested['submit'] == 'Cancel':         #if the user decided not to make changes - redirect to overview page
             return redirect(url_for('overview'))
 
@@ -367,19 +373,15 @@ def item_edit(username, item, item_id):
 
                         #conversion is done via a celery background task in order not to block the app - the task
                         # sends data to remote website with exchange rates and returns the converted price
-                        converted_price = currency_converter_api(price_metadata)
-                        price2 = Price(
-                            price=converted_price['converted_price'],
-                            currency=converted_price['comparison_currency'],
-                            first_entry=False
-                        )
-                        item.prices.append(price2)
+                        convert_prices([price_metadata])
+
                 db.session.commit()
                 return redirect(url_for('overview'))
-    elif request.method == "GET":                       #at get request/first rendering of the page, pre-populate
-        form.item.data = item.name                      # the form fields with existing data for that item.
+    #at get request/first rendering of the page, pre-populate the form fields with existing data for that item.
+    elif request.method == "GET":
+        form.item.data = item.name
         form.price.data = price.price
-        form.currency.data = price.currency
+        form.currency.choice = price.currency
         form.category.data = item.category
         form.date.data = item.date
     return render_template('edit_entries.html', form=form)

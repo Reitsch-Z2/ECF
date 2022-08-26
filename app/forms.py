@@ -31,7 +31,6 @@ class RegistrationForm(FlaskForm):
             raise ValidationError('Email already exists.')
 
 class ItemForm(FlaskForm):
-    # currencies = json_loader(True, "settings", "general", "currencies")
     item = StringField('Item', validators=[DataRequired()])
     price = DecimalField('Price', validators=[DataRequired()])
     currency = SelectField('Currency', validators=[DataRequired()])
