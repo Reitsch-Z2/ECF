@@ -36,6 +36,7 @@ def choice_list(choice, lista=['yes', 'no']):
 
 #testing if the api request format is still correct, and if the remote webpage is active (fallback website planned)
 if __name__ == '__main__':
-    result = currency_converter_api('EUR', 'RSD', '2022-07-09', 200, 4)
+    import requests
+    result = currency_converter_api('RSD', 'EUR', '2022-07-09', 200, 4)
     print(result)
 

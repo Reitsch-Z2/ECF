@@ -16,11 +16,11 @@ function autoSuggest(id, property){
     target = e.target                                                 // existing result
     choice = target.textContent
     inputField.value = choice
+    inputSuggestions.innerHTML=''                   //empty the dropdown menu if the user clicked a suggested option
     }
   )
   inputField.addEventListener('input', function(){  //on input send ajax request to check for matching existing results
-      if (inputField.value.length != 0){
-      inputSuggestions.innerHTML=''                                   //clear the previous results on every keystroke
+    if (inputField.value.length != 0){
       let xhr = new XMLHttpRequest()
       xhr.open('POST', '/api/auto-suggest', true)
       xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8')
@@ -28,21 +28,23 @@ function autoSuggest(id, property){
       xhr.send(JSON.stringify({'value': inputField.value, 'property': property}))
 
       xhr.onload = function() {
-        if (xhr.status == 200){
-          parsed = JSON.parse(xhr.response)
-          values = parsed['data']
-          if (values.length != 0){
-            for (let i = 0; i < values.length; i++){                  //generate suggestions in a dropdown element
-              temp = document.createElement('div')
-              temp.classList.add('choice')
-              temp.textContent = values[i]
-              inputSuggestions.append(temp)
+        if (xhr.status == 200) {
+          if (inputField.matches(':focus')) {             //conditional that prevents the potentially delayed ajax
+            inputSuggestions.innerHTML=''                 // responses from forming a dropdown menu if the user already
+            parsed = JSON.parse(xhr.response)             // clicked outside of the input field
+            values = parsed['data']
+            if (values.length != 0){                      //if there are matching results in the ajax response
+              for (let i = 0; i < values.length; i++){    // generate suggestions in a dropdown element
+                temp = document.createElement('div')
+                temp.classList.add('choice')
+                temp.textContent = values[i]
+                inputSuggestions.append(temp)
+                inputField.after(inputSuggestions)
+              }
             }
           }
-        inputField.after(inputSuggestions)
         }
       }
-
     } else {
       inputSuggestions.remove()       //if the user deleted the typed characters down to none, remove the suggestions,
     }                                 // so that they do not remain for an empty input field
@@ -75,8 +77,10 @@ function autoFill(eventNodeId, targetId, property){
         if (xhr.status == 200){
           parsed = JSON.parse(xhr.response)
           value = parsed['data']
-          let inputField = document.getElementById(targetId)
-          inputField.value = value
+          if (value.length!=0){
+            let inputField = document.getElementById(targetId)
+            inputField.value = value
+          }
         } else {
           //pass
         }

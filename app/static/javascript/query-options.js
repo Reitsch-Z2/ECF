@@ -178,7 +178,7 @@ function typeQuery() {                                            //create an ht
           queryTypePacker[query_type]=inputField.value
           postQuery()
         }
-        paginationPacker['page'] = 1
+        paginationPacker['page'] = '1'
         postQuery()
       })
     }

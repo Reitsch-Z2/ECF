@@ -264,8 +264,10 @@ function timeMarker() {
     *  event instantly creates a new ajax request with the to-query data, serving the results back into the table.
     */
   let cal = document.getElementById('calender')
-  cal.addEventListener('click', function(e) {
-    if (mode == 'day') {                                           //TODO restructure it as a switch in the future?
+  cal.addEventListener('click', function(e) {                     //TODO restructure it as a switch in the future?
+    if (typeof mode == 'undefined'){
+      createFlashMessage('Please choose day/week/month option')   //instruct the user to choose the time query option
+    } else if (mode == 'day') {
       let target = e.target.closest('td.day')
       let targetChild = target.children[0]
       let remover = this.querySelectorAll('td div')
@@ -380,7 +382,7 @@ function weekDatesParser(Y, M, D, additional) {
   }
 }
 
-  function monthDatesParser(Y, M, D) {                     //returns dates for the first and the last day of the month
+function monthDatesParser(Y, M, D) {                      //returns dates for the first and the last day of the month
   let firstDay = D[0]
   let lastDay = D[D.length-1]
   let monthScope = [dateFormat(Y, M, firstDay), dateFormat(Y, M, lastDay)]
@@ -577,16 +579,13 @@ function queryUnpacker(query) {
       }
     }
   }
+
   let target = document.querySelector('#queried-results')
   observer.observe(target, {childList: true, subtree: true})
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 monthModes()                //create buttons for selecting the query mode - day/week/month get all the settings from the
@@ -599,7 +598,7 @@ var presets = presets       // flask route as a JSON object which gets converted
 */
 
 createQueryOptions('queried-holder', presets)
-if (Object.keys(lastQuery).length != 0) {            //if lastQuery is defined - reconstruct the page and the query
+if (Object.keys(lastQuery).length != 0) {             //if lastQuery is defined - reconstruct the page and the query
   queryUnpacker(lastQuery)
 } else {                                              //else - generate an empty Calender with default settings/options
   generateCalender()

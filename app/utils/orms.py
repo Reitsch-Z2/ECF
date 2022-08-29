@@ -98,7 +98,6 @@ class AjaxQuery():
         final['limit'] = self.limit         # navigates to the edit item page, the query could be reloaded when the user
         final['page'] = self.page           # gets redirected back to the overview page
         final['total'] = str(total)
-        final['saved'] = self.request
 
         #if the user chose to save the most recent query, the request object is commited to the db as a stringified
         # JSON object, and then used to reload the query when the user goes back to the overview page

@@ -3,7 +3,7 @@ from flask import render_template, url_for, redirect, flash, request
 from sqlalchemy.sql import except_              #TODO test if superfluous
 from flask_login import current_user, login_user, logout_user, login_required
 from app import app, db
-from app import currency_converter_api, convert_prices
+from app import convert_prices
 from app.forms import LoginForm, RegistrationForm, ItemForm, ResetPasswordRequestForm, ResetPasswordForm, \
     EditUserPersonalForm, EditUserPasswordForm, EditUserSettingsForm
 from app.email import send_password_reset_email
@@ -111,12 +111,12 @@ def edit_profile():
         return {'data': string}
 
     elif value == 'Settings':
-        #re-organize the data for the two select fields - "currency" and "save queries". The code
-        # below uses the "choice_list" function to pass the standard app options into the select field,
+        #re-organize the data for the two select fields - 'currency' and 'save queries'. The code
+        # below uses the 'choice_list' function to pass the standard app options into the select field,
         # but place the previously chosen option by the user as the first one - i.e. active one
         form = EditUserSettingsForm()
         base_currency = current_user.setting('base_currency')
-        currencies = json_loader(True, "settings", "general", "currencies")
+        currencies = json_loader(True, 'settings', 'general', 'currencies')
         form.currency.choices = choice_list(base_currency, currencies)
         save_query = current_user.setting('save_query')
         form.save_query.choices = choice_list(save_query)
@@ -144,9 +144,9 @@ def register():
         user.set_setting('base_currency', form.currency.data)               #chosen currency taken from the form
         user.set_setting('query_currency', 'Total - base currency')         #other settings defined as neutral/standard,
         user.set_setting('save_query', 'no')                                # but also as placeholders in order to avoid
-        user.set_setting('temp_query', 'yes')                               # "NoneType" TypeError
+        user.set_setting('temp_query', 'yes')                               # 'NoneType' TypeError
         user.set_setting('last_query', '{}')                                #placeholder value until the first query is
-        user.set_password(form.password.data)                               # made, preventing the "NoneType" TypeError
+        user.set_password(form.password.data)                               # made, preventing the 'NoneType' TypeError
         db.session.add(user)
         db.session.commit()
         flash('You have successfuly registered your account')
@@ -159,7 +159,7 @@ def login():
     """
     A view function handling login and authentication of the users.
     Serves a login form, which if validated on submit, checks if the user exists and if the password is
-    correct. On successful validation, it loads the "entries" page as the landing page, so that the
+    correct. On successful validation, it loads the 'entries' page as the landing page, so that the
     user instantly enter new expenses. If the login failed, the form is sent back to the user, with
     the relevant info on why the validation failed.
     """
@@ -228,7 +228,7 @@ def entries():
     the entering of new expenses/data is a more common task than querying that data.
     """
     base_currency = current_user.setting('base_currency')   #get the default currency for the user
-    choices = choice_list(base_currency, json_loader(True, "settings", "general", "currencies"))    #load all currencies
+    choices = choice_list(base_currency, json_loader(True, 'settings', 'general', 'currencies'))    #load all currencies
     form = ItemForm()
     form.currency.choices = choices                         #pass pre-loaded currencies as options for the select field
                                                             # with the user's currency of choice as the first one
@@ -268,17 +268,20 @@ def entries():
         #if the item price is not entered in the default/base currency for the user, the second price in the main   #TODO
         # currency also gets defined here, via a celery background task that sends an api request to a website
         # that returns that price converted to the default currency, with the exchange rate for the specified date
+        #the celery function is used for looping over all the received results, and since in this case the request/
+        # result is singular, it still needs to be placed inside a list because the for loop expects a list     #TODO
         currency = form.currency.data
-        if  currency != base_currency:
+        if currency != base_currency:
             item = Item.query.filter_by(category=form.category.data, user_id=current_user.id).all()[-1]
-            price_metadata = {
-                'price': form.price.data,
+            price_metadata = [{
+                'price': str(round(form.price.data, 2)),
                 'item_id': item.id,
-                'date': form.date.data,
-                'base_currency': base_currency,
-                'comparison_currency': form.currency.data
-            }
-            currency_converter_api(price_metadata)
+                'date': form.date.data.strftime('%Y-%m-%d'),
+                'entry_currency': form.currency.data,
+                'target_currency': base_currency,
+                'first_entry': False
+            }]
+            convert_prices(price_metadata)
 
         return redirect(url_for('entries'))
     return render_template('entries.html', form=form)
@@ -292,22 +295,24 @@ def item_edit(username, item, item_id):
     the item and return the form, pre-populated with the existing data for the item.
     This page is accessed through the item links present in the table in the overview page -
     each link forming a unique view/URL for the item/articel in question.
-    The submit buttons for this form differ from the form in the "entries" view, where we have
+    The submit buttons for this form differ from the form in the 'entries' view, where we have
     only the submit button. In this view function, user can confirm the edit, delete the item,
     or cancel the editing - all three options lead the user back to the overview page, with
     the most recent query (from which the user came to the item edit page via the item link)
     re-loaded.
     """
 
-    form = ItemForm()
-    base_currency = current_user.setting('base_currency')
-    choices = choice_list(base_currency, json_loader(True, "settings", "general", "currencies"))
-    form.currency.choices = choices
+
     #get the price/item/category data for the item, in order to pre-populate the form and subsequently
     # update the info for these db models in case the changes are made
     item = Item.query.filter_by(id=item_id, user_id=current_user.id).first()
     price = Price.query.filter_by(item_id=item_id, first_entry=True).first()
     category = Category.query.filter_by(id=item.category_id).first()
+
+    form = ItemForm()
+    choices = choice_list(price.currency, json_loader(True, 'settings', 'general', 'currencies'))
+    form.currency.choices = choices
+
 
     if request.method == 'POST':                    #if the user clicked any of the three submit buttons
 
@@ -316,7 +321,6 @@ def item_edit(username, item, item_id):
         current_user.set_setting('temp_query', 'yes')
         db.session.commit()
         requested = (request.form.to_dict())
-        flash(requested)
         if requested['submit'] == 'Cancel':         #if the user decided not to make changes - redirect to overview page
             return redirect(url_for('overview'))
 
@@ -346,39 +350,42 @@ def item_edit(username, item, item_id):
 
                 #if the price has been edited - get all the prices for the item (i.e. in all the currencies), delete
                 # them, and then add the new price. If only the currency for that entry of the item in the database
-                # is changed, the identical process is repeated - so that the "first_entry" unique attribute for the
-                # price gets removed from the database and the one with the new currency is added as "first_entry".
-                # The "first_entry" denotes that this one specific price is the original entry, and that all other
+                # is changed, the identical process is repeated - so that the 'first_entry' unique attribute for the
+                # price gets removed from the database and the one with the new currency is added as 'first_entry'.
+                # The 'first_entry' denotes that this one specific price is the original entry, and that all other
                 # conversions of the price are derivatives - so that the user can track the original/correct currency
                 # used for that expense.
                 if price.price != form.price.data or price.currency != form.currency.data:
-                    prices = Price.query.filter_by(item_id=item_id, first_entry=0).all()
+                    prices = Price.query.filter_by(item_id=item_id, first_entry=False).all()
                     for prc in prices:
                         db.session.delete(prc)
                     price.price = form.price.data
                     price.currency = form.currency.data
                     base_currency = current_user.setting('base_currency')
 
+                    db.session.commit()         #TODO comment/explain
                     #if the currency for the entry differs from the default/base currency for that user, a conversions
                     # of the price is performed here, so that the user can query the price for that item both in
                     # the currency used for the purchase, as well as in the default currency
                     if price.currency != base_currency:
-                        price_metadata={
-                            'price': form.price.data,
-                            'item_id': item.id,
-                            'date': form.date.data,
-                            'base_currency': base_currency,
-                            'comparison_currency': form.currency.data
-                        }
+
+                        price_metadata= [{
+                            'price': str(round(form.price.data, 2)),
+                            'item_id': item_id,
+                            'date': form.date.data.strftime('%Y-%m-%d'),
+                            'entry_currency': form.currency.data,
+                            'target_currency': base_currency,
+                            'first_entry': True
+                        }]
 
                         #conversion is done via a celery background task in order not to block the app - the task
                         # sends data to remote website with exchange rates and returns the converted price
                         convert_prices(price_metadata)
 
-                db.session.commit()
+
                 return redirect(url_for('overview'))
     #at get request/first rendering of the page, pre-populate the form fields with existing data for that item.
-    elif request.method == "GET":
+    elif request.method == 'GET':
         form.item.data = item.name
         form.price.data = price.price
         form.currency.choice = price.currency
@@ -397,19 +404,19 @@ def overview():
     to the page, the data which is then used to create the table with the queried results.
     This function handles two elements which are sent to the page:
 
-    1. Presets, in the form of "preset_loader" variable, which contains app constants loaded from a
+    1. Presets, in the form of 'preset_loader' variable, which contains app constants loaded from a
     JSON file - namely, the numbers of results per page, standard query options for the currencies and currency
     names. On top of that, it also retrieves the currency query type chosen by the user from the database - this is
     used to order/sort the currency query types in the select field, placing the chosen one as the first/active one.
 
-    2. It goes through the user settings for "temp_query" and "save_query", and based on those values decides if the
-    most recent query should be reconstructed and displayed when the user lands on the page. The "temp_query" setting
-    is used for the scenario where the user returns from the "edit item" view, in which case it is always set to
+    2. It goes through the user settings for 'temp_query' and 'save_query', and based on those values decides if the
+    most recent query should be reconstructed and displayed when the user lands on the page. The 'temp_query' setting
+    is used for the scenario where the user returns from the 'edit item' view, in which case it is always set to
     true (actually 'yes', as pseudo-boolean, since it is a user setting, and user settings are kept as strings), and
-    false ('no') in all other cases. The "save_query" is used as a "global" setting - meaning that whenever the user
+    false ('no') in all other cases. The 'save_query' is used as a 'global' setting - meaning that whenever the user
     lands on the overview page, the most recent query the user made is reconstructed and displayed.
     """
-    presets = json_loader(True, "settings", "general")      #load all general settings/constants for the app
+    presets = json_loader(True, 'settings', 'general')      #load all general settings/constants for the app
     currencies = presets['currencies']                      #load predefined currency names (3 at the moment)
     query_types = presets['currency_query']                 #load two more complex currency queries by generic name
     query_types.extend(currencies)                          #merge currency names with two queries above to form the
@@ -427,7 +434,7 @@ def overview():
     #else send an empty object, which when evaluated does not fork into the reconstructing of the most recent query TODO stringified? literate?
     else:
         last_query = '{}'
-    #"save_query" option being active renders "temp_query" option superfluous
+    #'save_query' option being active renders 'temp_query' option superfluous
     if current_user.setting('save_query') != 'yes':
         current_user.set_setting('temp_query', 'no')
         db.session.commit()
@@ -467,10 +474,10 @@ def profile(username):                          #argument only for the URL, not 
             form.email.data = form_data['email']
             form.csrf_token.data = form_data['csrf_token']
             if form.validate_on_submit():                   #if form is validated
-                #if there were changes made - return "updated" string - used by JS as a conditional for flashing a
-                # message to user; else - return "no change" string, which is also used by JS as a conditional. Both of
+                #if there were changes made - return 'updated' string - used by JS as a conditional for flashing a
+                # message to user; else - return 'no change' string, which is also used by JS as a conditional. Both of
                 # these responses, apart from the flashed message, have the same effect - the form gets removed, and the
-                # originally chosen tab/option gets "unclicked", i.e. the 'chosen-option' css class is removed from it
+                # originally chosen tab/option gets 'unclicked', i.e. the 'chosen-option' css class is removed from it
                 if user.username != form_data['username'] or user.email !=form_data['email']:
                     user.username = form_data['username']
                     user.email = form_data['email']
@@ -502,7 +509,7 @@ def profile(username):                          #argument only for the URL, not 
             #if the form for changing the settings was submitted, populate the both select fields with the options to
             # choose from with standard values, but make the current user choice of those options the top/active one
             form = EditUserSettingsForm()
-            currencies = json_loader(True, "settings", "general", "currencies")
+            currencies = json_loader(True, 'settings', 'general', 'currencies')
             form.currency.choices = choice_list(form_data['currency'], currencies)
             form.save_query.choices = ['yes', 'no']
             form.currency.data = form_data['currency']
@@ -555,11 +562,12 @@ def profile(username):                          #argument only for the URL, not 
                         #form the dictionary with necessary arguments for the celery task that does conversion for the
                         # prices for n number of items
                         final = [{
-                            'price': str(round(x[0], 2)),
+                            'price': str(round(item[0], 2)),
                             'item_id': item[1],
                             'date': item[2].strftime('%Y-%m-%d'),
-                            'base_currency': base_currency,
-                            'comparison_currency': form.currency.data
+                            'entry_currency': base_currency,
+                            'target_currency': form.currency.data,
+                            'first_entry': False
                         } for item in final]
 
                         #start a celery task that uses a chord: it sends multiple API requests to a remote webpage,

@@ -33,9 +33,11 @@ def rezultati(response):                #TODO optional/boolean for the commit to
     for item in response:
         price = Price(
             price = item['converted_price'],
-            currency = item['comparison_currency'],
-            first_entry = False
+            currency = item['target_currency'],
+            item_id=item['item_id'],
+            first_entry = item['first_entry']
         )
+
         db.session.add(price)
     db.session.commit()
     return response
@@ -46,13 +48,11 @@ def convert_prices(results):
 
 @celery.task(name='currency_converter_api')
 def currency_converter_api(price_metadata, decimals=2):
-    if hasattr(price_metadata, 'item_id'):
-        id = price_metadata['item_id']
     quantity = price_metadata['price']
     date = price_metadata['date']
-    base_currency = price_metadata['base_currency']
-    comparison_currency = price_metadata['comparison_currency']
-    url = f'https://api.exchangerate.host/convert?from={base_currency}&to={comparison_currency}'
+    entry_currency = price_metadata['entry_currency']
+    target_currency = price_metadata['target_currency']
+    url = f'https://api.exchangerate.host/convert?from={entry_currency}&to={target_currency}'
     response = requests.get(url, {'amount': quantity, 'date': date})
     data = response.json()
     if 'result' in data:
@@ -67,7 +67,7 @@ def currency_converter_api(price_metadata, decimals=2):
 
 from app import routes
 
-#https://ecf-expense-tracker.herokuapp.com/
+#https://ecf-expense-tracker.herokuapp.com/         //TODO
 
 
 

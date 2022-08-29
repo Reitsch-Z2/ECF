@@ -6,7 +6,7 @@ function addModal(prompt, submitButtonId, formId) {
    */
   let ziel = document.getElementById(submitButtonId)
   ziel.addEventListener('click', function(event) {
-    createModal(event, createModalContentConfirmation(prompt, submitButtonId, formId))
+    createModal(event, createModalContent(prompt, submitButtonId, formId))
   })
 }
 
@@ -29,7 +29,7 @@ function createModal(event, prompt) {
 	document.body.appendChild(frame)
 }
 
-function createModalContentConfirmation(question, submitButtonId, formId) {
+function createModalContent(question, submitButtonId, formId) {
   /**
    * Function that defines the modal content; first arg is the prompt/question,
    *  second is the ID of the submit button which triggers the appearance of the modal window,

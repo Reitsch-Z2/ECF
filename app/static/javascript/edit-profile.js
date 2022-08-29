@@ -65,13 +65,13 @@ function overrideSubmit(submitButton, formHolder) {
     xhr2.setRequestHeader('Content-Type', 'application/json;charset=UTF-8')
     xhr2.setRequestHeader('Accept', 'application/json;charset=UTF-8')
     xhr2.send(JSON.stringify({'data': formDataFinal, 'submit':submitButton.id}))
+
     xhr2.onload = function() {
-    if (xhr2.status == 200) {                               //three possible successful responses:
-      alert(xhr2.response)                                  // •'updated' = changes made > reset accordion + flash info
-      parsed = JSON.parse(xhr2.response)                    // •'no change' > reset accordion
-      value = parsed['data']                                // • other = response is a form with rendered errors, sent
-      if(value=='updated') {                                //   as html code, rendered back into the form container
-        createFlashMessage('your profile has been updated ')
+    if (xhr2.status == 200) {                                 //three possible successful responses:
+      parsed = JSON.parse(xhr2.response)                      // •'updated' = changes made > reset accordion, flash info
+      value = parsed['data']                                  // •'no change' > reset accordion
+      if(value=='updated') {                                  // • other = response is a form with rendered errors, sent
+        createFlashMessage('your profile has been updated ')  //   as html code, rendered back into the form container
       }
       if((value == 'updated') || (value == 'no change')) {
         let options = document.getElementById('options-container')      //reset the accordion appearance if there were
