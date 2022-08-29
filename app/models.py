@@ -68,8 +68,8 @@ class User(UserMixin, db.Model):
 class UserSetting(db.Model):
     __tablename__ = 'user_setting'
     id = db.Column(db.Integer, primary_key=True)
-    setting = db.Column(db.String(128))
-    setting_name = db.Column(db.String(64), index=True)
+    setting = db.Column(db.String())
+    setting_name = db.Column(db.String(), index=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     users = db.relationship("User", back_populates="settings")
 

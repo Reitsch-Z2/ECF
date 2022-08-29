@@ -507,13 +507,13 @@ function queryUnpacker(query) {
   *  (profile settings).
   * It uses the same object which was sent as an ajax query request - this object gets returned as a response and
   *  optionally saved to the database
-  * Sub functions and blocks below parse the data from that object and re-create/check/click all the options, thus
+  * Sub functions and code blocks below parse the data from that object and re-create/check/click all the options, thus
   *  also resending the last query and displaying the page as it was when the query was made.
-  *
-  *
   */
-  query = JSON.parse(query)['data']                             //parse the original object with the query data
-  generateCalender(query.time.year, query.time.month-1)
+
+  query = query['data']                               //parse the original object with the query data
+  alert(query.time.year, query.time.month)
+  generateCalender(query.time.year, query.time.month - 1)
   let activatePagination = document.getElementById('pagination')
   activatePagination.value = query.pagination.limit
   activatePagination.dispatchEvent(new Event('change'))
@@ -599,7 +599,7 @@ var presets = presets       // flask route as a JSON object which gets converted
 */
 
 createQueryOptions('queried-holder', presets)
-if (Object.keys(lastQuery).length != 0 ) {            //if lastQuery is defined - reconstruct the page and the query
+if (Object.keys(lastQuery).length != 0) {            //if lastQuery is defined - reconstruct the page and the query
   queryUnpacker(lastQuery)
 } else {                                              //else - generate an empty Calender with default settings/options
   generateCalender()

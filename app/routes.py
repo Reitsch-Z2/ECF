@@ -28,7 +28,7 @@ def autosuggest():
     value = request_data['value']
     Model = models[property]        #db model can be either Item or Category, and a variable is defined here
                                     # in order not to hardcode two separate scenarios for the query
-    query = Model.query.filter_by(user_id = current_user.id).filter(Model.name.ilike(f'{value}%')).group_by(Model.name)
+    query = Model.query.filter_by(user_id = current_user.id).filter(Model.name.ilike(f'{value}%')).with_entities(Model.name).distinct()
     results = [element.name for element in query]
     return {'data': results}
 
@@ -144,7 +144,7 @@ def register():
         user.set_setting('base_currency', form.currency.data)               #chosen currency taken from the form
         user.set_setting('query_currency', 'Total - base currency')         #other settings defined as neutral/standard,
         user.set_setting('save_query', 'no')                                # but also as placeholders in order to avoid
-        user.set_setting('temp_query', 'no')                                # "NoneType" TypeError
+        user.set_setting('temp_query', 'yes')                               # "NoneType" TypeError
         user.set_setting('last_query', '{}')                                #placeholder value until the first query is
         user.set_password(form.password.data)                               # made, preventing the "NoneType" TypeError
         db.session.add(user)
@@ -270,7 +270,7 @@ def entries():
         # that returns that price converted to the default currency, with the exchange rate for the specified date
         currency = form.currency.data
         if  currency != base_currency:
-            item = Item.filter_by(category=form.category.data, user_id=current_user.id).all()[-1]
+            item = Item.query.filter_by(category=form.category.data, user_id=current_user.id).all()[-1]
             price_metadata = {
                 'price': form.price.data,
                 'item_id': item.id,
@@ -278,7 +278,7 @@ def entries():
                 'base_currency': base_currency,
                 'comparison_currency': form.currency.data
             }
-            currency_converter_api([price_metadata])
+            currency_converter_api(price_metadata)
 
         return redirect(url_for('entries'))
     return render_template('entries.html', form=form)
@@ -373,7 +373,7 @@ def item_edit(username, item, item_id):
 
                         #conversion is done via a celery background task in order not to block the app - the task
                         # sends data to remote website with exchange rates and returns the converted price
-                        convert_prices([price_metadata])
+                        convert_prices(price_metadata)
 
                 db.session.commit()
                 return redirect(url_for('overview'))
@@ -426,12 +426,12 @@ def overview():
         last_query = current_user.setting('last_query')
     #else send an empty object, which when evaluated does not fork into the reconstructing of the most recent query TODO stringified? literate?
     else:
-        last_query = {}
+        last_query = '{}'
     #"save_query" option being active renders "temp_query" option superfluous
     if current_user.setting('save_query') != 'yes':
         current_user.set_setting('temp_query', 'no')
         db.session.commit()
-    return render_template('overview.html', title='test_main', presets_loader = presets_loader, last_query=last_query)
+    return render_template('overview.html', title='test_main', presets_loader = presets_loader, last_query=json.loads(last_query))
 
 @app.route('/profile/<username>', methods=['GET', 'POST'])
 @login_required
