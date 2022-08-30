@@ -416,6 +416,10 @@ def overview():
     false ('no') in all other cases. The 'save_query' is used as a 'global' setting - meaning that whenever the user
     lands on the overview page, the most recent query the user made is reconstructed and displayed.
     """
+
+    if not current_user.is_authenticated:
+        return render_template('login.html')
+
     presets = json_loader(True, 'settings', 'general')      #load all general settings/constants for the app
     currencies = presets['currencies']                      #load predefined currency names (3 at the moment)
     query_types = presets['currency_query']                 #load two more complex currency queries by generic name
