@@ -11,12 +11,12 @@ function queryTableMaker(id, responseObject) {
   let holder = document.getElementById(id)
   responseObject = JSON.parse(responseObject)
   holder.innerHTML=''
-  if (Object.keys(responseObject['data']).length == 0) {  //if there are no matching results, inform the user
+  if (Object.keys(responseObject['data']).length == 0) {  // If there are no matching results, inform the user
     let info = document.createElement('div')
     info.textContent = 'no matching results found'
     info.id = 'no-results'
     holder.append(info)
-  } else {                                                //if there are results, unpack the values from the response,
+  } else {                                                // If there are results, unpack the values from the response,
   let limit = responseObject['data']['limit']             // which are then used in the sub-functions to organize and
   let page = responseObject['data']['page']               // display the queried data
   let count = responseObject['data']['count']
@@ -36,7 +36,7 @@ function queryTableMaker(id, responseObject) {
 }
 
 
-function showPosition(limit, page, count) {               //create pointer/cursor, showing the current results out of
+function showPosition(limit, page, count) {               // Create pointer/cursor, showing the current results out of
   let pointer = document.createElement('div')             // total results
   pointer.id = 'query-table-pointer'
   let offset = (page-1)*limit
@@ -53,13 +53,13 @@ function showPosition(limit, page, count) {               //create pointer/curso
   return pointer
 }
 
-function createTable(rows, columns, responseObject) {     //create the table and fill it with the queried data
+function createTable(rows, columns, responseObject) {     // Create the table and fill it with the queried data
   let table = document.createElement('table')
   let headers = document.createElement('thead')
   let body = document.createElement('tbody')
   table.id = 'table-costs'
 
-  let headerRow = document.createElement('tr')            //create the table headers
+  let headerRow = document.createElement('tr')            // Create the table headers
   for (let i = 0; i < columns.length; i++) {
     let th = document.createElement('th')
     let container = document.createElement('div')
@@ -68,15 +68,15 @@ function createTable(rows, columns, responseObject) {     //create the table and
     headerRow.append(th)
   }
   headers.append(headerRow)
-  for (let i = 0; i < rows.length; i++) {                 //create the body of the table and populate it
+  for (let i = 0; i < rows.length; i++) {                 // Create the body of the table and populate it
     let tableRow = document.createElement('tr')
     for (let x = 0; x < columns.length; x++) {
       let td = document.createElement('td')
       let container = document.createElement('div')
       if (columns[x]=='item') {
-        container.innerHTML = rows[i][columns[x]]         //used only for the <a>/link element
+        container.innerHTML = rows[i][columns[x]]         // Used only for the <a>/link element
       } else {
-        container.textContent = rows[i][columns[x]]       //used for plain text
+        container.textContent = rows[i][columns[x]]       // Used for plain text
       }
       td.append(container)
       tableRow.append(td)
@@ -88,7 +88,7 @@ function createTable(rows, columns, responseObject) {     //create the table and
   return table
 }
 
-function showPages(limit, page, count) {                //create the page-navigation, based on number of results
+function showPages(limit, page, count) {                // Create the page-navigation, based on number of results
   let paginator = document.createElement('span')        // returned and the results displayed.
   paginator.id = 'query-table-paginator'
   let numberOfPages = Math.ceil(count/limit)
@@ -98,17 +98,17 @@ function showPages(limit, page, count) {                //create the page-naviga
 
   let pages = [...Array(numberOfPages+1).keys()].slice(1)
   let currentPage = parseInt(page)
-  let paginated = []                                    //array that receives page navigation elements - Nos and "..."
+  let paginated = []                                    // Array that receives page navigation elements - Nos and "..."
 
-  if ((currentPage <= 4) && (numberOfPages >= 10)) {    //formatting the start/beginning of the scope, i.e. the scenario
-    paginated.push(...pages.slice(0,5))                 // where the user is browsing the first few pages
+  if ((currentPage <= 4) && (numberOfPages >= 10)) {    // Formatting the start/beginning of the scope, i.e. the
+    paginated.push(...pages.slice(0,5))                 // scenario where the user is browsing the first few pages
     paginated.push('...')
     paginated.push(pages[pages.length-1])
-  } else if ((numberOfPages - currentPage <= 3) && (numberOfPages >= 10)) {  //formatting the end of the scope
+  } else if ((numberOfPages - currentPage <= 3) && (numberOfPages >= 10)) {  // Formatting the end of the scope
     paginated.push(1)
     paginated.push('...')
     paginated.push(...pages.slice(-5))
-  } else if (numberOfPages >= 10) {                     //formatting the middle of the scope
+  } else if (numberOfPages >= 10) {                     // Formatting the middle of the scope
     paginated.push(1)
     paginated.push('...')
     paginated.push(currentPage - 1)
@@ -116,24 +116,24 @@ function showPages(limit, page, count) {                //create the page-naviga
     paginated.push(currentPage + 1)
     paginated.push('...')
     paginated.push(pages[pages.length-1])
-  } else {                                              //displays all pages if the number thereof is less than 10
+  } else {                                              // Displays all pages if the number thereof is less than 10
     paginated.push(...pages)
   }
 
-  for (let i = 0; i < paginated.length; i++) {          //creates DOM nodes from the pagination elements
+  for (let i = 0; i < paginated.length; i++) {          // Creates DOM nodes from the pagination elements
     let pageHolder = document.createElement('span')
     pageHolder.textContent = paginated[i]
     if ((paginated[i] != '...') && (paginated[i] != currentPage)) {
-      pageHolder.classList.add('page')                  //style the numbers representing the pages with results
+      pageHolder.classList.add('page')                  // Style the numbers representing the pages with results
     } else if (paginated[i] == currentPage) {
-      pageHolder.classList.add('current-page')          //style the number representing the current page
+      pageHolder.classList.add('current-page')          // Style the number representing the current page
     } else {
-      pageHolder.classList.add('hidden-pages')          //style hidden pages, represented as "..."
+      pageHolder.classList.add('hidden-pages')          // Style hidden pages, represented as "..."
     }
     paginator.append(pageHolder)
   }
 
-  paginator.addEventListener('click', function(e) {     //event listener that triggers a new ajax request, where the
+  paginator.addEventListener('click', function(e) {     // Event listener that triggers a new ajax request, where the
     let target = e.target                               // response shows the different batch of results for the current
     if (target.matches('.page')) {                      // query, based on the page chosen
       paginationPacker['page'] = target.textContent
@@ -143,7 +143,7 @@ function showPages(limit, page, count) {                //create the page-naviga
   return paginator
 }
 
-function showSumTotal(total, count) {                   //create a node/element showing the sum for the queried expenses
+function showSumTotal(total, count) {               // Create a node/element showing the sum for the queried expenses
   let sumTotal = document.createElement('span')
   sumTotal.id = 'query-table-sum'
   sumTotal.textContent = total

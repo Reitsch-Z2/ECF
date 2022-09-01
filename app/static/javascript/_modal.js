@@ -13,9 +13,9 @@ function addModal(prompt, submitButtonId, formId) {
 function createModal(event, prompt) {
   /**
    * Function that creates the modal frame/window; first argument is the event to listen for,
-   *  second is the content of the modal window
+   * second is the content of the modal window
    */
-	event.preventDefault()                                    //prevent instant following of the link
+	event.preventDefault()                                    // Prevent instant following of the link
 
 	let frame = document.createElement('div')
   frame.classList.add('modalFrame')
@@ -32,8 +32,8 @@ function createModal(event, prompt) {
 function createModalContent(question, submitButtonId, formId) {
   /**
    * Function that defines the modal content; first arg is the prompt/question,
-   *  second is the ID of the submit button which triggers the appearance of the modal window,
-   *  third the ID of the form to be submitted
+   * second is the ID of the submit button which triggers the appearance of the modal window,
+   * third the ID of the form to be submitted
    */
   let buttonHolder = document.createElement('div')
   let prompt = document.createElement('div')
@@ -41,7 +41,7 @@ function createModalContent(question, submitButtonId, formId) {
 
   prompt.textContent = question
   buttonHolder.append(prompt, br)
-  let options = ['yes', 'no']                           //prompt buttons - check if the default action is to go through
+  let options = ['yes', 'no']                           // Prompt buttons - check if the default action is to go through
 
 	options.forEach(option => {
     let button = document.createElement('button')
@@ -53,14 +53,14 @@ function createModalContent(question, submitButtonId, formId) {
  buttonHolder.addEventListener('click', function(e) {
     let modal
     switch(e.target.textContent) {
-      case('yes'):                                                      //follow the link, i.e. confirm the submission
+      case('yes'):                                                      // Follow the link, i.e. confirm the submission
         let myForm = document.getElementById(formId)
         let submitButton = document.getElementById(submitButtonId)
         document.getElementById('modal').remove()
       	myForm.requestSubmit(submitButton)
-        history.replaceState({}, '', '/entries')                        //prevent user from going back to the page view
+        history.replaceState({}, '', '/entries')                        // Prevent user from going back to the page view
         break                                                           // of a deleted item
-      case('no'):                                                       //cancel/not go through with the submission
+      case('no'):                                                       // Cancel/not go through with the submission
         document.getElementById('modal').remove()
         break
     }

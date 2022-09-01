@@ -8,32 +8,32 @@ function createFlashMessage(text, popIn=1.5, pause=1, fadeAway=4) {
   let messages = [...existing]
   let message = document.createElement('div')
   message.classList.add('flash-message')
-  message.classList.add('flash-pop')                      //animation - message pops into the window
-  message.style['animation-duration']= popIn+'s'          //duration optionally defined via args
+  message.classList.add('flash-pop')                      // Animation - message pops into the window
+  message.style['animation-duration']= popIn+'s'          // Duration optionally defined via args
   message.textContent = text
   document.body.appendChild(message)
-  let msgPositions = []                                   //get the position of all the existing messages in the window
+  let msgPositions = []                                   // Get the position of all the existing messages in the window
 
   messages.forEach(msg =>{
     let position = window.getComputedStyle(msg).getPropertyValue('--bottom-flex')
     msgPositions.push((parseInt(position.replace('px', '').trim())))
   })
 
-  for (let x = 0; x < existing.length + 1; x++) {         //loop through positions of existing messages
-    if (msgPositions.includes(25 + x*40 ) != true) {      //find the first free slot for the new message to pop into
+  for (let x = 0; x < existing.length + 1; x++) {         // Loop through positions of existing messages
+    if (msgPositions.includes(25 + x*40 ) != true) {      // Find the first free slot for the new message to pop into
       let neumax = 25 + x*40
       let bottom = String(neumax) + 'px'
-      message.style.setProperty('--bottom-flex', bottom)  //set the position of the new message
+      message.style.setProperty('--bottom-flex', bottom)  // Set the position of the new message
       break
     }
   }
 
   setTimeout(function() {
-    message.classList.add('flash-fade')                   //animation - message fades away after being displayed
+    message.classList.add('flash-fade')                   // Animation - message fades away after being displayed
     message.style['animation-duration']= fadeAway+'s'     // for the amount of time specified in args
   }, (popIn+pause)*1000)
 
-  setTimeout(function() {            //message removed after fading away, opening the slot/position for a new message
+  setTimeout(function() {            // Message removed after fading away, opening the slot/position for a new message
     message.remove()
   }, (popIn+pause+fadeAway)*1000)
 }

@@ -66,6 +66,7 @@
 
 .dropdown-content li {
   border: 0.1px solid white;
+  text-align: center;
 }
 
 .dropdown {
@@ -76,7 +77,7 @@
   display: none;
 }
 
-@media only screen and (max-width: 650px) {
+@media all and (max-width: 650px) {
   .navbar {
     grid-template-columns: auto auto auto auto;
     justify-content: space-evenly;
@@ -91,6 +92,7 @@
 
   .nav-home{
     display: inline-block;
+
   }
 }
 

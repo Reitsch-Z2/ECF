@@ -1,7 +1,7 @@
 import datetime
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, DecimalField, DateField
-from wtforms.validators import DataRequired, EqualTo, ValidationError, Email
+from wtforms.validators import DataRequired, EqualTo, ValidationError, Email, Length
 from app.models import User
 from app.utils.helpers import json_loader
 
@@ -12,10 +12,14 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Log in')
 
 class RegistrationForm(FlaskForm):
-    currencies = json_loader(True, "settings", "general", "currencies")
-    username = StringField('Username', validators=[DataRequired()])
+    currencies = json_loader(True, 'settings', 'general', 'currencies')
+    username = StringField('Username', validators=[
+        Length(min=6, message='Username must be at least 6 characters')
+    ])
     email = StringField('Email', validators=[DataRequired(), Email()])
-    password = PasswordField('Password', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[
+        Length(min=6, message='Password must be at least 6 characters')
+    ])
     password2 = PasswordField('Repeat the password', validators=[DataRequired(), EqualTo('password')])
     currency = SelectField('Base currency', choices=currencies, validators=[DataRequired()])
     submit = SubmitField('Register')
@@ -38,6 +42,8 @@ class ItemForm(FlaskForm):
     date = DateField('Time', default=datetime.date.today(), format='%Y-%m-%d', validators=[DataRequired()])
     submit = SubmitField('Submit')
 
+    # Prevents the user from making entries for the dates in the future - mostly because the currency exchange rates
+    # data does not exist yet and the conversions cannot be made if the currency for the entry is not the default one
     def validate_date (self, date):
         if date.data.strftime('%Y-%m-%d') > datetime.date.today().strftime('%Y-%m-%d'):
             raise ValidationError('The date cannot be in the future')
@@ -62,7 +68,7 @@ class EditUserPasswordForm(FlaskForm):
     password2 = PasswordField('Repeat the password', validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Submit')
 
-    def __init__(self, username, *args, **kwargs):  #used to pass the current user's username as the argument for
+    def __init__(self, username, *args, **kwargs):  # Used to pass the current user's username as the argument for
         super().__init__(*args, **kwargs)           # identification in order to validate the old/current password
         self.username=username
 

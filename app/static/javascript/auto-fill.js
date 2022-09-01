@@ -12,14 +12,14 @@ function autoSuggest(id, property){
 
   inputSuggestions.classList.add('suggestions')                       //create a dropdown list with suggestions
   inputSuggestions.id = name
-  inputSuggestions.addEventListener('mousedown', function(e){         //populate the input field with the chosen
-    target = e.target                                                 // existing result
+  inputSuggestions.addEventListener('mousedown', function(e) {        // Populate the input field with the chosen
+    target = e.target                                                 // result from the database
     choice = target.textContent
     inputField.value = choice
-    inputSuggestions.innerHTML=''                   //empty the dropdown menu if the user clicked a suggested option
+    inputSuggestions.innerHTML=''                   // Empty the dropdown menu if the user clicked a suggested option
     }
   )
-  inputField.addEventListener('input', function(){  //on input send ajax request to check for matching existing results
+  inputField.addEventListener('input', function() { // On input send ajax request to check for matching existing results
     if (inputField.value.length != 0){
       let xhr = new XMLHttpRequest()
       xhr.open('POST', '/api/auto-suggest', true)
@@ -29,12 +29,12 @@ function autoSuggest(id, property){
 
       xhr.onload = function() {
         if (xhr.status == 200) {
-          if (inputField.matches(':focus')) {             //conditional that prevents the potentially delayed ajax
+          if (inputField.matches(':focus')) {             // Conditional that prevents the potentially delayed ajax
             inputSuggestions.innerHTML=''                 // responses from forming a dropdown menu if the user already
             parsed = JSON.parse(xhr.response)             // clicked outside of the input field
             values = parsed['data']
-            if (values.length != 0){                      //if there are matching results in the ajax response
-              for (let i = 0; i < values.length; i++){    // generate suggestions in a dropdown element
+            if (values.length != 0) {                     // If there are matching results in the ajax response
+              for (let i = 0; i < values.length; i++) {   // generate suggestions in a dropdown element
                 temp = document.createElement('div')
                 temp.classList.add('choice')
                 temp.textContent = values[i]
@@ -46,10 +46,10 @@ function autoSuggest(id, property){
         }
       }
     } else {
-      inputSuggestions.remove()       //if the user deleted the typed characters down to none, remove the suggestions,
+      inputSuggestions.remove()       // If the user deleted the typed characters down to none, remove the suggestions,
     }                                 // so that they do not remain for an empty input field
   })
-  inputField.addEventListener('blur', function(e){                    //on blur event, remove the current suggestions
+  inputField.addEventListener('blur', function(e) {                   // On blur event, remove the current suggestions
     inputSuggestions.remove()
   })
 }
@@ -57,12 +57,12 @@ function autoSuggest(id, property){
 function autoFill(eventNodeId, targetId, property){
   /**
    * Function used to populate one input field based on what the user typed in another input field - if there are
-   *  existing results for that relationship pattern
+   * existing results for that relationship pattern
    * For the arguments, it takes the id of the input field to be monitored for typing, the id for the input field to be
-   *  populated, and the name of the property to be checked for, in order to determine if the previous data exists
+   * populated, and the name of the property to be checked for, in order to determine if the previous data exists
    * Currently used to check if there is already a defined category for the item/article that the user is entering in
-   *  the first input field - the function sends an ajax request, and if there is a match, the category input field gets
-   *  automatically populated
+   * the first input field - the function sends an ajax request, and if there is a match, the category input field gets
+   * automatically populated
    */
   eventNode = document.getElementById(eventNodeId)
   eventNode.addEventListener('blur', function(){
@@ -82,7 +82,7 @@ function autoFill(eventNodeId, targetId, property){
             inputField.value = value
           }
         } else {
-          //pass
+          // pass
         }
       }
     }

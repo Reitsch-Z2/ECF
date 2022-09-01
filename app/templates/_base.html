@@ -16,7 +16,7 @@
     {% with messages = get_flashed_messages() %}
       {% if messages %}
         {% for message in messages %}
-          <script>createFlashMessage('{{ message }}')</script>
+          <script>createFlashMessage('{{message|safe}}')</script>
         {% endfor %}
       {% endif %}
     {% endwith %}
@@ -25,3 +25,4 @@
     {% endblock %}
 </body>
 </html>
+

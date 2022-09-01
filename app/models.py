@@ -71,7 +71,7 @@ class UserSetting(db.Model):
     setting = db.Column(db.String())
     setting_name = db.Column(db.String(), index=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    users = db.relationship("User", back_populates="settings")
+    users = db.relationship('User', back_populates='settings')
 
 
 class Item(db.Model, Upmodel):
@@ -82,7 +82,7 @@ class Item(db.Model, Upmodel):
     _category = db.relationship('Category', back_populates='items', innerjoin=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     user = db.relationship('User', back_populates='items')
-    prices = db.relationship('Price', back_populates='item', cascade="all, delete")
+    prices = db.relationship('Price', back_populates='item', cascade='all, delete')
 
     @hybrid_property
 
@@ -146,7 +146,7 @@ class Item(db.Model, Upmodel):
         if query_currency == 'Total - combined currencies':
             return str(round(price.price, 2)) + ' ' + price.currency
         else :
-            return str(round(price.price, 2))
+            return str(round(price.price, 2)) + ' ' + price.currency
 
     @price.expression
     def price(cls):
@@ -157,15 +157,6 @@ class Item(db.Model, Upmodel):
     def price(self, price_object):
         """Setter method used to update/enter the price for the item"""
         self.prices.append(price_object)
-
-    # @hybrid_property
-    # def currency(self):
-    #     """Hybrid property used to return the currency for item price -  """      #TODO
-    #     return self.prices[0].currency
-    # @currency.expression
-    # def currency(cls):
-    #     return select([Price.currency]).where(cls.id == Price.item_id).as_scalar()
-
 
 class Price(db.Model, Upmodel):
     id = db.Column(db.Integer, primary_key=True)
@@ -182,6 +173,6 @@ class Category(db.Model):
     items = db.relationship('Item', back_populates='_category')
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     user = db.relationship('User', back_populates='categories')
-    #a multicolumn index made for the column/user, so that no double category entries for the user can be made;
+    # A multicolumn index made for the column/user, so that no double category entries for the user can be made;
     # unique index on category column only would not work, since multiple users can have categories with identical names
     __table_args__ = (db.Index('index_category_user', 'name', 'user_id', unique=True),)
