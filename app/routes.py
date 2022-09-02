@@ -581,6 +581,7 @@ def profile(username):                          # Argument only for the URL, not
                         items = Item.query.filter(Item.user_id == current_user.id)
 
                         # Join Item model to Price model, in order to do further comparisons and filtering
+                        items = items.join(Price)
 
                         # Get all the items that have a price in the current (non-updated) base currency
                         items_pre = items.filter(Price.currency == base_currency)
@@ -604,7 +605,7 @@ def profile(username):                          # Argument only for the URL, not
                             .filter(Price.currency==base_currency)
 
                         # Get the necessary info from the results for the api request to be made
-                        final = items.with_entities(Price.price, Item.id, Item.date).all()
+                        queried = items.with_entities(Price.price, Item.id, Item.date).all()
 
                         # Form the dictionary with necessary arguments for the Celery task that does conversion for the
                         # prices for n number of items
@@ -615,7 +616,7 @@ def profile(username):                          # Argument only for the URL, not
                             'entry_currency': base_currency,
                             'target_currency': form.currency.data,
                             'first_entry': False
-                        } for item in final]
+                        } for item in queried]
 
                         # Start a Celery task that uses a chord: it sends multiple API requests to a remote webpage,
                         # and only when all the results are returned (with converted prices) - the new data is
