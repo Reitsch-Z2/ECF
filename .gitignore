@@ -2,5 +2,4 @@ venv/
 notes.txt
 heroku_envs.txt
 __pycache__/
-readme.md
 app.db

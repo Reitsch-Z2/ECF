@@ -364,7 +364,7 @@ def item_edit(username, item, item_id):
             db.session.commit()
             return redirect(url_for('overview'))
 
-        elif requested['submit'] == 'Edit':         # Submit changes to the item
+        elif requested['submit'] == 'Submit':         # Submit changes to the item
             if form.validate_on_submit():
                 # Update the entry name and date if they were edited, i.e. if they differ from the pre-populated data
                 if item.name != form.item.data or item.date != form.date.data:

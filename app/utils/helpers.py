@@ -23,7 +23,7 @@ def json_loader(path: bool or str, *args):
     return sample_config
 
 
-def choice_list(choice: str, lista=['yes', 'no']):
+def choice_list(choice: str, lista: list = ['yes', 'no']):
     """
     A function used for reordering of data for select fields in html - it takes the "choice" argument, which is what
     the user has previously decided for out of predefined select options ("choices" often saved in user settings in

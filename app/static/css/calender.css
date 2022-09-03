@@ -12,13 +12,13 @@
   text-overflow: ellipsis;
 }
 
-#calender-holder {
+#calendar-holder {
   display:inline-block;
   width: 50%;
   margin: 80px 25% 0% 25%;
 }
 
-#calender {
+#calendar {
   cellspacing: 0;
   width: 100%;
   border-collapse: collapse;
@@ -26,7 +26,7 @@
   margin-bottom: 5%;
 }
 
-#calender th {
+#calendar th {
   position: relative;
   width:  calc(100%*1/7);
   padding: 0;
@@ -36,7 +36,7 @@
   outline-offset: -1.5px;
 }
 
-#calender td {
+#calendar td {
   position: relative;
   width:  calc(100%*1/7);
   padding: 0;
@@ -45,7 +45,7 @@
   margin: 1%;
 }
 
-#calender th div {
+#calendar th div {
   position: absolute;
   font-size: 1.25vw;
   padding: 5%;
@@ -54,7 +54,7 @@
   transform: translate(-50%, -50%)
 }
 
-#calender td div {
+#calendar td div {
   position: absolute;
   height: 60%;
   width: 40%;
@@ -85,12 +85,16 @@
 }
 
 @media only screen and (max-width: 650px) {
-  #calender th div, #calender td div {
-    font-size: 1.75vw;
+  #calendar th div, #calendar td div {
+    font-size: 2vw;
   }
-  #calender-holder {
+  #calendar-holder {
     width: 80%;
     margin: 80px 10% 0% 10%;
+  }
+
+  #table-costs {
+    font-size: 2vw;
   }
 }
 

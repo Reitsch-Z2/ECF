@@ -9,7 +9,7 @@
     </li>
     <li class="nav-item"><a href="{{url_for('entries')}}">New entry</a></li>
     <li class="nav-item"><a href="{{url_for('overview')}}">Overview</a></li>
-    <li class="nav-item dropdown"><a href="#">Profile</a>
+    <li class="nav-item dropdown"><a href="">Profile</a>
       <ul class="dropdown-content">
         <li class="nav-item-dd"><div><a href="{{url_for('profile', username=current_user.username)}}">Settings</a></div></li>
         <li class="nav-item-dd"><a href="{{url_for('logout')}}">Logout</a></li>

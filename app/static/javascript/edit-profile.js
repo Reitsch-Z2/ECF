@@ -35,7 +35,7 @@ function editProfile() {
       if (xhr.status == 200) {                                   // On successful response, display the requested form
         parsed = JSON.parse(xhr.response)
         value = parsed['data']
-        var formHolder = document.getElementById('form-container')
+        var formHolder = document.getElementById('profile-form')
         formHolder.innerHTML=value
         submitButton = document.querySelector('input[type="submit"]')
         overrideSubmit(submitButton, formHolder)                // Nested function which restructures the submit request
@@ -79,7 +79,7 @@ function overrideSubmit(submitButton, formHolder) {
         options.forEach(opt => opt.classList.remove('chosen-option'))
         value = ''
       } else {
-      var formHolder = document.getElementById('form-container')        // Serve back the form with rendered errors
+      var formHolder = document.getElementById('profile-form')        // Serve back the form with rendered errors
       formHolder.innerHTML=value                                        // if the validation did not pass
       submitButton = document.querySelector('input[type="submit"]')
       overrideSubmit(submitButton, formHolder)                          // Function calls itself, in order to add the
@@ -88,7 +88,7 @@ function overrideSubmit(submitButton, formHolder) {
     } else {
       // pass atm
     }
-    var formHolder = document.getElementById('form-container')
+    var formHolder = document.getElementById('profile-form')
     formHolder.innerHTML=value
     }
   })

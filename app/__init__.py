@@ -27,7 +27,7 @@ celery = create_celery(app)
 
 from app.models import Price
 @celery.task(name='rezultati')
-def rezultati(response):                #TODO optional/boolean for the commit to happen inside or outside the function?
+def rezultati(response: list):     #TODO optional/boolean for the commit to happen inside or outside the function?
     """
     A callback function for the header functions in a chord, used to perform database entries for the prices which were
     converted to another currency via an API request to a remote webpage that holds data on currency exchange rates.
@@ -54,7 +54,7 @@ def rezultati(response):                #TODO optional/boolean for the commit to
 
 
 @celery.task(name='convert_prices')
-def convert_prices(results):
+def convert_prices(results: list):
     """
     A chord task, with the header function that sends the API requests for price conversions to another currency, and
     the callback function that populates the database with new price entries based on the data received in the
@@ -64,7 +64,7 @@ def convert_prices(results):
 
 
 @celery.task(name='currency_converter_api')
-def currency_converter_api(price_data, decimals=2):
+def currency_converter_api(price_data: dict, decimals: int = 2):
     """
     A function that makes an API request to a remote webpage that holds the historic data for the currency exchange
     rates. The function sends the data for the base and target currency, the relevant date, and the price for the base

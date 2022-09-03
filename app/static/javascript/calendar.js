@@ -6,7 +6,7 @@
 	};
 })()
 
-/* Generating global variables - "today" for the calender widget creation, and sub-objects which when compiled together
+/* Generating global variables - "today" for the calendar widget creation, and sub-objects which when compiled together
 form the body of an ajax request for querying the results. They are kept in the global scope so that the individual
 functions and choices that the user makes can update them instantly
 */
@@ -72,8 +72,8 @@ function Calender(
   day=(new Date(today).getDay())
   ) {
   /**
-   * A function that creates the calender object from the JS Date object. It takes three arguments, if a specific
-   * time is necessary, or creates the calender for the current time by default. Two constants with name mappings
+   * A function that creates the calendar object from the JS Date object. It takes three arguments, if a specific
+   * time is necessary, or creates the calendar for the current time by default. Two constants with name mappings
    * for days and months are created, so that one could render the days/months either as a number or a name.
    * Multiple attributes and methods are defined for the object, so that the relevant data can be displayed/processes
    * in whichever format necessary.
@@ -173,7 +173,7 @@ function generateCalender(
   day=(new Date(today).getDay())) {
  /**
   * A function to organize all the days in a month into an month table/calendar. It uses the Calender object defined
-  * above to access various attributes necessary to define the appearance and functionality of the calender widget,
+  * above to access various attributes necessary to define the appearance and functionality of the calendar widget,
   * which is used to make queries.
   * Month and year defined as global variables, so that other functions can access them to - "monthGlobal" is mostly
   * used for creating date strings, so the number has to be incremented by 1 in order to display it properly (i.e.
@@ -210,9 +210,9 @@ function generateCalender(
   table.append(header)
   table.append(body)
   header.append(header_row)
-  table.id = 'calender'
+  table.id = 'calendar'
 
-  for (let i = 0; i < 7; i++) {                      // Creating the calender TH/header cells
+  for (let i = 0; i < 7; i++) {                      // Creating the calendar TH/header cells
     let cell = document.createElement('th')
     let div = document.createElement('div')
     cell.append(div)
@@ -220,9 +220,9 @@ function generateCalender(
     header.append(cell)
   }
 
-  let calenderHolder = document.getElementById('calender-holder')       // Get the existing html node
-  calenderHolder.append(monthNav())                   // Appends the small month-navigation element
-  calenderHolder.append(table)
+  let calendarHolder = document.getElementById('calendar-holder')       // Get the existing html node
+  calendarHolder.append(monthNav())                   // Appends the small month-navigation element
+  calendarHolder.append(table)
   let content = new Calender(year, month, day)
 
   for (let i = 0; i < content.weeks.length; i++) {  // Gor each week create a table row, and populate it via the
@@ -242,29 +242,28 @@ function generateCalender(
     }
   }
 
-  if (content.weeks.length==5) {                  // Since a month can have 4 or 6 weeks (non-whole 6), this conditional
-    var row = document.createElement('tr')        // creates 0, 1 or 2 "phantom" placeholder rows, so that the position
-    body.append(row)                              // of the elements on the page does not shift when the user browses
-    for (let i = 0; i<7; i++) {                   // through the calender (by keeping the number of rows at max, i.e. 6)
-      var td = document.createElement('td')
-      var div = document.createElement('div')
+  if (content.weeks.length < 6) {                         // Since a month can have 4 or 6 weeks (non-whole 6), this
+    for (let i = 0; i< (6-content.weeks.length) ; i++) {  // conditional creates 0, 1 or 2 "phantom" placeholder rows,
+      var row = document.createElement('tr')              // so that the positions of the elements on the page do not
+      var td = document.createElement('td')               // shift when the user browses through the calendar
+      var div = document.createElement('div')             // (by keeping the number of rows always at max, i.e. 6)
       td.append(div); row.append(td);
+      body.append(row)
       td.setAttribute('style', 'border: 1px solid transparent')     //TODO ADD AS A CLASS TO PARENT!!!
     }
-    body.append(row)
   }
-  timeMarker()                                    // Adds an event listener to the calender
+  timeMarker()                                    // Adds an event listener to the calendar
 }
 
 function timeMarker() {
    /**
-    * A function that creates an event listener on the calender widget.
+    * A function that creates an event listener on the calendar widget.
     * It uses the value of the global variable "mode" (variable editable via the element created by "monthModes"
     * function) to define which element of the month gets selected and queried - a day, a week, or a month.
-    * It adds visual confirmation for the selection into the calender, updates the global querying object, and on click
+    * It adds visual confirmation for the selection into the calendar, updates the global querying object, and on click
     * event instantly creates a new ajax request with the to-query data, serving the results back into the table.
     */
-  let cal = document.getElementById('calender')
+  let cal = document.getElementById('calendar')
   cal.addEventListener('click', function(e) {                     // TODO restructure it as a switch in the future?
     if (typeof mode == 'undefined'){
       createFlashMessage('Please choose day/week/month option')   // Instruct the user to choose the time query option
@@ -424,7 +423,7 @@ function monthModes() {
   month.addEventListener('click', function(e) {
     var target = e.target
     if (month.querySelectorAll('.clicked')[0]) {
-      current = month.querySelectorAll('.clicked')[0]       // When a new mode is selected, calender days get deselected
+      current = month.querySelectorAll('.clicked')[0]       // When a new mode is selected, calendar days get deselected
       if (target.id != current.id) {
         let cleaner = document.querySelectorAll('div .clicked')
         cleaner.forEach(day => {day.classList.remove('clicked')})
@@ -448,15 +447,15 @@ function monthModes() {
       mode = target.textContent
     }
   })
-  document.getElementById('calender-holder').prepend(month)   // Not returned but prepended, because it should stay
-}                                                             // separate from the calender which changes dynamically,
-                                                              // keeping the chosen option when the calender changes
+  document.getElementById('calendar-holder').prepend(month)   // Not returned but prepended, because it should stay
+}                                                             // separate from the calendar which changes dynamically,
+                                                              // keeping the chosen option when the calendar changes
 function monthNav() {
  /**
-  * A function used to create a navigation element above the calender, showing the current month and year, and allowing
+  * A function used to create a navigation element above the calendar, showing the current month and year, and allowing
   * the user to move one month forward or backward in time.
   */
-  let calenderHolder = document.getElementById('calender-holder')
+  let calendarHolder = document.getElementById('calendar-holder')
   let content = new Calender(yearGlobal, monthGlobal -1)      // Generates the Calender object only to access its
   let month = document.createElement('nav')                   // attributes in order to properly display month and year
   month.id='month-nav-container'
@@ -473,11 +472,11 @@ function monthNav() {
   month.append(navList)
 
   larr.addEventListener('click', function() {                 // Add event listener for the left arrow, to generate a
-    let x = document.getElementById('month-nav-container')    // calender widget for the previous month
+    let x = document.getElementById('month-nav-container')    // calendar widget for the previous month
     datePacker = {}
     postQuery()                                           // Used here to inform the user to select dates, which happens
     x.remove()                                            // without sending the request if no dates are selected
-    calender.remove()
+    calendar.remove()
     let year = content.year
     let month = content.month - 1
     if (content.month == 0) {                             // If current month is January, change also the year when
@@ -488,10 +487,10 @@ function monthNav() {
   })
   rarr.addEventListener('click', function() {
     let x = document.getElementById('month-nav-container')    // Add event listener for the right arrow, to generate a
-    datePacker = {}                                           // calender widget for the following month
+    datePacker = {}                                           // calendar widget for the following month
     postQuery()
     x.remove()
-    calender.remove()
+    calendar.remove()
     let year = content.year
     let month = content.month +1
     if (content.month == 11) {                            // If current month is December, change also the year when
@@ -534,7 +533,7 @@ function queryUnpacker(query) {
 
   document.getElementById(query.time.mode + '-mode').click()  // Click/select the saved time query mode - day/week/month
 
-  switch(query.time.mode) {                                   // Select relevant day/days in the calender
+  switch(query.time.mode) {                                   // Select relevant day/days in the calendar
     case('day'):
       let days = document.querySelectorAll('.day')
       let day = [...days].filter(day => (day.textContent == query.time.day))[0]

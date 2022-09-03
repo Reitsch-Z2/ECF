@@ -8,7 +8,9 @@
   border: 2px solid white;
   height: 40px;
   background: gray;
-  padding-left:0;
+  padding: 0;
+
+
 }
 
 .navbar-container {
@@ -32,6 +34,7 @@
 
 .nav-item:first-child {
   justify-self: start;
+
 }
 
 .navbar a {
@@ -81,9 +84,14 @@
   .navbar {
     grid-template-columns: auto auto auto auto;
     justify-content: space-evenly;
+    width: 90%;
   }
   .nav-item {
-  padding: 0 10px 0 10px;
+    padding: 0 10px 0 10px;
+  }
+
+  ul {
+    margin: 0;
   }
 
   .nav-logo{

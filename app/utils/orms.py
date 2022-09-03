@@ -32,7 +32,7 @@ class AjaxQuery():
         if bool(self.requests_dict['query_type']):      # The only query "optional" option - check if it was chosen
             self.query_type = self.requests_dict['query_type']
 
-    def querier(self, columns):
+    def querier(self, columns: list):
         """
         The main (and only) method of the class, used to query the database based on the parameters
         received in the request body. There are multiple levels of querying - the query parameters/options

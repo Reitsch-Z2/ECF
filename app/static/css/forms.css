@@ -5,7 +5,7 @@
 
 .form {
   border: 0.1px solid black;
-  border-radius: 2em;
+  border-radius: 1em;
   position: absolute;
   height: auto;
   max-width: 300px;
@@ -104,7 +104,7 @@
 
 @media only screen and (max-width: 650px) {
   .form-alt {
-    width: auto;
+    width: 80%;
   }
 
   .item-form {
@@ -115,6 +115,7 @@
 
   .form-element, .form-element2, .submit-group {
     align-self: start;
+    width: 100%;
   }
 
   .form-error {
@@ -135,6 +136,7 @@
 
   .form {
   position: relative;
+  width: 1000%;
   top: 0;
   transform: translate(-50%, 0%)
   }

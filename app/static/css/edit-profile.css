@@ -2,26 +2,33 @@
   position: relative;
   width: auto;
   display: inline-flex;
-  width: 120%;
-  margin-left: -10%;
+  width: 100%;
   background: lightgray;
-  margin-bottom: 10%;
+  margin-bottom: 15%;
   text-align: center;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
-.profile-form {
+#profile-form {
+  padding: 0 7.5% 0 7.5%;
+}
+
+#edit-profile-form {
   border: 0.1px solid black;
-  border-radius: 2em;
+  border-radius: 1.5em;
   position: absolute;
   height: auto;
-  max-width: 300px;
+  max-width: 350px;
   width: 50%;
-  padding: 15px 30px 15px 30px;
   border : 0.5px solid black;
   top: 25%;
   left: 50%;
   transform: translate(-50%, 0%);
+}
+
+#edit-profile-form h2{
+  margin-left: 7.5%;
 }
 
 .profile-option {
@@ -32,9 +39,21 @@
   border-bottom: 0.5px solid black;
 }
 
+.profile-option:hover {
+  cursor: pointer;
+}
+
 .chosen-option {
-  margin: 0 -1px 0 -1px;
+  margin: 0 -0.5px 0 -0.5px;
   border: 0.5px black solid;
   background: white;
   box-sizing: border-box;
 }
+
+@media only screen and (max-width: 650px) {
+  #edit-profile-form {
+  width: 70%;
+
+  }
+}
+
