@@ -62,8 +62,9 @@ class AjaxQuery():
         # Get all the results in the default currency
         if query_currency == 'Total - base currency':
             query = query.filter_by(currency=base_currency)
-            if query.count()>0:
-                total[current_user.setting('base_currency')] = float(query.with_entities(func.sum(Price.price)).scalar())
+            if query.count() > 0:
+                sum_total = float(query.with_entities(func.sum(Price.price)).scalar())
+                total[current_user.setting('base_currency')] = sum_total
 
         # Get all the results in the currency chosen at first entry
         elif query_currency == 'Total - combined currencies':
@@ -90,14 +91,14 @@ class AjaxQuery():
         query = query.offset(self.limit*(self.page-1))      # Enforce limit and offset on the query, so that only the
         query = query.limit(self.limit)                     # partial results (in sync with pagination parameters) are
         rows = [x.to_dict(columns) for x in query.all()]    # returned
-        total = [f'{k} = {v}' for k, v in total.items()]    # Format and return the sum of all expenses in a string form
-        total = "TOTAL : " + " | ".join(total)              # to be displayed underneath the table with results
+        total = [f'{k} = {v}' for k, v in total.items()]    # Format and return the sum of all expenses in a string
+        total = "TOTAL : " + " | ".join(total)              # form to be displayed underneath the table with results
 
         final['columns'] = columns          # Final dict contains query options data + additional elements such as sum
         final['rows'] = rows                # and count, which are to be rendered on the page. In addition to those, it
         final['count'] = count              # contains/returns the active query back to the page, so that if the user
-        final['limit'] = self.limit         # navigates to the edit item page, the query could be reloaded when the user
-        final['page'] = self.page           # gets redirected back to the overview page
+        final['limit'] = self.limit         # navigates to the edit item page, the query could be reloaded when the
+        final['page'] = self.page           # user gets redirected back to the overview page
         final['total'] = str(total)
 
         # If the user chose to save the most recent query, the request object is committed to the db as a stringified

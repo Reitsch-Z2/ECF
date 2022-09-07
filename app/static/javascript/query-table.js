@@ -83,6 +83,51 @@ function createTable(rows, columns, responseObject) {     // Create the table an
     }
     body.append(tableRow)
   }
+
+  /* An event listener added onto links in the table with results, so that if the user clicks a link, the default
+  behaviour is prevented in order to update user settings. After the user clicked on the item link and went to the
+  item edit page, and once the user is done with the editing mode, the goal is to return to the overview page with the
+  most recent results loaded - regardless of the "save_query" setting. If the user does not want to keep the most
+  recent query saved and reloaded, it should still reload after editing an item. In order to do that, two ajax
+  requests are sent - the "temp_query" setting is set to "yes", and the JS object containing all the current query
+  settings/data is saved to the database. The "temp_query" setting is here used for a one-off reloading of the most
+  recent query. Only after these updates are made, the user is sent to the item edit page, so that it is possible for
+  the user (after clicking submit/delete/cancel in the item edit mode) to go back to the most recent view with the
+  queried results, i.e. to continue at the same spot.
+  */
+  body.addEventListener('click', function(e) {
+    let target = e.target
+
+    if (target.tagName == 'A') {                  // Check if the clicked element is a link
+      let link = target.getAttribute('href')      // Get the URL of the link
+      e.preventDefault()                          // Prevent instant loading of that page
+
+      // Update the "last_query" setting with the current query options/data, so that the query could be reloaded
+      let xhr = new XMLHttpRequest()
+      xhr.open('POST', '/api/user-settings', true)
+      xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8')
+      xhr.setRequestHeader('Accept', 'application/json;charset=UTF-8')
+      xhr.send(JSON.stringify({'setting_name': 'last_query', 'setting': JSON.stringify(reqPack())}))
+      xhr.onload = function() {
+        if (xhr.status == 200) {
+
+          // On success, update the "temp_query" setting, so that the current query is reloaded on return to the
+          // "overview" page from the "edit item" page
+          let xhr2 = new XMLHttpRequest()
+          xhr2.open('POST', '/api/user-settings', true)
+          xhr2.setRequestHeader('Content-Type', 'application/json;charset=UTF-8')
+          xhr2.setRequestHeader('Accept', 'application/json;charset=UTF-8')
+          xhr2.send(JSON.stringify({'setting_name': 'temp_query', 'setting': 'khm'}))
+          xhr2.onload = function() {
+            if (xhr2.status == 200) {
+              window.location = link              // On success - follow the link to the "item edit" page, now
+            }                                     // with the updated settings
+          }
+        }
+      }
+    }
+  })
+
   table.append(headers)
   table.append(body)
   return table

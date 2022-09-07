@@ -9,11 +9,19 @@
   position: absolute;
   height: auto;
   max-width: 300px;
-  width: 50%;
+  width: 60%;
   padding: 15px 30px 15px 30px;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%)
+}
+
+.form:after {
+    position: absolute;
+    content: "";
+    bottom: -50px;
+    height: 50px;
+    width: 10%;
 }
 
 .form-field {
@@ -95,16 +103,26 @@
   height: 50px;
   top: 35px;
   left: 35px;
-
 }
 
-.logo img{
+.logo img {
     height: 50px;
+}
+
+.link-password {
+  float: left;
+  font-size: 0.75em;
+}
+
+.link-register {
+  float: right;
+  font-size: 0.75em;
 }
 
 @media only screen and (max-width: 650px) {
   .form-alt {
     width: 80%;
+    margin-top: 50px;
   }
 
   .item-form {
@@ -135,9 +153,18 @@
   }
 
   .form {
-  position: relative;
-  width: 1000%;
-  top: 0;
+  position: absolute;
+  display: inline-block;
+  top: 100px;
   transform: translate(-50%, 0%)
   }
+
+  .link-register {
+  float: left;
+  }
+
+  .link-password {
+  margin-right: 5em;
+  }
+
 }

@@ -77,14 +77,13 @@ def usersettings():
         query_types.extend(currencies)
 
         # Check to see if the value from the select field has been tampered with - if the value sent via the ajax
-        # request does not exist as a standard option, the response is short-circuited to a default currency query type,
-        # and the attempt to update the database with improper setting value is prevented
+        # request does not exist as a standard option, the response is short-circuited to a default currency query
+        # type, and the attempt to update the database with improper setting value is prevented
         if setting_value not in query_types:
             return "Total - base currency"
 
     setting = UserSetting.query.filter_by(user_id=current_user.id, setting_name=setting_name).first()
     setting.setting = setting_value
-    db.session.add(setting)
     db.session.commit()
     return setting_value
 
@@ -99,7 +98,7 @@ def tables():
     """
     request_data = dict(json.loads(request.get_data()))
     columns = ['item', 'category', 'price', 'date']     # List with attributes to be parsed from matching items in the
-    query = AjaxQuery(request_data)                     # db - attributes are synonymous with table columns/column names
+    query = AjaxQuery(request_data)                     # db; attributes are synonymous with table columns/column names
     query_results = query.querier(columns)
     return {'data': query_results}
 
@@ -162,13 +161,13 @@ def register():
         return render_template('entries.html', form=ItemForm())
     form = RegistrationForm()
     if form.validate_on_submit():
-        user = User(username=form.username.data, email=form.email.data)     # Create a new user instance
-        user.set_setting('base_currency', form.currency.data)               # Chosen currency taken from the form
-        user.set_setting('query_currency', 'Total - base currency')         # Other settings defined as
-        user.set_setting('save_query', 'no')                                # neutral/standard, but also as placeholders
-        user.set_setting('temp_query', 'yes')                               # in order to avoid the "NoneType" TypeError
-        user.set_setting('last_query', '{}')                                # Placeholder value until the first query is
-        user.set_password(form.password.data)                               # made, preventing the "NoneType" TypeError
+        user = User(username=form.username.data, email=form.email.data)   # Create a new user instance
+        user.set_setting('base_currency', form.currency.data)             # Chosen currency taken from the form
+        user.set_setting('query_currency', 'Total - base currency')       # Other settings defined as
+        user.set_setting('save_query', 'no')                              # neutral/standard, but also as placeholders
+        user.set_setting('temp_query', 'yes')                             # in order to avoid the "NoneType" TypeError
+        user.set_setting('last_query', '{}')                              # Placeholder value until the first query is
+        user.set_password(form.password.data)                             # made, preventing the "NoneType" TypeError
         db.session.add(user)
         db.session.commit()
         flash('You have successfully registered your account')
@@ -238,7 +237,7 @@ def reset_password(token):
     if not user:
         return redirect(url_for('login'))           # Redirect to login if the token is not valid
     form = ResetPasswordForm()
-    if form.validate_on_submit():                   # If token was valid and the form was validated - change the password
+    if form.validate_on_submit():               # If token was valid and the form was validated - change the password
         user.set_password(form.password.data)
         db.session.commit()
         flash('Your password has been changed')
@@ -255,10 +254,10 @@ def entries():
     the entering of new expenses/data is a more common task than querying that data.
     """
     base_currency = current_user.setting('base_currency')   # Get the default currency for the user
-    choices = choice_list(base_currency, json_loader(True, 'settings', 'general', 'currencies'))   # Load all currencies
+    choices = choice_list(base_currency, json_loader(True, 'settings', 'general', 'currencies'))  # Load all currencies
     form = ItemForm()
-    form.currency.choices = choices                         # Pass pre-loaded currencies as options for the select field
-                                                            # with the user's currency of choice as the first one
+    form.currency.choices = choices                         # Pass pre-loaded currencies as options for the select
+                                                            # field with the user's currency of choice as the first one
     if form.validate_on_submit():
         item = Item(
             name=form.item.data,
@@ -313,8 +312,8 @@ def entries():
                 'date': form.date.data.strftime('%Y-%m-%d'),
                 'entry_currency': form.currency.data,
                 'target_currency': base_currency,
-                'first_entry': False            # "First_entry" is "False", since this is the second price for the item -
-            }]                                  # i.e. original entry converted to the main/base currency
+                'first_entry': False            # "First_entry" is "False", since this is the second price for the item
+            }]                                  # - i.e. original entry converted to the main/base currency
 
             convert_prices(price_data)          # DB commits occur inside the function; Celery worker has to be active
 
@@ -463,7 +462,7 @@ def overview():
     query_types.extend(currencies)                          # merge currency names with two queries above to form the
                                                             # total of 5 options for querying at the moment
 
-    presets_loader = {}                         # New dictionary that holds the settings that are to be sent to the page
+    presets_loader = {}                     # New dictionary that holds the settings that are to be sent to the page
     presets_loader['pagination'] = presets['pagination']
     presets_loader['currency_query'] = query_types
     presets_loader['currency_query_choice'] = current_user.setting('query_currency')
@@ -506,8 +505,8 @@ def profile(username):                          # Argument only for the URL, not
     using WTForm functionalities. This allows the possibility to return back the form if it wasn't validated, and
     automatically have validation feedback for the user.
     """
-    # User object handled via current_user instead of taking the variable from the URL - the variable practically serves
-    # as a URL decorator/personalization
+    # User object handled via current_user instead of taking the variable from the URL - the variable practically
+    # serves as a URL decorator/personalization
     user = User.query.filter_by(username=current_user.username).first()
 
     if request.method == 'POST':
@@ -522,9 +521,9 @@ def profile(username):                          # Argument only for the URL, not
             form.csrf_token.data = form_data['csrf_token']
             if form.validate_on_submit():                   # If form is validated
                 # If there were changes made - return "updated" string - used by JS as a conditional for flashing a
-                # message to user; else - return 'no change' string, which is also used by JS as a conditional. Both of
-                # these responses, apart from the flashed message, have the same effect - the form gets removed, and the
-                # originally chosen tab/option gets "unclicked", i.e. the 'chosen-option' css class is removed from it
+                # message to user; else - return 'no change' string, which is also used by JS as a conditional. Both
+                # of these responses, apart from the flashed message, have the same effect - the form gets removed, and
+                # the originally chosen option gets "unclicked", i.e. the 'chosen-option' css class is removed from it
                 if user.username != form_data['username'] or user.email !=form_data['email']:
                     user.username = form_data['username']
                     user.email = form_data['email']
@@ -569,12 +568,12 @@ def profile(username):                          # Argument only for the URL, not
                 # If any changes were made, check what those changes are with two sub-if clauses - and process them
                 if user.setting('save_query') != form.save_query.data or base_currency != form.currency.data:
                     if user.setting('save_query') != form.save_query.data:
-                        user.set_setting('save_query', form.save_query.data)  #update the setting for saving the queries
+                        user.set_setting('save_query', form.save_query.data)    # Update the setting for saving queries
 
                     # If user changes the base/main currency, a complex query is made, with the goal to convert all the
                     # prices entered in the previous base/main currency into the new currency - while keeping the old
-                    # prices as they are. This is done so that the user is able to query all the expenses ever made also
-                    # in the newly chosen currency - which allows the user to always see total costs
+                    # prices as they are. This is done so that the user is able to query all the expenses ever made
+                    # also in the newly chosen currency - which allows the user to always see total costs
                     if base_currency != form.currency.data:
 
                         # Get all the items/expenses for the current user
@@ -597,8 +596,8 @@ def profile(username):                          # Argument only for the URL, not
                         # and the results are filtered in such a way that only the rows with the prices in the previous
                         # base/main currency are returned (since each item can have multiple prices/prices in multiple
                         # currencies). In this way, only the results containing Item+Price in the previous currency
-                        # where there are no prices in the new currency are returned, in order to be parsed and sent for
-                        # conversion to the new currency.
+                        # where there are no prices in the new currency are returned, in order to be parsed and sent
+                        # for conversion to the new currency.
                         items = db.session.query(Item, Price)\
                             .outerjoin(Price, Item.id == Price.item_id)\
                             .filter(Price.item_id.in_(([item[0] for item in filtered_items])))\

@@ -26,3 +26,10 @@
   width: 30%;
   text-align: center
 }
+
+@media only screen and (max-width: 650px) {
+  #month-nav li {
+    font-size: 3vw;
+  }
+
+}
