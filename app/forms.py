@@ -5,11 +5,13 @@ from wtforms.validators import DataRequired, EqualTo, ValidationError, Email, Le
 from app.models import User
 from app.utils.helpers import json_loader
 
+
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     remember_me = BooleanField('Remember me')
     submit = SubmitField('Log in')
+
 
 class RegistrationForm(FlaskForm):
     currencies = json_loader(True, 'settings', 'general', 'currencies')
@@ -34,6 +36,7 @@ class RegistrationForm(FlaskForm):
         if email is not None:
             raise ValidationError('Email already exists.')
 
+
 class ItemForm(FlaskForm):
     item = StringField('Item', validators=[DataRequired()])
     price = DecimalField('Price', validators=[DataRequired()])
@@ -48,19 +51,23 @@ class ItemForm(FlaskForm):
         if date.data.strftime('%Y-%m-%d') > datetime.date.today().strftime('%Y-%m-%d'):
             raise ValidationError('The date cannot be in the future')
 
+
 class ResetPasswordRequestForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     submit = SubmitField('Request password reset')
+
 
 class ResetPasswordForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     password2 = PasswordField('Repeat the password', validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Request password reset')
 
+
 class EditUserPersonalForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
     submit = SubmitField('Submit')
+
 
 class EditUserPasswordForm(FlaskForm):
     old_password = PasswordField('Old password', validators=[DataRequired()])
@@ -76,6 +83,7 @@ class EditUserPasswordForm(FlaskForm):
         user = User.query.filter_by(username=self.username).first()
         if user.check_password(old_password.data) != True:
             raise ValidationError('The current password is incorrect.')
+
 
 class EditUserSettingsForm(FlaskForm):
     currency = SelectField('Currency', validators=[DataRequired()])

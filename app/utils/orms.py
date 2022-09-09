@@ -40,7 +40,6 @@ class AjaxQuery():
         """
         query = Item.query.filter_by(user_id=current_user.id)   # Limit the access to data for the authenticated user
 
-
         if self.time_mode == 'day':                             # If querying in "day" mode, filter by a single date
             query = query.filter(Item.date == self.dates)       # Else - if querying in week/month mode, use the first
         else:                                                   # and last day of the week/month to filter the results
@@ -65,7 +64,6 @@ class AjaxQuery():
             if query.count() > 0:
                 sum_total = float(query.with_entities(func.sum(Price.price)).scalar())
                 total[current_user.setting('base_currency')] = sum_total
-
         # Get all the results in the currency chosen at first entry
         elif query_currency == 'Total - combined currencies':
             query = query.filter_by(first_entry=True)
@@ -75,7 +73,6 @@ class AjaxQuery():
                     currency = currency[0]
                     total[currency]=float(query.filter(Price.currency==currency).
                         with_entities(func.sum(Price.price)).scalar())
-
         # Get all the results for a currency where the first entry into the database was made with that
         # currency, i.e. if the user made a query for a singular currency, only the results where the
         # original price is in that currency are returned

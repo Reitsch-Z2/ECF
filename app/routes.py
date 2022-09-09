@@ -316,7 +316,6 @@ def entries():
             }]                                  # - i.e. original entry converted to the main/base currency
 
             convert_prices(price_data)          # DB commits occur inside the function; Celery worker has to be active
-
         return redirect(url_for('entries'))
     return render_template('entries.html', title='new entry', form=form)
 
@@ -358,7 +357,7 @@ def item_edit(username, item, item_id):
         if requested['submit'] == 'Cancel':         # If no changes were made - redirect the user to the overview page
             return redirect(url_for('overview'))
 
-        if requested['submit'] == 'Delete':         # Delete the item from the database (cascaded price deletion)
+        elif requested['submit'] == 'Delete':      # Delete the item from the database (cascaded price deletion)
             db.session.delete(item)
             db.session.commit()
             return redirect(url_for('overview'))
@@ -418,7 +417,6 @@ def item_edit(username, item, item_id):
                         # sends data to remote website with exchange rates and returns the converted price, and
                         # upon receiving the price in new currency - commits that price to the database
                         convert_prices(price_data)                  # Only works if the Celery worker is active
-
                 return redirect(url_for('overview'))
     # At get request/first rendering of the page, pre-populate the form fields with existing data for that item.
     elif request.method == 'GET':
@@ -632,7 +630,6 @@ def profile(username):                          # Argument only for the URL, not
             else:
                 formErrors = render_template('forms/_edit_user_settings.html',form=form)
                 return {'data': formErrors}
-
     return render_template('edit_profile.html', title='edit profile')
 
 

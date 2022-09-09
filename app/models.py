@@ -14,6 +14,7 @@ from app.utils.mixins import Upmodel
 def load_user(id):
     return User.query.get(int(id))
 
+
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
@@ -134,7 +135,6 @@ class Item(db.Model, Upmodel):
         the currency code, so that the user can discern which prices are in which currency. For all other queries, all
         the results are for a single chosen currency, and therefore only the price amount is displayed.
         """
-
         base_currency = self.user.setting('base_currency')
         query_currency = self.user.setting('query_currency')
         if query_currency == 'Total - base currency':                                       #TODO maybe all as list
@@ -143,11 +143,7 @@ class Item(db.Model, Upmodel):
             price = list(filter(lambda x: x.first_entry == True, self.prices))[0]           # readable though
         else:
             price = list(filter(lambda x: x.currency == query_currency and x.first_entry == True, self.prices))[0]
-
-        if query_currency == 'Total - combined currencies':
-            return str(round(price.price, 2)) + ' ' + price.currency
-        else :
-            return str(round(price.price, 2)) + ' ' + price.currency
+        return str(round(price.price, 2)) + ' ' + price.currency
 
     @price.expression
     def price(cls):
@@ -158,6 +154,7 @@ class Item(db.Model, Upmodel):
     def price(self, price_object):
         """Setter method used to update/enter the price for the item"""
         self.prices.append(price_object)
+
 
 class Price(db.Model, Upmodel):
     id = db.Column(db.Integer, primary_key=True)
