@@ -1,5 +1,10 @@
 venv/
+data/
 notes.txt
 heroku_envs.txt
 __pycache__/
 app.db
+.env
+Dockerfile
+compose.yml
+data/

@@ -1,5 +1,8 @@
 from celery import Celery
 
+#docker imports - worker db context # TODO resolve elsehow?
+from app.models import Price
+from app import db
 
 def create_celery(application):
     """

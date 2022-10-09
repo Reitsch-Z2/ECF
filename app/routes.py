@@ -144,7 +144,7 @@ def edit_profile():
         return {'data': string}
 
     else:
-        pass #TODO - exception handling
+        pass # TODO - exception handling
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -157,6 +157,9 @@ def register():
     Defining these settings at inception is important because they are actively used
     during the querying of results.
     """
+
+    db.create_all()         # TODO temp for DOCKER db init
+
     if current_user.is_authenticated:
         return render_template('entries.html', form=ItemForm())
     form = RegistrationForm()

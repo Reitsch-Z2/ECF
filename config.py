@@ -16,5 +16,5 @@ class Config(object):
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     ADMINS =['assistance.ecf@gmail.com']
 
-    CELERY_BROKER_URL = os.environ.get('CLOUDAMQP_URL') or 'amqp://guest:guest@localhost'   # Alt values for docker
-    RESULT_BACKEND = os.environ.get('REDIS_URL') or 'redis://localhost:6379/0'              # images - for testing
+    CELERY_BROKER_URL = os.environ.get('CLOUDAMQP_URL') or 'amqp://guest:guest@rabbit:5672'     # Alt values for docker
+    RESULT_BACKEND = os.environ.get('REDIS_URL') or 'redis://redis:6379/0'                      # compose

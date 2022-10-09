@@ -263,6 +263,15 @@ function timeMarker() {
     * It adds visual confirmation for the selection into the calendar, updates the global querying object, and on click
     * event instantly creates a new ajax request with the to-query data, serving the results back into the table.
     */
+  if ((typeof mode)!='undefined'){                                // if mode variable is defined
+    let outers = document.body.querySelectorAll('.outer-day div')
+    if (mode == 'week') {                                         // display "outer" days if the query is made by "week"
+      outers.forEach(day => {day.classList.remove('hidden')})
+    } else {                                                      // otherwise - hide the "outer" days
+      outers.forEach(day => {day.classList.add('hidden')})
+    }
+  }
+
   let cal = document.getElementById('calendar')
   cal.addEventListener('click', function(e) {                     // TODO restructure it as a switch in the future?
     if (typeof mode == 'undefined'){

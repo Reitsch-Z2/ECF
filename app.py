@@ -2,7 +2,7 @@ from app import app, db
 from app.models import User, Price, Item, Category, UserSetting
 
 # if __name__ == '__main__':
-#     app.run(debug=True, port=8080)
+#     app.run(host='0.0.0.0', bind=True)
 
 # @app.shell_context_processor
 # def make_shell_context():
